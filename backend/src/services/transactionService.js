@@ -1,4 +1,5 @@
 import models, { sequelize } from "../config/db.js";
+import _ from "lodash";
 
 export const getValidUser = async (userId, transaction) => {
     const user = await models.users.findByPk(userId, { transaction: transaction });
@@ -35,21 +36,22 @@ export const insertTransactionItem = async (productJSON, txnJSON, item, transact
     return txnItem;
 }
 
-export const updateProductQuantity = async (productJSON, item, transaction) => {
-    const newProductQuantity = await models.products.update({
-        product_quantity: productJSON.product_quantity - item.quantity_bought,
-    }, {
-        where: {
-            product_id: productJSON.product_id,
-        }
-    }, { transaction: transaction })
-}
-
 export const validatePurchasedAmount = (quantityBought, availableQuantity) => {
-    console.log(quantityBought, availableQuantity)
     if (quantityBought > availableQuantity) {
         const error = new Error("Quantity purchased is higher than the available quantity of the particular product.");
         error.status = 400;
         throw error;
     } 
+}
+
+export const patchTransactionPayload = (oldPayload, patch) => {
+    return { ...oldPayload, ...patch }
+}
+
+export const isPayloadIdentical = (oldPayload, newPayload) => {
+    if (_.isEqual(oldPayload, newPayload)) {
+        const error = new Error("Old and new payloads identical; update aborted.");
+        error.status = 400;
+        throw error;
+    }
 }

@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, afterAll } from "vitest";
+import { beforeAll, beforeEach, afterAll, afterEach } from "vitest";
 import models, { sequelize } from "../config/db.js";
 import { usersSeed } from "../seeders/usersSeeder.js";
 import { productsSeed } from "../seeders/productsSeeder.js";
@@ -7,7 +7,9 @@ beforeAll(async () => {
     if (process.env.NODE_ENV !== "test") {
         throw new Error("Error: Running tests while not in test mode strictly prohibited. Run npm test first.");
     }
-    
+})
+
+beforeEach(async () => {
     const modelList = Object.values(sequelize.models);
 
     for (const model of modelList) {
