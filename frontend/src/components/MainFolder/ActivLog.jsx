@@ -6,7 +6,7 @@ const ActivLog = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   useEffect(() => {
     const fetchLog = async () => {
       try {
@@ -59,13 +59,7 @@ const ActivLog = () => {
   return (
     <>
       <Navbar />
-      <input
-        type="search"
-        placeholder="Search..."
-        className={styles.search1}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <input type="search" placeholder="Search..." className={styles.search1} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
       <section id="sales" className={styles.page}>
         <div className={styles.actions}>
           <div className={styles['center-title']}>

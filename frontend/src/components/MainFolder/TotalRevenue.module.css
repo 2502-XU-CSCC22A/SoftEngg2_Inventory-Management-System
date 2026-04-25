@@ -1,117 +1,150 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
-
-
+/* LAYOUT */
 .container {
-    display: flex;
-    height: calc(100vh - 70px);
+  display: flex;
+  height: calc(100vh - 55px);
+  overflow: hidden;
 }
 
-
-.left-panel {
-    width: 35%;
-    background: #d9cfc1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* LEFT PANEL */
+.leftPanel {
+  width: 38%;
+  background: #f4eedf;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 48px 32px;
 }
 
-.left-panel h1 {
-    font-size: 60px;
-    color: #222;
+.leftContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
 }
 
-.left-panel .date {
-    margin: 10px 0 20px;
-    font-size: 18px;
-    color: #666;
+.revenueAmount {
+  font-size: 68px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: -2px;
 }
 
-.revenue-btn {
-    background: #e53935;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
+.date {
+  font-size: 18px;
+  color: #777;
 }
 
-
-.right-panel {
-    width: 65%;
-    padding: 40px;
+/* BUTTON */
+.revenueBtn {
+  background: #24a0ed;
+  color: #fff;
+  border: none;
+  padding: 11px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
 }
 
-
-.chart-box {
-    height: 200px;
-    border: 1px solid #ddd;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #aaa;
+.revenueBtn:hover {
+  background: #1a8fd4;
 }
 
-
-.info h2 {
-    color: #8b5e3c;
+/* RIGHT PANEL */
+.rightPanel {
+  width: 62%;
+  background: #ffffff;
+  padding: 32px 44px;
+  display: flex;
+  flex-direction: column;
 }
 
-
-.month-select {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
+/* CHART */
+.chartBox {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
-.arrow-btn {
-    width: 40px;
-    height: 40px;
-    border: 3px solid #222;
-    border-radius: 50%;
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: 0.2s;
+/* INFO */
+.info {
+  display: flex;
+  flex-direction: column;
 }
 
-.arrow-btn:hover {
-    background: #eee;
+.monthSelectTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #8b5e3c;
+  margin-bottom: 10px;
 }
 
+.divider {
+  border: none;
+  border-top: 1px solid #eeeeee;
+  margin-bottom: 20px;
+}
 
-.info-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 25px;
-    text-align: center;
+/* INFO ITEMS */
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.starIcon {
+  color: #bbbbbb;
+  font-size: 22px;
+}
+
+.infoText {
+  flex: 1;
 }
 
 .label {
-    font-weight: bold;
-    font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
-.info-item small {
-    margin-top: 3px;
-    color: #777;
+.subLabel {
+  font-size: 12px;
+  color: #999;
 }
 
 .value {
-    margin-top: 8px;
-    font-size: 20px;
-    font-weight: bold;
+  font-size: 17px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* STATES */
+.loadingState,
+.errorState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 55px);
+  font-size: 16px;
+  color: #888;
+}
+
+.errorState {
+  color: #e05c5c;
 }

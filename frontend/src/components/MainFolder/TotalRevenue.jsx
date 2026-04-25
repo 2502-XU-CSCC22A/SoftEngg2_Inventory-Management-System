@@ -3,9 +3,9 @@ import { Navbar } from './Navbar';
 import styles from './TotalRevenue.module.css';
 
 const TotalRevenue = () => {
-  const [revenueData, setRevenueData] = useState({
-    totalRevenue: 0,
-    totalQuantitySold: 0,
+  const [data, setData] = useState({
+    revenue: 0,
+    quantity: 0,
     loading: true,
     error: null
   });
@@ -13,62 +13,79 @@ const TotalRevenue = () => {
   useEffect(() => {
     const fetchTotalRevenue = async () => {
       try {
-        const response = await fetch('/api/reports/total-revenue');
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        setRevenueData({
-          totalRevenue: data.totalRevenue,
-          totalQuantitySold: data.totalQuantitySold,
-          loading: false,
-          error: null
-        });
+        const res = await fetch('/api/reports/total-revenue');
+        if (!res.ok) throw new Error('Failed to fetch');
+
+        const result = await res.json();
+
+        setData({  revenue: result.totalRevenue, quantity: result.totalQuantitySold, loading: false, error: null});
       } catch (err) {
-        setRevenueData(prev => ({ ...prev, loading: false, error: err.message }));
+        setData(prev => ({ ...prev, loading: false, error: err.message }));
       }
     };
     fetchTotalRevenue();
   }, []);
 
-  const handleBack = () => window.history.back();
-
-  if (revenueData.loading) return <div>Loading...</div>;
-  if (revenueData.error) return <div>Error: {revenueData.error}</div>;
+  if (data.loading) return <div className={styles.loadingState}>Loading...</div>;
+  if (data.error) return <div className={styles.errorState}>Error: {data.error}</div>;
 
   return (
     <>
       <Navbar />
-      <div className={`${styles.container} ${styles['total-revenue-page']}`}>
-        <div className={`${styles['left-panel']} ${styles['revenue-panel']}`}>
-          <div className={styles['revenue-summary']}>
-            <h1>₱{revenueData.totalRevenue.toLocaleString()}</h1>
+
+      <div className={styles.container}>
+
+        <div className={styles.leftPanel}>
+          <div className={styles.leftContent}>
+            <h1 className={styles.revenueAmount}>
+              ₱{data.revenue.toLocaleString()}
+            </h1>
             <p className={styles.date}>Overall Revenue</p>
           </div>
-          <button className={styles['back-btn']} onClick={handleBack}>Back</button>
+
+          <button
+            className={styles.revenueBtn}
+            onClick={() => window.history.back()}
+          >
+            Back
+          </button>
         </div>
 
-        <div className={styles['right-panel']}>
-          <div className={styles['chart-box']}>
-            {/* Placeholder for a chart library (e.g., Recharts) */}
+        <div className={styles.rightPanel}>
+          <div className={styles.chartBox}>
+            <p style={{ textAlign: 'center', color: '#aaa' }}>
+              Overall Revenue Trend
+            </p>
           </div>
+
           <div className={styles.info}>
-            <h2 className={styles['section-title']}>Overall</h2>
-            <div className={styles['info-item']}>
-              <span className={styles['star-icon']}>★</span>
-              <div className={styles['info-text']}>
+
+            <h2 className={styles.monthSelectTitle}>Overall</h2>
+            <hr className={styles.divider} />
+            <div className={styles.infoItem}>
+              <span className={styles.starIcon}>☆</span>
+              <div className={styles.infoText}>
                 <p className={styles.label}>Income</p>
-                <p className={styles['sub-label']}>Overall Sales</p>
+                <p className={styles.subLabel}>Overall Sales</p>
               </div>
-              <p className={styles.value}>₱{revenueData.totalRevenue.toLocaleString()}</p>
+              <p className={styles.value}>
+                ₱{data.revenue.toLocaleString()}
+              </p>
             </div>
-            <div className={styles['info-item']}>
-              <span className={styles['star-icon']}>★</span>
-              <div className={styles['info-text']}>
+
+            <hr className={styles.divider} />
+
+            <div className={styles.infoItem}>
+              <span className={styles.starIcon}>☆</span>
+              <div className={styles.infoText}>
                 <p className={styles.label}>Quantity Sold</p>
-                <p className={styles['sub-label']}>Overall Sold Products</p>
+                <p className={styles.subLabel}>Overall Sold Products</p>
               </div>
-              <p className={styles.value}>{revenueData.totalQuantitySold}</p>
+              <p className={styles.value}>{data.quantity}</p>
             </div>
+
           </div>
+          
         </div>
       </div>
     </>
