@@ -11,11 +11,11 @@ function Login() {
 
   const handleLogin = () => {
     // Check if fields are empty
-    if (!username()) {
+    if (!username) {
       setError("Please enter your username");
       return;
     }
-    if (!password()) {
+    if (!password) {
       setError("Please enter your password");
       return;
     }
