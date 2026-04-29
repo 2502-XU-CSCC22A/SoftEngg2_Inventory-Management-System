@@ -6,12 +6,12 @@ function EditAvailable({ product, onClose, onSave }) {
   const [price, setPrice] = useState(product?.price ? product.price.replace(/[^\d]/g, "") : "");
 
   const handleSave = () => {
-    const updatedQuantity = quantity === "" ? product.quantity : Number(quantity);
-    const sanitizedPrice = price === "" ? product.price : `₱${price.replace(/[^\d]/g, "")}`;
+    const updatedQuantity = quantity === "" ? product.product_quantity : Number(quantity);
+    const sanitizedPrice = price === "" ? product.product_unit_price : Number(price);
 
     onSave({
-      quantity: updatedQuantity,
-      price: sanitizedPrice,
+      product_quantity: updatedQuantity,
+      product_unit_price: sanitizedPrice,
     });
   };
 
