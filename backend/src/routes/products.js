@@ -19,7 +19,8 @@ productsRouter.get('/search', checkValidQuery(), async (req, res) => {
       where: {
         product_name: {
           [Op.iLike]: `%${name}%`
-        }
+        },
+        is_still_offered: true,
       }
     });
     return res.status(200).json({ message: "Product fetched successfully", data: products });
