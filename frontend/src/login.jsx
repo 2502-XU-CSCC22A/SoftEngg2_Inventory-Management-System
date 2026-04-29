@@ -1,4 +1,4 @@
-import "./login.css";
+import styles from "./login.module.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,48 +6,87 @@ function Login() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
-  const [userid, setUserid] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = () => {
-    if (username === "admin" && userid === "admin123" && password === "password") {
+    // Check if fields are empty
+    if (!username()) {
+      setError("Please enter your username");
+      return;
+    }
+    if (!password()) {
+      setError("Please enter your password");
+      return;
+    }
+
+    // Check credentials
+    if (username === "admin" && password === "password") {
+      setError("");
       navigate("/welcomeadmin");
-    } else if (username === "user" && userid === "user123" && password === "password") {
+    } else if (username === "user" && password === "password") {
+      setError("");
       navigate("/welcomeuser");
     } else {
-      alert("Invalid credentials. Please try again.");
+      setError("Invalid username or password. Please try again.");
+    }
+  };
+
+  // Clear error when user starts typing
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+    if (error) setError("");
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (error) setError("");
+  };
+
+  // Allow Enter key to submit
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
   return (
-  <div className="loginpage">
-    <div className="logincontainer">
-      <h1 className="usernamefont">Username:</h1>
-      <input 
-        type="text" 
-        placeholder="Enter Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
+    <div className={styles.loginpage}>
+      <div className={styles.logincontainer}>
+        <div className={styles.welcomeWrapper}>
+          <h1 className={styles.welcome}>Welcome User!</h1>
+          <p className={styles.welcomeCaption}>Please enter your credentials</p>
+        </div>
+        
+        {/* Error message display */}
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
+          </div>
+        )}
+        
+        <h1 className={styles.usernamefont}>Username:</h1>
+        <input 
+          type="text" 
+          placeholder="Enter Username"
+          value={username}
+          onChange={handleUsernameChange}
+          onKeyPress={handleKeyPress}
+        />
 
-      <h1 className="useridfont">User ID:</h1>
-      <input 
-        type="text" 
-        placeholder="Enter User ID"
-        onChange={(e) => setUserid(e.target.value)}
-      />
+        <h1 className={styles.passwordfont}>Password:</h1>
+        <input 
+          type="password" 
+          placeholder="Enter your password"
+          value={password}
+          onChange={handlePasswordChange}
+          onKeyPress={handleKeyPress}
+        />
 
-      <h1 className="passwordfont">Password:</h1>
-      <input 
-        type="password" 
-        placeholder="Enter your password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <br />
-      <button className="loginbutton" onClick={handleLogin}>
-        Login
-      </button>
-    </div>
+        <button className={styles.loginbutton} onClick={handleLogin}>
+          Login
+        </button>
+      </div>
     </div>
   );
 }
