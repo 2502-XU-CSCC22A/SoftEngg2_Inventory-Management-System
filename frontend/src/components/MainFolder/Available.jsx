@@ -3,10 +3,10 @@ import { Navbar } from './Navbar';
 import EditAvailable from './editavailable';
 import AddProduct from './addproduct';
 import styles from './Available.module.css';
-import { useProducts } from '../../hooks/useProducts';
+import { useProducts } from '../../hooks/useProducts.js';
 
 const Available = () => {
-  const { data: products, isLoading, isError, updateMutation } = useProducts();
+  const { data: products, isLoading, isError, updateMutation, insertMutation } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -38,6 +38,11 @@ const Available = () => {
     updateMutation.mutate({ product_id: selectedProduct.product_id, ...updatedValues });
     closeEdit();
   };
+
+  const addProduct = (newValues) => {
+    insertMutation.mutate(newValues);
+    closeAdd();
+  }
 
   const filteredProducts = (products.data || []).filter(product =>
     product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,7 +97,7 @@ const Available = () => {
           />
         )}
         {isAdding && (
-          <AddProduct onClose={closeAdd} />
+          <AddProduct onClose={closeAdd} onAdd={addProduct} />
         )}
       </div>
     </>
