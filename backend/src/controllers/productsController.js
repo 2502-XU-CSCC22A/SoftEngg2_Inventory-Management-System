@@ -9,7 +9,8 @@ export const insertNewProduct = async (req, res) => {
         })
     }
     catch (err) {
-        return res.status(400).json({
+        console.error(err);
+        return res.status(500).json({
             message: "Error adding product.",
             error: err.message,
         })
