@@ -49,6 +49,17 @@ const Available = () => {
     product.product_id.toString().includes(searchTerm)
   );
 
+  const formatPrice = (price) => {
+    if (price === null || price === undefined) return "N/A";
+    const priceStr = String(price);
+    if (priceStr.length <= 2) {
+      return `0.${priceStr.padStart(2, '0')}`;
+    }
+    const pesosPart = priceStr.slice(0, -2);
+    const centsPart = priceStr.slice(-2);
+    return `${pesosPart + "." + centsPart}`;
+  }
+
   return (
     <>
       <Navbar />
@@ -79,7 +90,7 @@ const Available = () => {
                       <p className={styles.quantity}>Quantity: {product.product_quantity}</p>
                       <p className={styles['product-id']}>ID: {product.product_id}</p>
                     </div>
-                    <p className={styles.price}>{product.product_unit_price}</p>
+                    <p className={styles.price}>{formatPrice(product.product_unit_price)}</p>
                   </div>
                   <button className={styles.edit} onClick={() => openEdit(product)}>Edit</button>
                 </div>
