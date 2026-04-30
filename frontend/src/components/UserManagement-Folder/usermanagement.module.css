@@ -5,120 +5,208 @@
   font-size: 55px;
   width: 100%;
 }
-.line1{
-    border: 1px solid rgba(168, 110, 92, 1);
-    position: absolute;
-    top: 140px;
-    left: 1px;
-    right: 1px;    
+
+.line1 {
+  border: 1px solid rgba(168, 110, 92, 1);
+  position: absolute;
+  top: 140px;
+  left: 1px;
+  right: 1px;    
 }
 
 .header .backbutton {
-    color: rgb(255, 255, 255);
-    background-color: rgba(44, 44, 44, 1);
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    left: 80px;
-    top: 78px;
-    width: 250px;
-    height: 45px;
-  
-    
+  color: rgb(255, 255, 255);
+  background-color: rgba(44, 44, 44, 1);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  left: 80px;
+  top: 78px;
+  width: 250px;
+  height: 45px;
 }
-.header .backbutton:hover {
-    background-color: rgba(68, 66, 66, 0.9);
-    transition: 0.3s;
-}
-.adduserbutton {
-    color: white;
-    background-color: rgba(34, 197, 94, 1);
-    box-shadow: 8px 12px 5px rgba(119, 116, 116, 0.479);
-    border: none;
-    border-radius: 101px;
-    width: 250px;
-    height: 55px;
-    font-size: 16px;
-    cursor: pointer;
-    position: absolute;
-    top: 190px;
-    left: 70px;
-}
-.adduserbutton:hover {
-    background-color: rgba(40, 231, 110, 0.9);
-    transition: 0.3s;
-}
-.removeuserbutton {
-    color: white;
-    background-color: rgba(239, 68, 68, 1);
-    box-shadow: 8px 12px 5px rgba(119, 116, 116, 0.479);
-    border: none;
-    border-radius: 101px;
-    width: 250px;
-    height: 55px;
-    font-size: 16px;
-    cursor: pointer;
-    position: absolute;
-    top: 190px;
-    right: 70px;
-}
-.removeuserbutton:hover {
-    background-color: rgba(253, 97, 97, 0.9);
-    transition: 0.3s;
-}
-.recent {
-    color: rgb(255, 255, 255);
-    font-size: 24px;
-    font-weight: 100;
-    background-color: rgba(152, 116, 96, 0.9);
-    width: 350px;
-    height: 30px;
-    padding: 10px;
-    border-radius: 9999px;
-    position: absolute;
-    text-align: center;
-    top: 234px;
-    left: 50%;
-    transform: translate(-50%);
-    
-}
-.search {
-    width: 250px;
-    height: 40px;
-    border-radius: 200px;
-    border: 1px solid rgba(168, 110, 92, 1);
-    padding: 20px; 
-    position: relative;
-    left: 100px;
-    top: 150px;
-}
-.table{
-   display: flex;
-    overflow-y: auto;  /*napay hi add dinhi para ma scroll2 siya */
-    justify-content: center;
-    align-items: center;
-    gap: 500px;
-    font-size: 14px;
-    font-weight: 100;
-    margin-top: 130px;
-    border: 1px solid rgba(168, 110, 92, 1);
-    border-radius: 8px;
-    padding-bottom: 30%;
-    box-shadow: 0px 12px 5px rgba(226, 221, 221, 0.479);
-    margin-left: 50px;
-    margin-right: 50px;
 
-    
+.header .backbutton:hover {
+  background-color: rgba(68, 66, 66, 0.9);
+  transition: 0.3s;
 }
-.line2{
-    border: 1px solid rgba(168, 110, 92, 1);
-    position: absolute;
-    top: 420px;
-    left: 57px;
-    right: 57px;
+
+.adduserbutton {
+  color: white;
+  background-color: rgba(34, 197, 94, 1);
+  box-shadow: 8px 12px 5px rgba(119, 116, 116, 0.479);
+  border: none;
+  border-radius: 101px;
+  width: 250px;
+  height: 55px;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  top: 190px;
+  left: 70px;
+}
+
+.adduserbutton:hover {
+  background-color: rgba(40, 231, 110, 0.9);
+  transition: 0.3s;
+}
+
+.removeuserbutton {
+  color: white;
+  background-color: rgba(239, 68, 68, 1);
+  box-shadow: 8px 12px 5px rgba(119, 116, 116, 0.479);
+  border: none;
+  border-radius: 101px;
+  width: 250px;
+  height: 55px;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  top: 190px;
+  right: 70px;
+}
+
+.removeuserbutton:hover {
+  background-color: rgba(253, 97, 97, 0.9);
+  transition: 0.3s;
+}
+
+.recent {
+  color: rgb(255, 255, 255);
+  font-size: 24px;
+  font-weight: 100;
+  background-color: rgba(152, 116, 96, 0.9);
+  width: 350px;
+  height: 50px;
+  padding: 10px;
+  border-radius: 9999px;
+  position: absolute;
+  text-align: center;
+  top: 200px;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+.search {
+  width: 250px;
+  height: 40px;
+  border-radius: 200px;
+  border: 1px solid rgba(168, 110, 92, 1);
+  padding: 20px; 
+  position: relative;
+  left: 100px;
+  top: 150px;
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 500px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 130px;
+  margin-left: 50px;
+  margin-right: 50px;
+  padding: 15px 20px;
+  background-color: rgba(152, 116, 96, 0.1);
+  border-radius: 8px 8px 0 0;
+}
+
+.headerCell {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: rgba(152, 116, 96, 1);
+}
+
+.line2 {
+  border: 1px solid rgba(168, 110, 92, 1);
+  margin: 0 50px;
+}
+
+.tableBody {
+  margin: 0 50px;
+  border: 1px solid rgba(168, 110, 92, 1);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.tableRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 500px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background-color: #f9f5f0;
+}
+
+.cell {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 14px;
+}
+
+.adminBadge {
+  background-color: rgba(152, 116, 96, 1);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.userBadge {
+  background-color: #e0e0e0;
+  color: #555;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.tableBody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tableBody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.tableBody::-webkit-scrollbar-thumb {
+  background: rgba(152, 116, 96, 0.5);
+  border-radius: 4px;
+}
+
+.tableBody::-webkit-scrollbar-thumb:hover {
+  background: rgba(152, 116, 96, 0.8);
 }
