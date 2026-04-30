@@ -4,7 +4,6 @@ import RemoveUserPopup from "./removeuserpopup";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUsers } from "../../hooks/useUsers.js";
-import api from "../../api/api.js";
 
 function UserManagement() {
     const [showAdd, setShowAdd] = useState(false);
