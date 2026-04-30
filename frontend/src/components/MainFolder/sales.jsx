@@ -1,35 +1,169 @@
 import styles from "./sales.module.css";
-import {Navbar} from "../MainFolder/Navbar";
+import { Navbar } from "../MainFolder/Navbar";
 import AddSales from "./addsales";
 import EditSales from "./editsales";
 import { useState } from "react";
+import { useTransactions } from "../../hooks/useTransactions.js";
+import api from "../../api/api.js";
 
 function Sales() {
     const [showaddsales, setshowaddsales] = useState(false);
     const [showeditsales, setshoweditsales] = useState(false);
-   
-     return (
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+    // Use the React Query hook to fetch transactions
+    const { data: transactionsData, isLoading, isError, refetch } = useTransactions();
+    
+    // Extract transactions array from the response
+    const transactions = transactionsData?.data || transactionsData || [];
+
+    const filteredTransactions = transactions.filter(transaction =>
+        (transaction.product_name || transaction.product || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+    );
+
+    const formatDateTime = (datetime) => {
+        if (!datetime) return "N/A";
+        const date = new Date(datetime);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const handleAddTransaction = async (newTransaction) => {
+        try {
+            // Format data for API
+            const transactionData = {
+                payment_type: newTransaction.payment_type,
+                payment_refstr: newTransaction.payment_refstr || null,
+                transaction_items: [{
+                    product_id: newTransaction.product_id,
+                    quantity_bought: newTransaction.quantity_bought
+                }]
+            };
+            
+            const response = await api.post('/transactions', transactionData);
+            if (response.status === 201) {
+                await refetch(); // Refresh the transaction list
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Failed to add transaction:", error);
+            return false;
+        }
+    };
+
+    const handleEditTransaction = async (updatedTransaction) => {
+        try {
+            const editData = {
+                payment_type: updatedTransaction.payment_type,
+                payment_refstr: updatedTransaction.payment_refstr || null,
+                transaction_items: updatedTransaction.transaction_items
+            };
+            
+            const response = await api.put(`/transactions/${updatedTransaction.transaction_id}`, editData);
+            if (response.status === 200) {
+                await refetch(); // Refresh the transaction list
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Failed to update transaction:", error);
+            return false;
+        }
+    };
+
+    const openEditPopup = (transaction) => {
+        setSelectedTransaction(transaction);
+        setshoweditsales(true);
+    };
+
+    if (isLoading) return <div className={styles.loading}>Loading transactions...</div>;
+    if (isError) return <div className={styles.error}>Failed to load transactions. Please try again.</div>;
+
+    return (
         <div>
             <Navbar/>
-            <input type="search" placeholder="Search..." className={styles.search1}/>
-            <button className={styles.add} onClick={()=> setshowaddsales(true)}>ADD</button>
-            <button className={styles.edit} onClick={() => setshoweditsales(true)}>EDIT</button>
+            <input
+                type="search"
+                placeholder="Search..."
+                className={styles.search1}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className={styles.add} onClick={() => setshowaddsales(true)}>ADD</button>
 
             <h1 className={styles.soldtransactions}>Sold Transactions</h1>
              
-            <div className={styles.container1}>
-            <h1 className={styles.products}>Products</h1>
-             <h1 className={styles.datentime}>Date & Time</h1>
-             <h1 className={styles.method}>Payment Method</h1>
-             <h1 className={styles.revenue}>Revenue</h1>
-             <h1 className={styles.action}>Action</h1>
-             <hr className={styles.line}/>
+            <div className={styles.tableHeader}>
+                <div className={styles.headerCell}>Products</div>
+                <div className={styles.headerCell}>Date & Time</div>
+                <div className={styles.headerCell}>Payment Method</div>
+                <div className={styles.headerCell}>Revenue</div>
+                <div className={styles.headerCell}>Action</div>
             </div>
-          
-           {showaddsales && <AddSales onClose={()=> setshowaddsales(false)} />}
-            {showeditsales && <EditSales onClose={() => setshoweditsales(false)} />}
-        </div>
-          
-    )
+            <hr className={styles.line2} />
+           
+            <div className={styles.tableBody}>
+                {filteredTransactions.length === 0 ? (
+                    <div className={styles.noData}>
+                        <p>No transactions found</p>
+                    </div>
+                ) : (
+                    filteredTransactions.map((transaction) => (
+                        <div key={transaction.transaction_id || transaction.id} className={styles.tableRow}>
+                            <div className={styles.cell}>
+                                {transaction.transaction_items?.map(item => item.product_name || item.product_id).join(', ') || transaction.product}
+                            </div>
+                            <div className={styles.cell}>{formatDateTime(transaction.transaction_timestamp || transaction.datetime)}</div>
+                            <div className={styles.cell}>
+                                <span className={styles.methodBadge}>{transaction.payment_type}</span>
+                                {transaction.payment_type === "GCash" && transaction.payment_refstr && (
+                                    <div className={styles.transactionIdText}>
+                                        ID: {transaction.payment_refstr}
+                                    </div>
+                                )}
+                            </div>
+                            <div className={`${styles.cell} ${styles.revenueValue}`}>
+                                ₱{(transaction.total_amount || 0).toLocaleString()}
+                            </div>
+                            <div className={styles.cell}>
+                                <button
+                                    className={styles.editButton}
+                                    onClick={() => openEditPopup(transaction)}
+                                >
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+         
+            {showaddsales && <AddSales
+                onClose={() => setshowaddsales(false)}
+                onAdd={handleAddTransaction}
+            />}
+           
+            {showeditsales && selectedTransaction && (
+                <EditSales
+                    onClose={() => {
+                        setshoweditsales(false);
+                        setSelectedTransaction(null);
+                    }}
+                    transaction={selectedTransaction}
+                    onSave={handleEditTransaction}
+                />
+            )}
+        </div>  
+    );
 }
+
 export default Sales;
