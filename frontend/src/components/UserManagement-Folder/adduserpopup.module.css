@@ -55,3 +55,7 @@
     background-color: rgb(138, 90, 72);
     transition: 0.3s;
 }
+
+.buttonpop:last-child {
+    margin-top: -40px;
+}
