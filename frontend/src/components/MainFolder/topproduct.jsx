@@ -2,21 +2,44 @@ import styles from "./topproduct.module.css";
 import { Navbar } from "../MainFolder/Navbar";
 import { useState, useEffect } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
+import { useProducts } from "../../hooks/useProducts.js";
 
 function TopProduct() {
     const [topProducts, setTopProducts] = useState([]);
     const [bestProduct, setBestProduct] = useState(null);
+    const [productsMap, setProductsMap] = useState({});
     
-    // Use the React Query hook to fetch transactions
-    const { data: transactionsData, isLoading, isError } = useTransactions();
+    // Use both hooks
+    const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useTransactions();
+    const { data: productsData, isLoading: productsLoading, isError: productsError } = useProducts();
     
     const transactions = transactionsData?.data || transactionsData || [];
+    const products = productsData?.data || productsData || [];
+
+    // Create a map of product_id to product details
+    useEffect(() => {
+        if (products.length > 0) {
+            const map = {};
+            products.forEach(product => {
+                map[product.product_id] = {
+                    name: product.product_name,
+                    price: product.product_unit_price,
+                    quantity: product.product_quantity,
+                    isOffered: product.is_still_offered
+                };
+            });
+            setProductsMap(map);
+        }
+    }, [products]);
 
     useEffect(() => {
-        if (transactions.length > 0) {
+        if (transactions.length > 0 && products.length > 0) {
             calculateTopProducts();
+        } else if (transactions.length === 0) {
+            setTopProducts([]);
+            setBestProduct(null);
         }
-    }, [transactions]);
+    }, [transactions, products]);
 
     const calculateTopProducts = () => {
         // Calculate total quantity sold per product from transaction_items
@@ -25,14 +48,20 @@ function TopProduct() {
         transactions.forEach(transaction => {
             if (transaction.transaction_items && Array.isArray(transaction.transaction_items)) {
                 transaction.transaction_items.forEach(item => {
-                    const productName = item.product_name || `Product ID: ${item.product_id}`;
+                    const productId = item.product_id;
+                    const productInfo = productsMap[productId];
+                    const productName = productInfo?.name || `Product ID: ${productId}`;
+                    const unitPrice = productInfo?.price || 0;
+                    
                     if (productSales[productName]) {
                         productSales[productName].quantity += item.quantity_bought;
-                        productSales[productName].revenue += (item.quantity_bought * (item.unit_price || 0));
+                        productSales[productName].revenue += (item.quantity_bought * unitPrice);
                     } else {
                         productSales[productName] = {
+                            name: productName,
                             quantity: item.quantity_bought,
-                            revenue: item.quantity_bought * (item.unit_price || 0)
+                            revenue: item.quantity_bought * unitPrice,
+                            productId: productId
                         };
                     }
                 });
@@ -40,12 +69,7 @@ function TopProduct() {
         });
         
         // Convert to array and sort by quantity sold
-        const sortedProducts = Object.entries(productSales)
-            .map(([name, data]) => ({
-                name,
-                quantity: data.quantity,
-                revenue: data.revenue
-            }))
+        const sortedProducts = Object.values(productSales)
             .sort((a, b) => b.quantity - a.quantity)
             .slice(0, 5);
         
@@ -58,8 +82,8 @@ function TopProduct() {
         }
     };
 
-    if (isLoading) return <div className={styles.loading}>Loading top products...</div>;
-    if (isError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
+    if (transactionsLoading || productsLoading) return <div className={styles.loading}>Loading top products...</div>;
+    if (transactionsError || productsError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
 
     return (
         <div className={styles.page}>
@@ -86,7 +110,7 @@ function TopProduct() {
                     <hr />
                     <div className={styles.productList}>
                         {topProducts.map((product, index) => (
-                            <div key={index} className={styles.productItem}>
+                            <div key={product.productId || index} className={styles.productItem}>
                                 <span className={styles.rank}>{index + 1}</span>
                                 <span className={styles.productName}>{product.name}</span>
                                 <span className={styles.productQuantity}>{product.quantity} units</span>
