@@ -83,7 +83,7 @@ function AddSales({ onClose, onAdd }) {
             return;
         }
         if (formData.payment_type === "GCash" && !formData.payment_refstr) {
-            setError("Reference string required for GCash.");
+            setError("Reference is required for GCash payments.");
             return;
         }
 
@@ -103,10 +103,10 @@ function AddSales({ onClose, onAdd }) {
             
             const success = await onAdd(transactionData);
             if (success) {
-                alert(`Transaction completed! Total: ₱${calculateTotal().toLocaleString()}`);
+                alert(`Transaction added Successfully!`);
                 onClose();
             } else {
-                setError("Failed to add transaction.");
+                setError("Failed to add transaction. Please Try again!");
             }
         } catch (err) {
             console.error("Error in handleSubmit:", err);
