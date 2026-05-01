@@ -2,55 +2,23 @@
   width: 100%;
 }
 
-.bestsold {
-  background-color: rgba(246, 238, 225, 0.9608);
-  width: 670px;   
-  height: 83.5vh;
-  color: rgba(152, 116, 96, 1);
-  font-size: 40px;
-  margin: 0;
-  padding: 20px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-}
-
-.bestProductContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.bestProductName {
-  font-size: 48px;
-  font-weight: bold;
-  color: rgba(152, 116, 96, 1);
-  text-transform: uppercase;
-}
-
-.bestProductSold {
-  font-size: 24px;
-  font-weight: normal;
-  color: rgba(152, 116, 96, 0.8);
-}
-
 .topproduct {
   position: absolute;   
-  right: 400px;          
+  left: 50%;
   top: 135px;
+  transform: translateX(-50%);
   color: rgba(152, 116, 96, 1);
   font-size: 32px;
   font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .container {
   position: absolute;   
-  right: 150px;          
+  left: 50%;
   top: 200px;
+  transform: translateX(-50%);
   color: rgb(30, 30, 30, 1);
   font-size: 14px;
   border: 1px solid rgba(217, 217, 217, 1);
@@ -129,16 +97,6 @@
   font-weight: 600;
 }
 
-.noData {
-  text-align: center;
-  padding: 40px 20px;
-  color: #999;
-}
-
-.noData p {
-  margin: 5px 0;
-}
-
 /* Scrollbar styling */
 .productList::-webkit-scrollbar {
   width: 8px;
@@ -156,4 +114,19 @@
 
 .productList::-webkit-scrollbar-thumb:hover {
   background: rgba(152, 116, 96, 0.8);
+}
+.noData {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.noData p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.subText {
+    font-size: 12px;
+    color: #bbb;
 }
