@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import models from "../config/db";
+import models from "../config/db.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -41,6 +41,6 @@ export const logoutUser = (req, res) => {
       return res.status(500).json({error: "logout failed"});
     }
     res.clearCookie("session_id");
-    res.sendStatus(204);
+    res.status(204).json({message: "logged out user"});
   })
 }

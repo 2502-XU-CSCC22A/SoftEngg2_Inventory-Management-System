@@ -11,14 +11,14 @@ function Login() {
 
   const handleLogin = async () => {
     // Check if fields are empty
-    if (!username()) {
+    /*if (!username()) {
       setError("Please enter your username");
       return;
     }
     if (!password()) {
       setError("Please enter your password");
       return;
-    }
+    }*/
 
     try {
       const response = await fetch("http://localhost:3000/auth/login", {

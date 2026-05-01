@@ -1,4 +1,5 @@
 import models from "../config/db.js";
+import bcrypt from "bcryptjs";
 
 export const addUser = async (req, res) => {
   try {
