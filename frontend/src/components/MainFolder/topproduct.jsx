@@ -11,10 +11,10 @@ function TopProduct() {
     
     // Use both hooks
     const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useTransactions();
-    const { data: productsData, isLoading: productsLoading, isError: productsError } = useProducts();
+    const { queryAll: allProducts, isLoading: productsLoading, isError: productsError } = useProducts();
     
     const transactions = transactionsData?.data || transactionsData || [];
-    const products = productsData?.data || productsData || [];
+    const products = allProducts || [];
 
     // Create a map of product_id to product details
     useEffect(() => {
