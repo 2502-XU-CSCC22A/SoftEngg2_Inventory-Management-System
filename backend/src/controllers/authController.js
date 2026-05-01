@@ -1,9 +1,5 @@
 import bcrypt from "bcryptjs";
 import models from "../config/db";
-import { generateAccessToken, generateRefreshToken } from "../utils/tokens";
-
-//temp only
-//let refreshTokens = [];
 
 export const loginUser = async (req, res) => {
   try {

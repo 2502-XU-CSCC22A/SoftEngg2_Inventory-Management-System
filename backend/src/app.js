@@ -5,6 +5,7 @@ import session from 'express-session';
 import { productsRouter } from "./routes/products.js";
 import { transactionsRouter } from './routes/transactions.js';
 import { usersRouter } from './routes/users.js';
+import { authRouter } from './routes/auth.js';
 import cors from 'cors';
 
 const app = express();
@@ -37,5 +38,6 @@ app.get('/', (req, res) => {
 app.use("/products", productsRouter);
 app.use("/transactions", transactionsRouter); 
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 export default app;

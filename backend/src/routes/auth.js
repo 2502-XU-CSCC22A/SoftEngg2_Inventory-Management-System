@@ -1,7 +1,16 @@
 import express from "express";
-import { loginUser, refreshToken, logoutUser } from "../controllers/authController";
+import { loginUser, logoutUser } from "../controllers/authController";
+import { validateLoginPayload } from "../middleware/authMiddleware";
 
 export const authRouter = express.Router();
 
-authRouter.post("/login", loginUser);
+const loginSchema = {
+  username: "string",
+  password: "string",
+}
+
+// -> login user
+authRouter.post("/login", validateLoginPayload(loginSchema), loginUser);
+
+// -> logout user
 authRouter.delete("/logout", logoutUser);

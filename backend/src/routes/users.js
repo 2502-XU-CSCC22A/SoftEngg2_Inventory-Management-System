@@ -1,6 +1,6 @@
 import express from "express";
 import models from "../config/db.js";
-import { validateLoginPayload, validateAddPayload } from "../middleware/usersMiddleware.js";
+import { validateAddPayload } from "../middleware/usersMiddleware.js";
 import { addUser, archiveUser } from "../controllers/usersController.js";
 import { authenticateUser, requreAdmin } from "../middleware/authMiddleware.js";
 
@@ -11,11 +11,6 @@ const usersSchema = {
   password: "string",
   confirmPassword: "string",
   role: "string"
-}
-const loginSchema = {
-  username: "string",
-  password: "string",
-  user_id: "number"
 }
 
 // -> add user

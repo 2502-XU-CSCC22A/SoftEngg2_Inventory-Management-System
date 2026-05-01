@@ -9,7 +9,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Check if fields are empty
     if (!username()) {
       setError("Please enter your username");
@@ -20,15 +20,33 @@ function Login() {
       return;
     }
 
-    // Check credentials
-    if (username === "admin" && password === "password") {
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        setError(data.error || "Login failed");
+        return;
+      }
+
       setError("");
-      navigate("/welcomeadmin");
-    } else if (username === "user" && password === "password") {
-      setError("");
-      navigate("/welcomeuser");
-    } else {
-      setError("Invalid username or password. Please try again.");
+
+      if (data.user.is_admin) {
+        navigate("/welcomeadmin");
+      } else {
+        navigate("/welcomeuser");
+      }
+    }catch (err){
+      setError("Server error.");
+      console.log(`Error during login: ${err}`);
     }
   };
 
