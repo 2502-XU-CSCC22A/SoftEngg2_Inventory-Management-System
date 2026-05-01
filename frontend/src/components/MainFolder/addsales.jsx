@@ -1,5 +1,5 @@
 import styles from "./addsales.module.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useProducts } from "../../hooks/useProducts.js";
 
 function AddSales({ onClose, onAdd }) {
@@ -13,8 +13,8 @@ function AddSales({ onClose, onAdd }) {
     const [loading, setLoading] = useState(false);
     
     // Fetch products for the dropdown
-    const { data: productsData, isLoading: productsLoading } = useProducts();
-    const products = productsData?.data || productsData || [];
+    const { query } = useProducts();
+    const products = query.data?.data || [];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,13 +50,8 @@ function AddSales({ onClose, onAdd }) {
                 }]
             };
             
-            const success = await onAdd(transactionData);
-            if (success) {
-                alert("Transaction added successfully!");
-                onClose();
-            } else {
-                setError("Failed to add transaction. Please try again.");
-            }
+            await onAdd(transactionData);
+            onClose();
         } catch (err) {
             setError("Failed to add transaction. Please try again.");
         } finally {
@@ -81,7 +76,7 @@ function AddSales({ onClose, onAdd }) {
                     className={styles.input}
                     value={formData.product_id}
                     onChange={handleChange}
-                    disabled={productsLoading}
+                    disabled={query.isLoading}
                 >
                     <option value="">Select Product</option>
                     {products.map((product) => (
@@ -131,7 +126,7 @@ function AddSales({ onClose, onAdd }) {
                 <button
                     className={styles.buttonpop}
                     onClick={handleSubmit}
-                    disabled={loading || productsLoading}
+                    disabled={loading || query.isLoading}
                 >
                     {loading ? "Adding..." : "Add Transaction"}
                 </button>
