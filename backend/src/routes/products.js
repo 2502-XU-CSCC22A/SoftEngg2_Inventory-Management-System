@@ -6,10 +6,19 @@ import { validate, checkValidQuery } from "../middleware/productsMiddleware.js";
 import { insertNewProduct, updateExistingProduct } from "../controllers/productsController.js";
 import { insertProductSchema, updateProductSchema } from "../schemas/schemas.js";
 
-// -> get all products
+// -> get all offered products
 productsRouter.get('/', async (req, res) => {
-  const products = await models.products.findAll();
+  const products = await models.products.findAll({
+    where: {
+      is_still_offered: true,
+    }
+  });
   return res.status(200).json({ message: "Products fetched successfully.", data: products});
+})
+
+productsRouter.get('/show-hidden', async (req, res) => {
+  const products = await models.products.findAll({})
+  return res.status(200).json({ message: "Products fetched successfully.", data: products });
 })
 
 productsRouter.get('/search', checkValidQuery(), async (req, res) => {

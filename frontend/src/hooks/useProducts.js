@@ -11,6 +11,14 @@ export const useProducts = () => {
         }
     });
 
+    const queryAll = useQuery({
+        queryKey: ['products', 'all'],
+        queryFn: async () => {
+            const { data } = await api.get('/products/show-hidden');
+            return data;
+        }
+    });
+
     // The Updater (Mutation)
     const updateMutation = useMutation({
         mutationFn: async ({ product_id, ...payload }) => {
@@ -30,5 +38,5 @@ export const useProducts = () => {
         },
     });
 
-    return { ...query, updateMutation, insertMutation };
+    return { query, queryAll, updateMutation, insertMutation };
 }

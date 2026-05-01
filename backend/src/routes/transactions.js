@@ -13,10 +13,23 @@ transactionsRouter.get('/', async (req, res) => {
     include: {
       model: models.transaction_items,
       as: "transaction_items",
+    },
+    where: {
+      voided_at: null,
     }
   });
   res.json(transactions);
 })
+
+transactionsRouter.get('/show-all', async (req, res) => {
+  const transactions = await models.transactions.findAll({
+    include: {
+      model: models.transaction_items,
+      as: "transaction_items",
+    },
+  });
+  res.json(transactions);
+});
 
 
 // -> get transactions by month and year
