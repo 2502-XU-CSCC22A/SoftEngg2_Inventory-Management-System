@@ -35,6 +35,16 @@ export const loginUser = async (req, res) => {
   }
 }
 
+export const getCurrent = (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  res.json({
+    user: req.session.user
+  });
+};
+
 export const logoutUser = (req, res) => {
   req.session.destroy((err) => {
     if (err){

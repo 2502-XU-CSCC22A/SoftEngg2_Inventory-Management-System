@@ -1,5 +1,5 @@
 import styles from "./login.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -8,17 +8,20 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     // Check if fields are empty
-    /*if (!username()) {
+    if (!username.trim()) {
       setError("Please enter your username");
       return;
     }
-    if (!password()) {
+    if (!password.trim()) {
       setError("Please enter your password");
       return;
-    }*/
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
@@ -39,7 +42,7 @@ function Login() {
 
       setError("");
 
-      if (data.user.is_admin) {
+      if (data?.user?.is_admin) {
         navigate("/welcomeadmin");
       } else {
         navigate("/welcomeuser");
@@ -47,6 +50,8 @@ function Login() {
     }catch (err){
       setError("Server error.");
       console.log(`Error during login: ${err}`);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -67,6 +72,34 @@ function Login() {
       handleLogin();
     }
   };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/auth/me", {
+          credentials: "include"
+        });
+
+        if (!res.ok) {
+          navigate("/login");
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.user.is_admin) {
+          navigate("/welcomeadmin");
+        } else {
+          navigate("/welcomeuser");
+        }
+
+      } catch (err) {
+        navigate("/login");
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
 
   return (
     <div className={styles.loginpage}>
@@ -101,8 +134,8 @@ function Login() {
           onKeyPress={handleKeyPress}
         />
 
-        <button className={styles.loginbutton} onClick={handleLogin}>
-          Login
+        <button className={styles.loginbutton} onClick={handleLogin} disabled={loading}>
+          {loading? "Logging in...": "Login"}
         </button>
       </div>
     </div>

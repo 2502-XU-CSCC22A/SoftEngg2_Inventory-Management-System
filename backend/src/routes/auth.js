@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, logoutUser } from "../controllers/authController.js";
+import { loginUser, getCurrent, logoutUser } from "../controllers/authController.js";
 import { validateLoginPayload } from "../middleware/authMiddleware.js";
 
 export const authRouter = express.Router();
@@ -11,6 +11,9 @@ const loginSchema = {
 
 // -> login user
 authRouter.post("/login", validateLoginPayload(loginSchema), loginUser);
+
+// -> gets current user
+authRouter.get("/me", getCurrent);
 
 // -> logout user
 authRouter.delete("/logout", logoutUser);
