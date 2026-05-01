@@ -4,7 +4,6 @@ import AddSales from "./addsales";
 import EditSales from "./editsales";
 import { useState } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
-import api from "../../api/api.js";
 
 function Sales() {
     const [showaddsales, setshowaddsales] = useState(false);
@@ -13,10 +12,10 @@ function Sales() {
     const [selectedTransaction, setSelectedTransaction] = useState(null);
 
     // Use the React Query hook to fetch transactions
-    const { data: transactionsData, isLoading, isError, refetch } = useTransactions();
+    const { query, updateMutation, insertMutation } = useTransactions();
     
     // Extract transactions array from the response
-    const transactions = transactionsData?.data || transactionsData || [];
+    const transactions = query.data || [];
 
     const filteredTransactions = transactions.filter(transaction =>
         (transaction.product_name || transaction.product || "")
@@ -37,27 +36,7 @@ function Sales() {
     };
 
     const handleAddTransaction = async (newTransaction) => {
-        try {
-            // Format data for API
-            const transactionData = {
-                payment_type: newTransaction.payment_type,
-                payment_refstr: newTransaction.payment_refstr || null,
-                transaction_items: [{
-                    product_id: newTransaction.product_id,
-                    quantity_bought: newTransaction.quantity_bought
-                }]
-            };
-            
-            const response = await api.post('/transactions', transactionData);
-            if (response.status === 201) {
-                await refetch(); // Refresh the transaction list
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error("Failed to add transaction:", error);
-            return false;
-        }
+        insertMutation.mutate(newTransaction);
     };
 
     const convertToPesos = (centsAmt) => {
@@ -69,29 +48,16 @@ function Sales() {
     }
 
     const handleEditTransaction = async (updatedTransaction) => {
-        try {
-            const editData = {
-                payment_type: updatedTransaction.payment_type,
-                payment_refstr: updatedTransaction.payment_refstr || null,
-                transaction_items: updatedTransaction.transaction_items
-            };
-            
-            const response = await api.put(`/transactions/${updatedTransaction.transaction_id}`, editData);
-            if (response.status === 200) {
-                await refetch(); // Refresh the transaction list
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error("Failed to update transaction:", error);
-            return false;
-        }
+        updateMutation.mutate(updatedTransaction)
     };
 
     const openEditPopup = (transaction) => {
         setSelectedTransaction(transaction);
         setshoweditsales(true);
     };
+
+    const isLoading = query.isLoading 
+    const isError = query.isError 
 
     if (isLoading) return <div className={styles.loading}>Loading transactions...</div>;
     if (isError) return <div className={styles.error}>Failed to load transactions. Please try again.</div>;
@@ -140,7 +106,6 @@ function Sales() {
                                 )}
                             </div>
                             <div className={`${styles.cell} ${styles.revenueValue}`}>
-                                { console.log("Transaction Items:", transaction.transaction_items) }
                                 {(convertToPesos((transaction.transaction_items.reduce((total, item) => total + (item.product_unit_price * item.quantity_bought), 0))) || 0).toLocaleString()}
                             </div>
                             <div className={styles.cell}>
