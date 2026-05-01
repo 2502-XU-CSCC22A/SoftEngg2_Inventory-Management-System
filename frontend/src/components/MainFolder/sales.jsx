@@ -60,6 +60,14 @@ function Sales() {
         }
     };
 
+    const convertToPesos = (centsAmt) => {
+        const amtStr = String(centsAmt);
+
+        const pesosPart = amtStr.slice(0, -2) || "0";
+        const centsPart = amtStr.slice(-2).padStart(2, '0');
+        return Number(pesosPart + "." + centsPart).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+    }
+
     const handleEditTransaction = async (updatedTransaction) => {
         try {
             const editData = {
@@ -132,7 +140,8 @@ function Sales() {
                                 )}
                             </div>
                             <div className={`${styles.cell} ${styles.revenueValue}`}>
-                                ₱{(transaction.total_amount || 0).toLocaleString()}
+                                { console.log("Transaction Items:", transaction.transaction_items) }
+                                {(convertToPesos((transaction.transaction_items.reduce((total, item) => total + (item.product_unit_price * item.quantity_bought), 0))) || 0).toLocaleString()}
                             </div>
                             <div className={styles.cell}>
                                 <button
