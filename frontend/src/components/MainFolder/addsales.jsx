@@ -1,16 +1,16 @@
-import "./addsales.css";
+import styles from "./addsales.module.css";
 
 function AddSales({ onClose }) {
     return (
-        <div className="addpopsbg">
-            <div className="addpops">
-        <h1 className="producttitle">ADDING...</h1>
+        <div className={styles.addpopsbg}>
+            <div className={styles.addpops}>
+        <h1 className={styles.producttitle}>ADDING...</h1>
         <h3>PRODUCT:</h3>
-        <input type="text" placeholder="Enter Item" className="input" />
+        <input type="text" placeholder="Enter Item" className={styles.input} />
         <h3>DATE & TIME</h3>
-        <input type="datetime-local" className="input"/>
+        <input type="datetime-local" className={styles.input}/>
         <h3>PAYMENT METHOD:</h3>
-        <select className="paymentmethod">
+        <select className={styles.paymentmethod}>
             <option value="">Select Method</option>
             <option value="cash">Cash</option>
              <option value="gcash">Gcash</option>
@@ -20,10 +20,10 @@ function AddSales({ onClose }) {
         </select>
         
         <h3>REVENUE:</h3>
-        <input type="number" placeholder="Enter Price" className="input"/>
+        <input type="number" placeholder="Enter Price" className={styles.input}/>
 
-        <button className="buttonpop">Add</button>
-        <button onClick={onClose} className="buttonpop">Cancel</button>
+        <button className={styles.buttonpop}>Add</button>
+        <button onClick={onClose} className={styles.buttonpop}>Cancel</button>
         </div>
         </div>
        

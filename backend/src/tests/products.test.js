@@ -204,4 +204,42 @@ describe('Products API', () => {
         const res = await request(app).patch('/products/1').send(fakeProduct);
         expect(res.statusCode).toEqual(400);
     })
+
+    it('should return a product via the search route', async () => {
+        const res = await request(app).get('/products/search?name=Mouse');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data.length).toBeGreaterThan(0);
+    })
+
+    it('should return an empty array when searching for a non-existent product', async () => {
+        const res = await request(app).get('/products/search?name=NonExistentProduct');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data.length).toEqual(0);
+    });
+
+    it('should return an error when searching for a product with an empty name query', async () => {
+        const res = await request(app).get('/products/search?name=');
+        expect(res.statusCode).toEqual(400);
+    });
+
+    it('should reject whitespace queries', async () => {
+        const res = await request(app).get('/products/search?name=   ');
+        expect(res.statusCode).toEqual(400);
+
+        const res2 = await request(app).get('/products/search?name=+++');
+        expect(res2.statusCode).toEqual(400);
+
+        const res3 = await request(app).get('/products/search/?name=%20%20%20');
+        expect(res3.statusCode).toEqual(400);
+    })
+
+    it('should reject queries that are more than 255 characters long', async () => {
+        const res = await request(app).get(`/products/search?name=${'a'.repeat(300)}`);
+        expect(res.statusCode).toEqual(400);
+    })
+
+    it('should reject queries that are less than 2 characters long', async () => {
+        const res = await request(app).get('/products/search?name=A');
+        expect(res.statusCode).toEqual(400);
+    })
 });

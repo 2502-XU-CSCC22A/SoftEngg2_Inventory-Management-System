@@ -1,18 +1,18 @@
 import {useState} from "react";
-import "./editsales.css";
+import styles from "./editsales.module.css";
 function EditSales({ onClose }) {
   const [paymentMethod, setPaymentMethod] = useState("");
   return (
-   <div className="editpopsbg">
-            <div className="editpops">
-        <h1 className="producttitle">EDITING...</h1>
-        <h3 className="message">Leave blank if no changes are needed</h3>
+   <div className={styles.editpopsbg}>
+            <div className={styles.editpops}>
+        <h1 className={styles.producttitle}>EDITING...</h1>
+        <h3 className={styles.message}>Leave blank if no changes are needed</h3>
         <h3>PRODUCT:</h3>
-        <input type="text" placeholder="Enter Item" className="input" />
+        <input type="text" placeholder="Enter Item" className={styles.input} />
         <h3>DATE & TIME</h3>
-        <input type="datetime-local" className="input"/>
+        <input type="datetime-local" className={styles.input}/>
         <h3>PAYMENT METHOD:</h3>
-        <select className="paymentmethod" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+        <select className={styles.paymentmethod} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
             <option value="">Select Method</option>
             <option value="cash">Cash</option>
              <option value="gcash">Gcash</option>
@@ -23,14 +23,14 @@ function EditSales({ onClose }) {
         {paymentMethod === "gcash" &&(
           <>
           <h3> Reference Number:</h3>
-          <input type="text" placeholder="Enter Reference Number" className="input" />
+          <input type="text" placeholder="Enter Reference Number" className={styles.input} />
           </>
           )}
         <h3>REVENUE:</h3>
-        <input type="number" placeholder="Enter Price" className="input"/>
+        <input type="number" placeholder="Enter Price" className={styles.input}/>
 
-        <button className="buttonpop">Edit</button>
-        <button onClick={onClose} className="buttonpop">Cancel</button>
+        <button className={styles.buttonpop}>Edit</button>
+        <button onClick={onClose} className={styles.buttonpop}>Cancel</button>
         </div>
         </div>
   )

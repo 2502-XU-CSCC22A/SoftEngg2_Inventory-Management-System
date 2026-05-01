@@ -4,6 +4,10 @@ import Welcomeadmin from "./components/UserManagement-Folder/welcomeadmin";
 import UserManagement from "./components/UserManagement-Folder/usermanagement";
 import TopProduct from "./components/MainFolder/topproduct.jsx";
 import Sales from "./components/MainFolder/sales.jsx";
+import ActivLog from "./components/MainFolder/ActivLog.jsx";
+import Monthlyreport from "./components/MainFolder/Monthlyreport.jsx";
+import TotalRevenue from "./components/MainFolder/TotalRevenue.jsx";
+import Available from "./components/MainFolder/Available.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -17,6 +21,10 @@ function App() {
         <Route path="/usermanagement" element={<UserManagement/>}/> 
         <Route path="/topproduct" element={<TopProduct/>}/>
         <Route path="/sales" element={<Sales/>}/>
+        <Route path="/activlog" element={<ActivLog/>}/>
+        <Route path="/monthlyreport" element={<Monthlyreport/>}/>
+        <Route path="/totalrevenue" element={<TotalRevenue/>}/>
+        <Route path="/available" element={<Available/>}/>
       </Routes>
     </BrowserRouter>
   );

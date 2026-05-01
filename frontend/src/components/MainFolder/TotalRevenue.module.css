@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+
+
+.container {
+    display: flex;
+    height: calc(100vh - 70px);
+}
+
+
+.left-panel {
+    width: 35%;
+    background: #d9cfc1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-panel h1 {
+    font-size: 60px;
+    color: #222;
+}
+
+.left-panel .date {
+    margin: 10px 0 20px;
+    font-size: 18px;
+    color: #666;
+}
+
+.revenue-btn {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.right-panel {
+    width: 65%;
+    padding: 40px;
+}
+
+
+.chart-box {
+    height: 200px;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+}
+
+
+.info h2 {
+    color: #8b5e3c;
+}
+
+
+.month-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+
+.arrow-btn {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #222;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.arrow-btn:hover {
+    background: #eee;
+}
+
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.info-item small {
+    margin-top: 3px;
+    color: #777;
+}
+
+.value {
+    margin-top: 8px;
+    font-size: 20px;
+    font-weight: bold;
+}

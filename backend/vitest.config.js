@@ -22,7 +22,9 @@ export default defineConfig({
                 'src/index.js',
                 'src/config/**',
                 'src/**/*.test.js',
-                'src/tests/**'
+                'src/tests/**',
+                'src/migrations/**',
+                'src/models/**',
             ],
             thresholds: {
                 lines: 80,

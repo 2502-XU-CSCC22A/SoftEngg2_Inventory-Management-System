@@ -1,18 +1,18 @@
-import "./Navbar.css";
+import styles from './Navbar.module.css';
 import { useNavigate } from "react-router-dom";
 export const Navbar = () => {
   const navigate = useNavigate();
   return (
     <nav>
-      <div className = "header">
-        <div className ="nav">
+      <div className={styles.header}>
+        <div className={styles.nav}>
       <button onClick={() => navigate("/topproduct")}>Top Product</button>
       <button onClick ={()=> navigate("/sales")}>Sales</button>
-      <button>Inventory</button>
-      <button>Activity Log</button>
-      <button>Overall reports</button>
+      <button onClick ={()=> navigate("/Available")}>Inventory</button> 
+      <button onClick ={()=> navigate("/ActivLog")}>Activity Log</button>
+      <button onClick ={()=> navigate("/Monthlyreport")}>Overall reports</button>
       </div>
-       <button onClick ={()=> navigate("/login")}className="logoutbutton">Logout</button>
+       <button onClick ={()=> navigate("/login")} className={styles.logoutbutton}>Logout</button>
       </div>
       <hr />
       
