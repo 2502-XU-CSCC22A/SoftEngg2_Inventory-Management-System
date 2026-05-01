@@ -80,24 +80,17 @@ function Login() {
           credentials: "include"
         });
 
-        if (!res.ok) {
-          navigate("/login");
-          return;
-        }
+        if (!res.ok) return;
 
         const data = await res.json();
 
-        if (data.user.is_admin) {
+        if (data?.user?.is_admin) {
           navigate("/welcomeadmin");
         } else {
           navigate("/welcomeuser");
         }
-
-      } catch (err) {
-        navigate("/login");
-      }
+      } catch { }
     };
-
     checkSession();
   }, [navigate]);
 

@@ -1,6 +1,21 @@
 import models from "../config/db.js";
 import bcrypt from "bcryptjs";
 
+export const getUsers = async (req, res) => {
+  try {
+    const users = await models.users.findAll({
+      where: {
+        is_active: true
+      },
+      attributes: ['user_id', 'username', 'is_admin']
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const addUser = async (req, res) => {
   try {
     const {username, role, password, confirmPassword} = req.body;
