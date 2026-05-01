@@ -2,10 +2,10 @@ import Joi from 'joi';
 
 export const insertTransactionSchema = Joi.object({
     payment_type: Joi.string().valid("Cash", "GCash").required(),
-    payment_refstr: Joi.string().allow('', 'null').when('payment_type', {
+    payment_refstr: Joi.string().allow(null).when('payment_type', {
         is: Joi.valid('GCash'),
         then: Joi.string().min(1).max(255).required(),
-        otherwise: Joi.allow('null', ''),
+        otherwise: Joi.allow(null, ''),
     }),
     transaction_items: Joi.array().items(
         Joi.object({
