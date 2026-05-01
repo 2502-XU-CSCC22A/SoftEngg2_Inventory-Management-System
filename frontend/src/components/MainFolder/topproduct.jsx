@@ -9,12 +9,18 @@ function TopProduct() {
     const [bestProduct, setBestProduct] = useState(null);
     const [productsMap, setProductsMap] = useState({});
     
-    // Use both hooks
-    const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useTransactions();
-    const { query, queryAll, updateMutation, insertMutation } = useProducts();
+    // Use both hooks as requested by classmate
+    const { query: transactionsQuery, queryAll: transactionsQueryAll, queryByMonthAndYear, updateMutation: updateTransaction, insertMutation: insertTransaction } = useTransactions();
+    const { query: productsQuery, queryAll: productsQueryAll, updateMutation, insertMutation } = useProducts();
     
-    const transactions = transactionsData?.data || transactionsData || [];
-    const products = allProducts || [];
+    // Extract data and loading/error states
+    const transactions = transactionsQuery.data || [];
+    const products = productsQuery.data || [];
+    
+    const transactionsLoading = transactionsQuery.isLoading;
+    const transactionsError = transactionsQuery.isError;
+    const productsLoading = productsQuery.isLoading;
+    const productsError = productsQuery.isError;
 
     // Create a map of product_id to product details
     useEffect(() => {
@@ -33,13 +39,13 @@ function TopProduct() {
     }, [products]);
 
     useEffect(() => {
-        if (transactions.length > 0 && products.length > 0) {
+        if (transactions.length > 0 && Object.keys(productsMap).length > 0) {
             calculateTopProducts();
         } else if (transactions.length === 0) {
             setTopProducts([]);
             setBestProduct(null);
         }
-    }, [transactions, products]);
+    }, [transactions, productsMap]);
 
     const calculateTopProducts = () => {
         // Calculate total quantity sold per product from transaction_items
