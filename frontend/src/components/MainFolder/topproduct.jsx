@@ -11,7 +11,7 @@ function TopProduct() {
     
     // Use both hooks
     const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useTransactions();
-    const { queryAll: allProducts, isLoading: productsLoading, isError: productsError } = useProducts();
+    const { query, queryAll, updateMutation, insertMutation } = useProducts();
     
     const transactions = transactionsData?.data || transactionsData || [];
     const products = allProducts || [];
