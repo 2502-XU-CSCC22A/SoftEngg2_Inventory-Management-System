@@ -81,21 +81,18 @@ function Login() {
         });
 
         if (!res.ok) {
-          navigate("/login");
           return;
         }
 
         const data = await res.json();
 
-        if (data.user.is_admin) {
+        if (data?.user?.is_admin) {
           navigate("/welcomeadmin");
         } else {
           navigate("/welcomeuser");
         }
 
-      } catch (err) {
-        navigate("/login");
-      }
+      } catch { }
     };
 
     checkSession();

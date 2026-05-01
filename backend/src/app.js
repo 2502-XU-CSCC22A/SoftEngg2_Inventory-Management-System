@@ -10,6 +10,11 @@ import cors from 'cors';
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true
+}))
 app.use(express.json());
 app.use(cookieParser());
 app.use(session( {
@@ -17,19 +22,19 @@ app.use(session( {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  proxy: true,
   cookie: {
     httpOnly: true,
     secure: false, // set true later
-    sameSite: "Strict",
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
+    sameSite: "Lax",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    path: "/"
   }
 }));
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  credentials: true
-}))
+app.get("/debug-session", (req, res) => {
+  res.json(req.session);
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
