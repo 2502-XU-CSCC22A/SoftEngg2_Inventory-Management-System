@@ -9,7 +9,7 @@ function TopProduct() {
     const [bestProduct, setBestProduct] = useState(null);
     const [productsMap, setProductsMap] = useState({});
     
-    // Use both hooks as requested by classmate
+    // Use both hooks
     const { query: transactionsQuery, queryAll: transactionsQueryAll, queryByMonthAndYear, updateMutation: updateTransaction, insertMutation: insertTransaction } = useTransactions();
     const { query: productsQuery, queryAll: productsQueryAll, updateMutation, insertMutation } = useProducts();
     
