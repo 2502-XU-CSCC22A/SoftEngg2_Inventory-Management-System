@@ -4,6 +4,7 @@ import EditAvailable from './editavailable';
 import AddProduct from './addproduct';
 import styles from './Available.module.css';
 import { useProducts } from '../../hooks/useProducts.js';
+import { formatToPesos } from '../../utils/utils.js';
 
 const Available = () => {
   const { query, queryAll, updateMutation, insertMutation } = useProducts();
@@ -57,17 +58,6 @@ const Available = () => {
     product.product_id.toString().includes(searchTerm)
   );
 
-  const formatPrice = (price) => {
-    if (price === null || price === undefined) return "N/A";
-    const priceStr = String(price);
-    if (priceStr.length <= 2) {
-      return `0.${priceStr.padStart(2, '0')}`;
-    }
-    const pesosPart = priceStr.slice(0, -2);
-    const centsPart = priceStr.slice(-2);
-    return `${pesosPart + "." + centsPart}`;
-  }
-
   return (
     <div className={styles.wrapper}>
       <Navbar />
@@ -104,7 +94,7 @@ const Available = () => {
                       <p className={styles.quantity}>Quantity: {product.product_quantity}</p>
                       <p className={styles['product-id']}>ID: {product.product_id}</p>
                     </div>
-                    <p className={styles.price}>{formatPrice(product.product_unit_price)}</p>
+                    <p className={styles.price}>{formatToPesos(product.product_unit_price)}</p>
                   </div>
                   <div className={styles['card-actions']}>
                     { product.is_still_offered === true && <button className={styles.edit} onClick={() => openEdit(product)}>Edit</button> }

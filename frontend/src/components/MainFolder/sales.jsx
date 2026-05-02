@@ -4,6 +4,7 @@ import AddSales from "./addsales";
 import EditSales from "./editsales";
 import { useState } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
+import { formatToPesos } from "../../utils/utils.js";
 
 function Sales() {
     const [showaddsales, setshowaddsales] = useState(false);
@@ -38,14 +39,6 @@ function Sales() {
     const handleAddTransaction = async (newTransaction) => {
         insertMutation.mutate(newTransaction);
     };
-
-    const convertToPesos = (centsAmt) => {
-        const amtStr = String(centsAmt);
-
-        const pesosPart = amtStr.slice(0, -2) || "0";
-        const centsPart = amtStr.slice(-2).padStart(2, '0');
-        return Number(pesosPart + "." + centsPart).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
-    }
 
     const handleEditTransaction = async (updatedTransaction) => {
         updateMutation.mutate(updatedTransaction)
@@ -106,7 +99,7 @@ function Sales() {
                                 )}
                             </div>
                             <div className={`${styles.cell} ${styles.revenueValue}`}>
-                                {(convertToPesos((transaction.transaction_items.reduce((total, item) => total + (item.product_unit_price * item.quantity_bought), 0))) || 0).toLocaleString()}
+                                {(formatToPesos((transaction.transaction_items.reduce((total, item) => total + (item.product_unit_price * item.quantity_bought), 0))) || 0).toLocaleString()}
                             </div>
                             <div className={styles.cell}>
                                 <button
