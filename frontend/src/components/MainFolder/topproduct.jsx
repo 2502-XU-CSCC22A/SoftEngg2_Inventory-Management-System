@@ -1,63 +1,34 @@
 import styles from "./topproduct.module.css";
 import { Navbar } from "../MainFolder/Navbar";
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
 import { useProducts } from "../../hooks/useProducts.js";
+import { formatToPesos } from "../../utils/utils.js";
 
 function TopProduct() {
-    const [topProducts, setTopProducts] = useState([]);
-    const [bestProduct, setBestProduct] = useState(null);
-    const [productsMap, setProductsMap] = useState({});
-    
     // Use both hooks
-    const { query: transactionsQuery, queryAll: transactionsQueryAll, queryByMonthAndYear, updateMutation: updateTransaction, insertMutation: insertTransaction } = useTransactions();
-    const { query: productsQuery, queryAll: productsQueryAll, updateMutation, insertMutation } = useProducts();
+    const { query: transactionsQuery } = useTransactions();
+    const { query: productsQuery } = useProducts();
     
-    // Extract data and loading/error states
-    const transactions = transactionsQuery.data || [];
-    const products = productsQuery.data || [];
-    
+    // Extract loading/error states
     const transactionsLoading = transactionsQuery.isLoading;
     const transactionsError = transactionsQuery.isError;
     const productsLoading = productsQuery.isLoading;
     const productsError = productsQuery.isError;
 
     // Create a map of product_id to product details
-    useEffect(() => {
-        if (products.length > 0) {
-            const map = {};
-            products.forEach(product => {
-                map[product.product_id] = {
-                    name: product.product_name,
-                    price: product.product_unit_price,
-                    quantity: product.product_quantity,
-                    isOffered: product.is_still_offered
-                };
-            });
-            setProductsMap(map);
-        }
-    }, [products]);
-
-    useEffect(() => {
-        if (transactions.length > 0 && Object.keys(productsMap).length > 0) {
-            calculateTopProducts();
-        } else if (transactions.length === 0) {
-            setTopProducts([]);
-            setBestProduct(null);
-        }
-    }, [transactions, productsMap]);
-
-    const calculateTopProducts = () => {
-        // Calculate total quantity sold per product from transaction_items
+    const { topProducts, bestProduct } = useMemo(() => {
+        const transactions = transactionsQuery.data || [];
+        const products = productsQuery.data?.data || [];
+        
         const productSales = {};
         
         transactions.forEach(transaction => {
             if (transaction.transaction_items && Array.isArray(transaction.transaction_items)) {
                 transaction.transaction_items.forEach(item => {
                     const productId = item.product_id;
-                    const productInfo = productsMap[productId];
-                    const productName = productInfo?.name || `Product ID: ${productId}`;
-                    const unitPrice = productInfo?.price || 0;
+                    const productName = item.product_name || `Product ID: ${productId}`;
+                    const unitPrice = item.product_unit_price || 0;
                     
                     if (productSales[productName]) {
                         productSales[productName].quantity += item.quantity_bought;
@@ -66,7 +37,7 @@ function TopProduct() {
                         productSales[productName] = {
                             name: productName,
                             quantity: item.quantity_bought,
-                            revenue: item.quantity_bought * unitPrice,
+                            revenue: formatToPesos(item.quantity_bought * unitPrice),
                             productId: productId
                         };
                     }
@@ -79,14 +50,8 @@ function TopProduct() {
             .sort((a, b) => b.quantity - a.quantity)
             .slice(0, 5);
         
-        setTopProducts(sortedProducts);
-        
-        if (sortedProducts.length > 0) {
-            setBestProduct(sortedProducts[0]);
-        } else {
-            setBestProduct(null);
-        }
-    };
+        return { topProducts: sortedProducts, bestProduct: sortedProducts.length > 0 ? sortedProducts[0] : null };
+    }, [transactionsQuery.data, productsQuery.data]);
 
     if (transactionsLoading || productsLoading) return <div className={styles.loading}>Loading top products...</div>;
     if (transactionsError || productsError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
@@ -120,7 +85,7 @@ function TopProduct() {
                                 <span className={styles.rank}>{index + 1}</span>
                                 <span className={styles.productName}>{product.name}</span>
                                 <span className={styles.productQuantity}>{product.quantity} units</span>
-                                <span className={styles.productRevenue}>₱{product.revenue.toLocaleString()}</span>
+                                <span className={styles.productRevenue}>{product.revenue.toLocaleString()}</span>
                             </div>
                         ))}
                         {topProducts.length === 0 && (
