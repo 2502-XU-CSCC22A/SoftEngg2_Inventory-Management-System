@@ -1,86 +1,162 @@
-.soldtransactions{
+.soldtransactions {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 5px;
     font-size: 40px;
     color: rgba(152, 116, 96, 1);
-    
 }
-.container1{
-    display: flex;
-    overflow-y: auto;
-    justify-content: space-between;
-    margin-top: 20px;
-    color: rgb(30, 30, 30, 1);
-    font-size: 16px;
-    border: 1px solid rgba(217, 217, 217, 1);
-    box-shadow: 3px 5px 10px rgba(94, 89, 89, 0.5);
-    border-radius: 8px;
-    padding-top: 15px;
-    height: 71vh;
-    
-}
-.container1 h1{
-  flex: 1;            
-  text-align: center;
 
-}
 .search1 {
-  width: 250px;
-    height: 10px;
+    width: 250px;
+    height: 40px;
     border-radius: 200px;
-    border: 1px solid rgb(63, 58, 57);
+    border: 1px solid rgba(168, 110, 92, 1);
     padding: 20px;
     position: relative;
-    top: -40px; 
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
-   
-     
-    
 }
-.add{
+
+.add {
     color: white;
     background-color: rgba(34, 197, 94, 1);
-    border-color: rgba(25, 80, 34, 1);
+    border: none;
     border-radius: 8px;
-    width: 250px;
-    height: 55px;
-    font-size: 16px;
+    width: 200px;
+    height: 50px;
+    font-size: 14px;
     cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    position: relative; 
-    top: 105px;  
-    left: -200px;  
-  
-   
-  
+    position: absolute;
+    top: 190px;
+    left: 70px;
 }
+
 .add:hover {
-    background-color: rgba(34, 197, 94, 0.9);
+    background-color: rgba(40, 231, 110, 0.9);
     transition: 0.3s;
 }
-.edit{ /*Kailangan pani balikan */
-    color: white;
-    background-color: rgba(36, 160, 237, 1);
-    border-color: rgba(152, 216, 255, 1);
-    border-radius: 8px;
-    width: 250px;
-    height: 55px;
-    font-size: 16px;
-    cursor: pointer;
-    position: fixed;
-    top: 350px;
-    right: 40px;
-  
+
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 70px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding: 15px 20px;
+    background-color: rgba(152, 116, 96, 0.1);
+    border-radius: 8px 8px 0 0;
 }
-.line{
-    border: 1px solid rgb(82, 72, 72);
-   position: fixed;  
-    top: 330px;
-    left: 9px;
-    right: 9px;
- 
+
+.headerCell {
+    flex: 1;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgba(152, 116, 96, 1);
+}
+
+.line2 {
+    border: 1px solid rgba(168, 110, 92, 1);
+    margin: 0 50px;
+}
+
+
+.tableBody {
+    margin: 0 50px;
+    border: 1px solid rgba(168, 110, 92, 1);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 450px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.tableRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.tableRow:hover {
+    background-color: #f9f5f0;
+}
+
+.cell {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    word-wrap: break-word;
+    padding: 0 5px;
+}
+
+.methodBadge {
+    background-color: rgba(152, 116, 96, 0.15);
+    color: rgba(152, 116, 96, 1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.revenueValue {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.editButton {
+    background-color: #24A0ED;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background-color 0.2s;
+}
+
+.editButton:hover {
+    background-color: #1a7bc4;
+}
+
+.noData {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.tableBody::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tableBody::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.tableBody::-webkit-scrollbar-thumb {
+    background: rgba(152, 116, 96, 0.5);
+    border-radius: 4px;
+}
+
+.tableBody::-webkit-scrollbar-thumb:hover {
+    background: rgba(152, 116, 96, 0.8);
+}
+.transactionIdText {
+    font-size: 10px;
+    color: #f59e0b;
+    margin-top: 4px;
+    font-family: monospace;
 }

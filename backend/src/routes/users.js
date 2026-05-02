@@ -1,7 +1,8 @@
 import express from "express";
 import models from "../config/db.js";
-import { validateLoginPayload, validateAddPayload } from "../middleware/usersMiddleware.js";
-import { loginUser, addUser, archiveUser } from "../controllers/usersController.js";
+import { validateAddPayload } from "../middleware/usersMiddleware.js";
+import { getUsers, addUser, archiveUser } from "../controllers/usersController.js";
+import { authenticateUser, requreAdmin } from "../middleware/authMiddleware.js";
 
 export const usersRouter = express.Router();
 
@@ -11,17 +12,12 @@ const usersSchema = {
   confirmPassword: "string",
   role: "string"
 }
-const loginSchema = {
-  username: "string",
-  password: "string",
-  user_id: "number"
-}
 
-// -> login 
-usersRouter.post('/login', validateLoginPayload(loginSchema), loginUser);
+// -> get users
+usersRouter.get('/', authenticateUser, requreAdmin, getUsers);
 
 // -> add user
-usersRouter.post('/', validateAddPayload(usersSchema), addUser);
+usersRouter.post('/', validateAddPayload(usersSchema), authenticateUser, requreAdmin, addUser);
 
 // -> remove(archive) user
-usersRouter.delete('/:user_id', archiveUser);
+usersRouter.delete('/:user_id', authenticateUser, requreAdmin, archiveUser);

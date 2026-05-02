@@ -114,7 +114,6 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
         </>
       )}
 
-  
       {tooltip && (() => {
         const bw = 96, bh = 28;
         const bx = tooltip.x + 12 + bw > w ? tooltip.x - bw - 12 : tooltip.x + 12;
@@ -142,24 +141,53 @@ const Monthlyreport = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const totalDays = getDaysInMonth(currentYear, currentMonth);
   const today = new Date();
-  const activeDay =today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth? today.getDate(): totalDays;
+  const activeDay = today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth ? today.getDate() : totalDays;
 
   useEffect(() => {
     const fetchData = async () => {
       setReportData(prev => ({ ...prev, loading: true, error: null }));
       try {
+        // Updated to use the correct API endpoint with proxy
         const response = await fetch(`/api/reports/daily-revenue?year=${currentYear}&month=${currentMonth}`);
-        if (!response.ok) throw new Error('Failed to fetch');
-        const { data } = await response.json();
-        const dailyData = Array.from({ length: totalDays }, (_, i) => {const dayEntry = data.find(item => item.day === i + 1); return dayEntry?.revenue || 0;});
-        const revenue = dailyData.reduce((sum, v) => sum + v, 0);
-        const quantity = data.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        setReportData({ revenue, quantity, dailyData, loading: false, error: null });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch monthly revenue data');
+        }
+        
+        const result = await response.json();
+        
+        // Handle the response format - adjust based on your backend response structure
+        const dailyData = result.data || [];
+        
+        // Create array for all days in month with revenue data
+        const dailyRevenueArray = Array.from({ length: totalDays }, (_, i) => {
+          const dayEntry = dailyData.find(item => item.day === i + 1);
+          return dayEntry?.revenue || 0;
+        });
+        
+        const revenue = dailyRevenueArray.reduce((sum, v) => sum + v, 0);
+        const quantity = dailyData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        
+        setReportData({ 
+          revenue, 
+          quantity, 
+          dailyData: dailyRevenueArray, 
+          loading: false, 
+          error: null 
+        });
       } catch (err) {
-        setReportData(prev => ({ ...prev, loading: false, error: err.message }));
+        console.error('Error fetching monthly report:', err);
+        setReportData(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: err.message 
+        }));
       }
     };
-    fetchData();
+    
+    if (currentYear && currentMonth) {
+      fetchData();
+    }
   }, [currentYear, currentMonth, totalDays]);
 
   const handleMonthSelect = (monthIndex) => {
@@ -169,13 +197,13 @@ const Monthlyreport = () => {
 
   if (reportData.loading) return <div className={styles.loadingState}>Loading monthly report...</div>;
   if (reportData.error) return <div className={styles.errorState}>Error: {reportData.error}</div>;
-  const dailyData = reportData.dailyData.length >= 2 ? reportData.dailyData : Array.from({ length: totalDays }, (_, i) => Math.round(300 + Math.sin(i / 3) * 200 + Math.random() * 400));
+  
+  const dailyData = reportData.dailyData;
 
   return (
     <>
       <Navbar />
       <div className={styles.container}>
-
         
         <div className={styles.leftPanel}>
           <div className={styles.leftContent}>

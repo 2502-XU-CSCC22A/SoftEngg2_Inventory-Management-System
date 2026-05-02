@@ -1,5 +1,5 @@
 import express from "express";
-import { getTotalRevenue, getMonthlyRevenue, getTopProduct } from "../controllers/reportController.js";
+import { getTotalRevenue, getMonthlyRevenue, getTopProduct, getDailyRevenue } from "../controllers/reportController.js";
 import models from "../config/db.js";
 
 export const reportsRouter = express.Router();
@@ -7,6 +7,7 @@ export const reportsRouter = express.Router();
 reportsRouter.get("/total-revenue", getTotalRevenue);
 reportsRouter.get("/monthly-revenue", getMonthlyRevenue);
 reportsRouter.get("/top-product", getTopProduct);
+reportsRouter.get("/daily-revenue", getDailyRevenue);
 
 // Activity log endpoint
 reportsRouter.get("/activity-log", async (req, res) => {

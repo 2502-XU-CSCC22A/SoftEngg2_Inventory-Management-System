@@ -24,6 +24,28 @@ export const getValidProduct = async (productId, transaction) => {
     return product;
 }
 
+
+export const isPayloadIdentical = (oldPayload, newPayload) => {
+    const oldStr = JSON.stringify(oldPayload);
+    const newStr = JSON.stringify(newPayload);
+    
+    if (oldStr === newStr) {
+        const error = new Error("Old and new payloads identical; update aborted.");
+        error.status = 400;
+        throw error;
+    }
+    
+    return false;
+};
+
+export const patchTransactionPayload = (oldTxn, newData) => {
+    return {
+        ...oldTxn,
+        ...newData,
+        transaction_items: newData.transaction_items || oldTxn.transaction_items
+    };
+};
+
 export const insertTransactionItem = async (productJSON, txnJSON, item, transaction) => {
     const txnItem = await models.transaction_items.create({
         transaction_id: txnJSON.transaction_id,

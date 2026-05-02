@@ -13,16 +13,31 @@ const TotalRevenue = () => {
   useEffect(() => {
     const fetchTotalRevenue = async () => {
       try {
+        // Updated to use the correct API endpoint with proxy
         const res = await fetch('/api/reports/total-revenue');
-        if (!res.ok) throw new Error('Failed to fetch');
+        
+        if (!res.ok) {
+          throw new Error('Failed to fetch total revenue data');
+        }
 
         const result = await res.json();
 
-        setData({  revenue: result.totalRevenue, quantity: result.totalQuantitySold, loading: false, error: null});
+        setData({  
+          revenue: result.totalRevenue || 0, 
+          quantity: result.totalQuantitySold || 0, 
+          loading: false, 
+          error: null
+        });
       } catch (err) {
-        setData(prev => ({ ...prev, loading: false, error: err.message }));
+        console.error('Error fetching total revenue:', err);
+        setData(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: err.message 
+        }));
       }
     };
+    
     fetchTotalRevenue();
   }, []);
 
@@ -81,7 +96,7 @@ const TotalRevenue = () => {
                 <p className={styles.label}>Quantity Sold</p>
                 <p className={styles.subLabel}>Overall Sold Products</p>
               </div>
-              <p className={styles.value}>{data.quantity}</p>
+              <p className={styles.value}>{data.quantity.toLocaleString()}</p>
             </div>
 
           </div>

@@ -1,88 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Navbar } from './Navbar';
 import EditAvailable from './editavailable';
 import AddProduct from './addproduct';
 import styles from './Available.module.css';
+import { useProducts } from '../../hooks/useProducts.js';
+import { formatToPesos } from '../../utils/utils.js';
 
 const Available = () => {
+  const { query, queryAll, updateMutation, insertMutation } = useProducts();
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('/api/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
-      const mapped = data.map(p => ({
-        id: p.product_id,
-        name: p.product_name,
-        quantity: p.product_quantity,
-        price: `₱${p.product_unit_price}`
-      }));
-      setProducts(mapped);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const isLoading = query.isLoading || (isChecked && queryAll.isLoading);
+  const isError = query.isError || (isChecked && queryAll.isError);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading products.</div>;
 
   const openEdit = (product) => {
     setSelectedProduct(product);
     setIsEditing(true);
+    setIsAdding(false);
   };
-
   const openAdd = () => {
     setIsAdding(true);
+    setIsEditing(false);
     setSelectedProduct(null);
   };
-
   const closeEdit = () => {
     setIsEditing(false);
     setSelectedProduct(null);
   };
-
   const closeAdd = () => {
     setIsAdding(false);
-    fetchProducts(); // refresh list after adding
   };
 
-  const saveProduct = async (updatedValues) => {
-    try {
-      const response = await fetch(`/api/products/${selectedProduct.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_quantity: updatedValues.quantity,
-          product_unit_price: parseInt(updatedValues.price.replace(/[^\d]/g, ''))
-        })
-      });
-      if (!response.ok) throw new Error('Update failed');
-      fetchProducts();
-      closeEdit();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to update product');
-    }
+  const handleToggle = () => {
+    setIsChecked(!isChecked);
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.id.toString().includes(searchTerm)
+  const saveProduct = (updatedValues) => {
+    updateMutation.mutate({ product_id: selectedProduct.product_id, ...updatedValues });
+    closeEdit();
+  };
+
+  const addProduct = (newValues) => {
+    insertMutation.mutate(newValues);
+    closeAdd();
+  }
+
+  const filteredProducts = ((isChecked ? queryAll.data?.data : query.data?.data) || []).filter(product =>
+    product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.product_id.toString().includes(searchTerm)
   );
 
-  if (loading) return <div>Loading products...</div>;
-
   return (
-    <>
+    <div className={styles.wrapper}>
       <Navbar />
       <div className={styles.container}>
         <div className={styles['content-card']}>
@@ -94,35 +71,55 @@ const Available = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className={styles.add} onClick={openAdd}>ADD</button>
+            <div className={styles['action-buttons']}>
+              <span className={styles['show-hidden-box']}>
+                <input id="show-hidden" htmlFor="show-hidden" type="checkbox" checked={isChecked} onChange={handleToggle} />
+                <label htmlFor="show-hidden" className={styles['show-hidden-label']}>Show Hidden</label>
+              </span>
+              <button className={styles.add} onClick={openAdd}>ADD</button>
+            </div>
           </div>
+
           <div className={styles.header}>
             <h1>Available Product</h1>
           </div>
+
           <div className={styles['product-grid-wrapper']}>
             <div className={styles['product-list']}>
               {filteredProducts.map((product) => (
-                <div key={product.id} className={styles['product-card']}>
+                <div key={product.product_id} className={styles[`${product.is_still_offered ? 'product-card' : 'product-card-hidden'}`]}>
                   <div className={styles['card-content']}>
-                    <h3 className={styles['product-name']}>{product.name}</h3>
+                    <h3 className={styles['product-name']}>{product.product_name}</h3>
                     <div className={styles['product-details']}>
-                      <p className={styles.quantity}>Quantity: {product.quantity}</p>
-                      <p className={styles['product-id']}>ID: {product.id}</p>
+                      <p className={styles.quantity}>Quantity: {product.product_quantity}</p>
+                      <p className={styles['product-id']}>ID: {product.product_id}</p>
                     </div>
-                    <p className={styles.price}>{product.price}</p>
+                    <p className={styles.price}>{formatToPesos(product.product_unit_price)}</p>
                   </div>
-                  <button className={styles.edit} onClick={() => openEdit(product)}>Edit</button>
+                  <div className={styles['card-actions']}>
+                    { product.is_still_offered === true && <button className={styles.edit} onClick={() => openEdit(product)}>Edit</button> }
+                    { product.is_still_offered === true && <button className={styles.hide} onClick={() => updateMutation.mutate({ product_id: product.product_id, is_still_offered: false })}>Hide</button> }
+                    { product.is_still_offered === false && <button className={styles.show} onClick={() => updateMutation.mutate({ product_id: product.product_id, is_still_offered: true })}>Show</button> }
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
         {isEditing && selectedProduct && (
-          <EditAvailable product={selectedProduct} onClose={closeEdit} onSave={saveProduct} />
+          <EditAvailable
+            key={selectedProduct.product_id}
+            product={selectedProduct}
+            onClose={closeEdit}
+            onSave={saveProduct}
+          />
         )}
-        {isAdding && <AddProduct onClose={closeAdd} />}
+        {isAdding && (
+          <AddProduct onClose={closeAdd} onAdd={addProduct} />
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,102 +1,144 @@
-import { useState } from "react";
 import styles from "./addsales.module.css";
+import { useState } from "react";
+import { useProducts } from "../../hooks/useProducts.js";
 
-function AddSales({ onClose }) {
-  const [productName, setProductName] = useState('');
-  const [datetime, setDatetime] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [revenue, setRevenue] = useState('');
-  const [quantity, setQuantity] = useState('');
+function AddSales({ onClose, onAdd }) {
+    const [formData, setFormData] = useState({
+        product_id: "",
+        quantity_bought: 1,
+        payment_type: "",
+        payment_refstr: ""
+    });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    
+    // Fetch products for the dropdown
+    const { query } = useProducts();
+    const products = query.data?.data || [];
 
-  const handleAdd = async () => {
-    if (!productName || !datetime || !paymentMethod || !revenue || !quantity) {
-      alert('Please fill all fields');
-      return;
-    }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        setError("");
+    };
 
-    // You need a valid product_id. For simplicity, we'll first fetch existing products,
-    // or you can add a product selection dropdown. Here we'll assume product_id 1 exists.
-    // In a real app, you'd select a product from a list.
-    const productId = 1; // Replace with actual selected product ID
+    const handleSubmit = async () => {
+        // Validation
+        if (!formData.product_id || !formData.payment_type || !formData.quantity_bought) {
+            setError("Please fill in all required fields.");
+            return;
+        }
 
-    try {
-      const response = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          operation: 'insert',
-          transaction_timestamp: datetime,
-          payment_type: paymentMethod,
-          created_by: 1, // Hardcoded admin user_id – you should get from logged-in user
-          items: [{
-            product_id: productId,
-            product_name: productName,
-            product_unit_price: parseInt(revenue),
-            quantity_bought: parseInt(quantity)
-          }]
-        })
-      });
-      if (!response.ok) throw new Error('Add sale failed');
-      onClose(); // closes popup and refreshes sales list in parent
-    } catch (err) {
-      console.error(err);
-      alert('Failed to add sale');
-    }
-  };
+        if (formData.quantity_bought <= 0) {
+            setError("Quantity must be greater than 0.");
+            return;
+        }
 
-  return (
-    <div className={styles.addpopsbg}>
-      <div className={styles.addpops}>
-        <h1 className={styles.producttitle}>ADDING...</h1>
-        <h3>PRODUCT:</h3>
-        <input
-          type="text"
-          placeholder="Enter Product Name"
-          className={styles.input}
-          value={productName}
-          onChange={e => setProductName(e.target.value)}
-        />
-        <h3>QUANTITY:</h3>
-        <input
-          type="number"
-          placeholder="Enter Quantity"
-          className={styles.input}
-          value={quantity}
-          onChange={e => setQuantity(e.target.value)}
-        />
-        <h3>DATE & TIME</h3>
-        <input
-          type="datetime-local"
-          className={styles.input}
-          value={datetime}
-          onChange={e => setDatetime(e.target.value)}
-        />
-        <h3>PAYMENT METHOD:</h3>
-        <select
-          className={styles.paymentmethod}
-          value={paymentMethod}
-          onChange={e => setPaymentMethod(e.target.value)}
-        >
-          <option value="">Select Method</option>
-          <option value="cash">Cash</option>
-          <option value="gcash">Gcash</option>
-          <option value="credit">Credit Card</option>
-          <option value="debit">Debit Card</option>
-          <option value="cheque">Cheque</option>
-        </select>
-        <h3>REVENUE:</h3>
-        <input
-          type="number"
-          placeholder="Enter Price"
-          className={styles.input}
-          value={revenue}
-          onChange={e => setRevenue(e.target.value)}
-        />
-        <button className={styles.buttonpop} onClick={handleAdd}>Add</button>
-        <button onClick={onClose} className={styles.buttonpop}>Cancel</button>
-      </div>
-    </div>
-  );
+        if (formData.payment_type === "GCash" && !formData.payment_refstr) {
+            setError("Reference string is required for GCash payments.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const transactionData = {
+                payment_type: formData.payment_type,
+                payment_refstr: formData.payment_refstr || null,
+                transaction_items: [{
+                    product_id: parseInt(formData.product_id),
+                    quantity_bought: parseInt(formData.quantity_bought)
+                }]
+            };
+            
+            await onAdd(transactionData);
+            onClose();
+        } catch (err) {
+            setError("Failed to add transaction. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className={styles.addpopsbg}>
+            <div className={styles.addpops}>
+                <h1 className={styles.producttitle}>ADD TRANSACTION</h1>
+               
+                {error && (
+                    <div className={styles.errorMessage} style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>
+                        {error}
+                    </div>
+                )}
+               
+                <h3>PRODUCT:*</h3>
+                <select
+                    name="product_id"
+                    className={styles.input}
+                    value={formData.product_id}
+                    onChange={handleChange}
+                    disabled={query.isLoading}
+                >
+                    <option value="">Select Product</option>
+                    {products.map((product) => (
+                        <option key={product.product_id || product.id} value={product.product_id || product.id}>
+                            {product.product_name} - ₱{(product.product_unit_price || 0).toLocaleString()}
+                        </option>
+                    ))}
+                </select>
+               
+                <h3>QUANTITY:*</h3>
+                <input
+                    type="number"
+                    name="quantity_bought"
+                    placeholder="Enter Quantity"
+                    className={styles.input}
+                    value={formData.quantity_bought}
+                    onChange={handleChange}
+                    min="1"
+                />
+               
+                <h3>PAYMENT METHOD:*</h3>
+                <select
+                    name="payment_type"
+                    className={styles.paymentmethod}
+                    value={formData.payment_type}
+                    onChange={handleChange}
+                >
+                    <option value="">Select Method</option>
+                    <option value="Cash">Cash</option>
+                    <option value="GCash">GCash</option>
+                </select>
+               
+                {formData.payment_type === "GCash" && (
+                    <>
+                        <h3>REFERENCE STRING:*</h3>
+                        <input
+                            type="text"
+                            name="payment_refstr"
+                            placeholder="Enter GCash Reference Number"
+                            className={styles.input}
+                            value={formData.payment_refstr}
+                            onChange={handleChange}
+                        />
+                    </>
+                )}
+
+                <button
+                    className={styles.buttonpop}
+                    onClick={handleSubmit}
+                    disabled={loading || query.isLoading}
+                >
+                    {loading ? "Adding..." : "Add Transaction"}
+                </button>
+                <button
+                    onClick={onClose}
+                    className={styles.buttonpop}
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default AddSales;

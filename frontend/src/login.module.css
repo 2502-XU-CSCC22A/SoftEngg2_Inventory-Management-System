@@ -1,9 +1,10 @@
-.loginpage{
+.loginpage {
     display: flex;
     min-height: 100vh;
-    background-color: rgb(223, 202, 188)
+    background-color: rgb(223, 202, 188);
 }
-.logincontainer{
+
+.logincontainer {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.5);
@@ -12,48 +13,100 @@
     margin: 150px auto;
     max-width: 350px;
     height: 508px;
- 
-   
 }
-.usernamefont{
+
+.usernamefont {
     color: rgba(74, 51, 45, 1);
     font-family: 'Inter', sans-serif;
-    font-weight: 1;
+    font-weight: 500;
     font-size: 16px;
+    margin-bottom: 5px;
 }
-.useridfont{
+
+.useridfont {
     color: rgba(74, 51, 45, 1);
     font-family: 'Inter', sans-serif;
-    font-weight: 1;
+    font-weight: 500;
     font-size: 16px;
+    margin-bottom: 5px;
 }
-.passwordfont{
+
+.passwordfont {
     color: rgba(74, 51, 45, 1);
     font-family: 'Inter', sans-serif;
-    font-weight: 1;
+    font-weight: 500;
     font-size: 16px;
+    margin-bottom: 5px;
 }
-.logincontainer input{
+
+.logincontainer input {
     width: 300px;
-    height: 30px;
+    height: 35px;
     border-radius: 5px;
     border: 1px solid rgba(168, 110, 92, 1);
     margin-bottom: 20px;
-    padding: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
-.loginbutton{
+
+.logincontainer input:focus {
+    outline: none;
+    border-color: rgba(152, 116, 96, 1);
+    box-shadow: 0 0 3px rgba(152, 116, 96, 0.3);
+}
+
+.loginbutton {
     width: 300px;
-    height: 30px;
+    height: 35px;
     border-radius: 5px;
     border: none;
     background-color: rgba(152, 116, 96, 0.9);
     color: white;
     font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
     margin-top: 30px;
 }
-.loginbutton:hover{
+
+.loginbutton:hover {
     background-color: rgba(152, 116, 96, 1);
     transition: 0.3s;
+}
 
+.welcome {
+    color: rgba(152, 116, 96, 1);
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.welcomeCaption {
+    color: rgba(74, 51, 45, 0.6);
+    font-size: 12px;
+    margin-top: 8px;
+    font-family: 'Inter', sans-serif;
+}
+
+.errorMessage {
+    background-color: #ffe0e0;
+    color: #d32f2f;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #ffcdcd;
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+.errorMessage {
+    animation: shake 0.3s ease-in-out;
 }

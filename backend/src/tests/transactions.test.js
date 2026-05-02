@@ -353,3 +353,70 @@ describe('INTEGRATION TESTS: updating an existing transaction', () => {
         expect(res2.statusCode).toEqual(400);
     })
 })
+
+describe('INTEGRATION TESTS: fetching transactions by month and year', () => {
+    it('should fetch transactions correctly by month and year', async () => {
+        const res = await request(app).get('/transactions/filter?month=1&year=2024');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data).toBeInstanceOf(Array);
+    })
+
+    it('should return an error when month query parameter is missing', async () => {
+        const res = await request(app).get('/transactions/filter?year=2024');
+        expect(res.statusCode).toEqual(400);
+    })
+    
+    it('should return an error when year query parameter is missing', async () => {
+        const res = await request(app).get('/transactions/filter?month=1');
+        expect(res.statusCode).toEqual(400);
+    })
+
+    it('should return an error when month query parameter is invalid', async () => {
+        const res = await request(app).get('/transactions/filter?month=13&year=2024');
+        expect(res.statusCode).toEqual(400);
+    })
+
+    it('should return an error when year query parameter is invalid', async () => {
+        const res = await request(app).get('/transactions/filter?month=1&year=abcd');
+        expect(res.statusCode).toEqual(400);
+    })
+
+    it('should return an empty array when no transactions are found for the specified month and year', async () => {
+        const res = await request(app).get('/transactions/filter?month=1&year=1900');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toEqual(0);
+    })
+
+    it('should return transactions that match the specified month and year', async () => {
+        const transaction1 = createTransaction({ created_at: new Date() });
+        const transaction2 = createTransaction({ created_at: new Date() });
+
+        const res0 = await request(app).post('/transactions').send(transaction1);
+        expect(res0.statusCode).toEqual(201);
+        const res1 = await request(app).post('/transactions').send(transaction2);
+        expect(res1.statusCode).toEqual(201);
+
+        const res = await request(app).get('/transactions/filter?month=4&year=2026');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data).toBeInstanceOf(Array);
+
+        console.log(res.body.data);
+        expect(res.body.data.length).toEqual(2);
+    })
+
+    it('should not return transactions that do not match the specified month and year', async () => {
+        const transaction1 = createTransaction({ created_at: new Date() });
+        const transaction2 = createTransaction({ created_at: new Date() });
+
+        const res0 = await request(app).post('/transactions').send(transaction1);
+        expect(res0.statusCode).toEqual(201);
+        const res1 = await request(app).post('/transactions').send(transaction2);
+        expect(res1.statusCode).toEqual(201);
+
+        const res = await request(app).get('/transactions/filter?month=1&year=2026');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toEqual(0);
+    });
+})

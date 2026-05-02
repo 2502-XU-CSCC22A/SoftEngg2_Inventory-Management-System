@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { registerConsoleShortcuts } from "vitest/node";
 import models, { sequelize } from "../config/db.js";
 import { where } from "sequelize";
@@ -53,4 +54,25 @@ export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
     // TODO: Modify above line once a user_id fetching function is created
 
     return newTxn;
+}
+
+export const getTransactionByMonthAndYear = async (month, year) => {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const transactions = await models.transactions.findAll({
+        where: {
+            transaction_timestamp: {
+                [Op.gte]: startDate,
+                [Op.lt]: endDate,
+            }
+        },
+        include: {
+            model: models.transaction_items,
+            as: "transaction_items",
+        },
+        order: [['transaction_timestamp', 'DESC']]
+    })
+
+    return transactions;
 }
