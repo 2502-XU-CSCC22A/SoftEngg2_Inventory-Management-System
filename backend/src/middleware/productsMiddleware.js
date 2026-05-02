@@ -58,3 +58,20 @@ export const validatePatchPayload = (schema) => {
         next();
     }
 }
+
+export const checkValidQuery = () => {
+    return (req, res, next) => {
+        const { name } = req.query;
+        const trimmedName = name ? name.trim() : null;
+        if (!trimmedName) {
+            return res.status(400).json({ message: "Query parameter 'name' is required." });
+        }
+        if (trimmedName.length > 255) {
+            return res.status(400).json({ message: "Query parameter 'name' is too long." });
+        }
+        if (trimmedName.length < 2) {
+            return res.status(400).json({ message: "Query parameter 'name' is too short." });
+        }
+        next();
+    }
+}
