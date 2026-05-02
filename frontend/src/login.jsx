@@ -1,5 +1,5 @@
 import styles from "./login.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -8,27 +8,50 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Check if fields are empty
-    if (!username) {
+    if (!username.trim()) {
       setError("Please enter your username");
       return;
     }
-    if (!password) {
+    if (!password.trim()) {
       setError("Please enter your password");
       return;
     }
 
-    // Check credentials
-    if (username === "admin" && password === "password") {
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        setError(data.error || "Login failed");
+        return;
+      }
+
       setError("");
-      navigate("/welcomeadmin");
-    } else if (username === "user" && password === "password") {
-      setError("");
-      navigate("/welcomeuser");
-    } else {
-      setError("Invalid username or password. Please try again.");
+
+      if (data?.user?.is_admin) {
+        navigate("/welcomeadmin");
+      } else {
+        navigate("/welcomeuser");
+      }
+    }catch (err){
+      setError("Server error.");
+      console.log(`Error during login: ${err}`);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -49,6 +72,27 @@ function Login() {
       handleLogin();
     }
   };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/auth/me", {
+          credentials: "include"
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (data?.user?.is_admin) {
+          navigate("/welcomeadmin");
+        } else {
+          navigate("/welcomeuser");
+        }
+      } catch { }
+    };
+    checkSession();
+  }, [navigate]);
 
   return (
     <div className={styles.loginpage}>
@@ -83,8 +127,8 @@ function Login() {
           onKeyPress={handleKeyPress}
         />
 
-        <button className={styles.loginbutton} onClick={handleLogin}>
-          Login
+        <button className={styles.loginbutton} onClick={handleLogin} disabled={loading}>
+          {loading? "Logging in...": "Login"}
         </button>
       </div>
     </div>

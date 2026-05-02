@@ -1,36 +1,20 @@
 import models from "../config/db.js";
 import bcrypt from "bcryptjs";
 
-export const loginUser = async (req, res) => {
+export const getUsers = async (req, res) => {
   try {
-    const {username, password, user_id} = req.body;
-
-    const user = await models.users.findOne({
+    const users = await models.users.findAll({
       where: {
-        username: username,
-        user_id: user_id,
         is_active: true
-      }
+      },
+      attributes: ['user_id', 'username', 'is_admin']
     });
-    if(!user) {
-      return res.status(404).json({error: 'Active user not found'})
-    }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch){
-      return res.status(401).json({message: 'Wrong password'})
-    }
-
-    res.status(200).json({
-      message: "Login successful",
-      user_id: user.user_id,
-      username: user.username,
-      is_admin: user.is_admin,
-    });
-  } catch(error){
-    res.status(500).json({error: error.message})
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
 export const addUser = async (req, res) => {
   try {
