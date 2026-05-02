@@ -82,8 +82,8 @@ function UserManagement() {
                         <div key={user.id || user.user_id} className={styles.tableRow}>
                             <div className={styles.cell}>{user.username || user.user_name}</div>
                             <div className={styles.cell}>
-                                <span className={user.role === "admin" ? styles.adminBadge : styles.userBadge}>
-                                    {user.role || "user"}
+                                <span className={user.is_admin ? styles.adminBadge : styles.userBadge}>
+                                    {user.is_admin ? "admin" : "user"}
                                 </span>
                             </div>
                             <div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>

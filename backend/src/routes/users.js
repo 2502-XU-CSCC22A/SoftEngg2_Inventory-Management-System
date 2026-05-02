@@ -8,9 +8,9 @@ export const usersRouter = express.Router();
 
 const usersSchema = {
   username: "string",
+  role: "string",
   password: "string",
-  confirmPassword: "string",
-  role: "string"
+  confirmPassword: "string"
 }
 
 // -> get users

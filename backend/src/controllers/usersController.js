@@ -28,7 +28,7 @@ export const addUser = async (req, res) => {
     }
 
     const isAdmin = (role.toLowerCase() === "admin")? true: false;
-    if (!isAdmin && !(role.toLowerCase() === "employee")){
+    if (!isAdmin && !(role.toLowerCase() === "user")){
       return res.status(400).json({error: 'Invalid role'})
     }
 
