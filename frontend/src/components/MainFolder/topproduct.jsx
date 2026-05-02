@@ -17,7 +17,7 @@ function TopProduct() {
     const productsError = productsQuery.isError;
 
     // Create a map of product_id to product details
-    const { topProducts, bestProduct } = useMemo(() => {
+    const { topProducts } = useMemo(() => {
         const transactions = transactionsQuery.data || [];
         const products = productsQuery.data?.data || [];
         
@@ -27,7 +27,7 @@ function TopProduct() {
             if (transaction.transaction_items && Array.isArray(transaction.transaction_items)) {
                 transaction.transaction_items.forEach(item => {
                     const productId = item.product_id;
-                    const productName = item.product_name || `Product ID: ${productId}`;
+                    const productName = item.product_name || 'Product ID: ${productId}';
                     const unitPrice = item.product_unit_price || 0;
                     
                     if (productSales[productName]) {
@@ -50,7 +50,7 @@ function TopProduct() {
             .sort((a, b) => b.quantity - a.quantity)
             .slice(0, 5);
         
-        return { topProducts: sortedProducts, bestProduct: sortedProducts.length > 0 ? sortedProducts[0] : null };
+        return { topProducts: sortedProducts };
     }, [transactionsQuery.data, productsQuery.data]);
 
     if (transactionsLoading || productsLoading) return <div className={styles.loading}>Loading top products...</div>;
@@ -60,16 +60,6 @@ function TopProduct() {
         <div className={styles.page}>
             <Navbar/>
             <div className={styles.main}>
-                <div className={styles.bestsold}>
-                    {bestProduct ? (
-                        <div className={styles.bestProductContent}>
-                            <span className={styles.bestProductName}>{bestProduct.name}</span>
-                            <span className={styles.bestProductSold}>Best Sold Product</span>
-                        </div>
-                    ) : (
-                        <span>No sales data available</span>
-                    )}
-                </div>
                 <h1 className={styles.topproduct}>Top 5 Best Selling Products</h1>
                 <div className={styles.container}>
                     <div className={styles.listHeader}>
