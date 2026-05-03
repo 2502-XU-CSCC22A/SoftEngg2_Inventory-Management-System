@@ -41,7 +41,7 @@ function Sales() {
     };
 
     const handleEditTransaction = async (updatedTransaction) => {
-        updateMutation.mutate(updatedTransaction)
+        updateMutation.mutate(updatedTransaction);
     };
 
     const openEditPopup = (transaction) => {
