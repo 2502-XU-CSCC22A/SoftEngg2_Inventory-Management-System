@@ -14,3 +14,21 @@ export const formatToPesos = (centsAmt) => {
 
     return `₱${formattedPesos}.${centsPart}`;
 };
+
+export const formatToCents = (pesosStr) => {
+    if (pesosStr == null || pesosStr === "") return null;
+
+    if (pesosStr.indexOf('.') === -1) {
+        return Number(pesosStr) * 100;
+    }
+    else {
+        const centsStr = pesosStr.replace('.', '');
+        return Number(centsStr);
+    }
+}
+
+export const validatePriceInput = (input) => {
+    // Allow only whole numbers or numbers with up to two decimal places
+    const regex = /^[0-9]*(\.[0-9][0-9])?$/;
+    return regex.test(input);
+}
