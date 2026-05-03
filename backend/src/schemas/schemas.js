@@ -11,7 +11,7 @@ export const insertTransactionSchema = Joi.object({
         Joi.object({
             product_id: Joi.number().positive().required(),
             quantity_bought: Joi.number().positive().max(2147483647).required()
-        }).unknown(false),
+        })
     ).min(1).required().unique('product_id'),
 })
 
@@ -28,7 +28,7 @@ export const updateTransactionSchema = Joi.object({
         Joi.object({
             product_id: Joi.number().positive().required(),
             quantity_bought: Joi.number().positive().max(2147483647).required()
-        }).unknown(false)
+        })
     ).min(1).unique('product_id'),
 })
 
