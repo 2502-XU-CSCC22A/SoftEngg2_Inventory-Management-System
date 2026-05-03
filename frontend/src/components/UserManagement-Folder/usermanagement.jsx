@@ -22,7 +22,7 @@ function UserManagement() {
         user.user_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // in case muingon na need ug created at
+    /* in case muingon na need ug created at
     const formatDateTime = (dateString) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
@@ -33,7 +33,7 @@ function UserManagement() {
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
+    };*/
 
     const handleUserAdded = async (newUser) => {
         await refetch(); // Refresh the user list
@@ -68,7 +68,7 @@ function UserManagement() {
             <div className={styles.tableHeader}>
                 <div className={styles.headerCell}>Users</div>
                 <div className={styles.headerCell}>Role</div>
-                {/**/}<div className={styles.headerCell}>Created On</div>
+                {/*<div className={styles.headerCell}>Created On</div> keep lng just in case*/}
             </div>
             <hr className={styles.line2} />
            
@@ -87,7 +87,7 @@ function UserManagement() {
                                     {user.is_admin ? "admin" : "user"}
                                 </span>
                             </div>
-                            {/**/}<div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>
+                            {/*<div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>  keep lng just in case*/}
                         </div>
                     ))
                 )}
