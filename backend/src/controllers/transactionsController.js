@@ -9,7 +9,7 @@ import { getValidProduct, getValidUser, insertTransactionItem, isPayloadIdentica
 
 
 // TODO: [WARNING!]: REFACTOR AS SOON AS SESSION STORAGE IS POSSIBLE
-export const insertTransaction = async (data, t, userId = 1) => {
+export const insertTransaction = async (data, t, userId) => {
     data.transaction_timestamp = Date.now();
     data.created_by = userId;
 
@@ -50,7 +50,7 @@ export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
     const s = await models.transactions.findByPk(oldTxn.transaction_id);
     await s.update({ voided_at: Date.now() }, { transaction: t });
     
-    const newTxn = await insertTransaction(updatedPayload, t, 1);
+    const newTxn = await insertTransaction(updatedPayload, t, userId);
     // TODO: Modify above line once a user_id fetching function is created
 
     return newTxn;
