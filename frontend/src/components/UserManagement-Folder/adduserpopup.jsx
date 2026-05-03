@@ -62,8 +62,11 @@ function AddUserPopup({ onClose, onUserAdded, existingUsers = [] }) {
             
             const response = await api.post('/users', userData);
             
-            if (response.status == 201 && onUserAdded) {
-                await onUserAdded(/*response.data*/);
+            if (response.status === 201) {
+                alert(`User ${formData.username} has been added successfully!`);
+                if (onUserAdded){
+                    await onUserAdded(/*response.data*/);
+                }
             }
             onClose();
             
