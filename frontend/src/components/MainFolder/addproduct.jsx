@@ -1,4 +1,5 @@
 import styles from "./addproduct.module.css";
+import { formatToCents } from "../../utils/utils";
 import { useState } from "react";
 
 function AddProduct({ onClose, onAdd }) {
@@ -10,7 +11,7 @@ function AddProduct({ onClose, onAdd }) {
     const handleAdd = () => {
         const finalName = productName ? productName : null;
         const finalQuantity = quantity ? Number(quantity) : null;
-        const finalPrice = price ? Number(price) : null;
+        const finalPrice = price ? formatToCents(price) : null;
 
         // Call the onAdd function with the new product details
         onAdd({

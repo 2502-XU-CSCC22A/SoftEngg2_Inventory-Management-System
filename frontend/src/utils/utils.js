@@ -14,3 +14,15 @@ export const formatToPesos = (centsAmt) => {
 
     return `₱${formattedPesos}.${centsPart}`;
 };
+
+export const formatToCents = (pesosStr) => {
+    if (pesosStr == null || pesosStr === "") return null;
+
+    if (pesosStr.indexOf('.') === -1) {
+        return Number(pesosStr) * 100;
+    }
+    else {
+        const centsStr = pesosStr.replace('.', '');
+        return Number(centsStr);
+    }
+}
