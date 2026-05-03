@@ -54,7 +54,7 @@ transactionsRouter.post('/', validate(insertTransactionSchema), async (req, res,
   try {
     let result;
     await sequelize.transaction(async t => {
-      result = await insertTransaction(req.body, t);
+      result = await insertTransaction(req.body, t, req.session.user.user_id);
     })
 
     if (result) {
@@ -76,7 +76,7 @@ transactionsRouter.patch('/:transactionId',
     try {
       let result;
       await sequelize.transaction(async t => {
-        result = await updateTransaction(req.oldTxn, req.updatedPayload, t);
+        result = await updateTransaction(req.oldTxn, req.updatedPayload, req.session.user.user_id, t);
       })
 
       if (result) {
