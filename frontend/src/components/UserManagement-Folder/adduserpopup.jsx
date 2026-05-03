@@ -56,20 +56,23 @@ function AddUserPopup({ onClose, onUserAdded, existingUsers = [] }) {
             const userData = {
                 username: formData.username,
                 role: formData.role,
-                password: formData.password
+                password: formData.password,
+                confirmPassword: formData.confirmPassword
             };
             
             const response = await api.post('/users', userData);
             
-            if (response.status === 201) {
-                alert("User added successfully!");
-                if (onUserAdded) {
-                    await onUserAdded(response.data);
-                }
-                onClose();
+            if (response.status == 201 && onUserAdded) {
+                await onUserAdded(/*response.data*/);
             }
+            onClose();
+            
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to add user. Please try again.");
+            setError(
+                err.response?.data?.error ||
+                err.response?.data?.message ||
+                "Failed to add user."
+            );
         } finally {
             setLoading(false);
         }

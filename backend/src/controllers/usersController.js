@@ -20,8 +20,8 @@ export const addUser = async (req, res) => {
   try {
     const {username, role, password, confirmPassword} = req.body;
 
-    if (password.length < 8){
-      return res.status(400).json({error: 'Password should be eight or more characters'})
+    if (password.length < 6){
+      return res.status(400).json({error: 'Password should be 6 or more characters'})
     } 
     if (!(password === confirmPassword)){
       return res.status(400).json({error: 'Passwords do not match'})

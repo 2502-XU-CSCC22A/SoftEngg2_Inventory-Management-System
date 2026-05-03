@@ -14,7 +14,7 @@ function UserManagement() {
     // Use the React Query hook to fetch users
     const { data: usersData, isLoading, isError, refetch } = useUsers();
     
-    // Extract users array from the response (assuming API returns { data: [...] } or just array)
+    // Extract users array from the response
     const users = usersData?.data || usersData || [];
 
     const filteredUsers = users.filter(user =>
@@ -22,6 +22,7 @@ function UserManagement() {
         user.user_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // in case muingon na need ug created at
     const formatDateTime = (dateString) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
@@ -67,7 +68,7 @@ function UserManagement() {
             <div className={styles.tableHeader}>
                 <div className={styles.headerCell}>Users</div>
                 <div className={styles.headerCell}>Role</div>
-                <div className={styles.headerCell}>Created On</div>
+                {/**/}<div className={styles.headerCell}>Created On</div>
             </div>
             <hr className={styles.line2} />
            
@@ -86,7 +87,7 @@ function UserManagement() {
                                     {user.is_admin ? "admin" : "user"}
                                 </span>
                             </div>
-                            <div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>
+                            {/**/}<div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>
                         </div>
                     ))
                 )}
