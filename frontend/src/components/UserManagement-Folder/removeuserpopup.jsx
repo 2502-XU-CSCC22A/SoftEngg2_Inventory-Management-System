@@ -56,7 +56,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                     <option value="">Select a user</option>
                     {users.map((user) => (
                         <option key={user.id || user.user_id} value={user.username || user.user_name}>
-                            {user.username || user.user_name} ({user.role || "user"})
+                            {user.username || user.user_name} ({user.is_admin ? "admin" : "user"})
                         </option>
                     ))}
                 </select>
