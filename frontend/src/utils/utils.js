@@ -26,3 +26,9 @@ export const formatToCents = (pesosStr) => {
         return Number(centsStr);
     }
 }
+
+export const validatePriceInput = (input) => {
+    // Allow only whole numbers or numbers with up to two decimal places
+    const regex = /^[0-9]*(\.[0-9][0-9])?$/;
+    return regex.test(input);
+}
