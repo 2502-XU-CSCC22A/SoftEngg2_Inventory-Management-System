@@ -113,7 +113,7 @@ function EditSales({ onClose, transaction, onSave }) {
                         </div>
                     )}
 
-                    <h3>PRODUCT:*</h3>
+                    <h3>PRODUCT:</h3>
                     <select
                         name="product_id"
                         className={styles.input}
@@ -129,7 +129,7 @@ function EditSales({ onClose, transaction, onSave }) {
                         ))}
                     </select>
                     
-                    <h3>QUANTITY:*</h3>
+                    <h3>QUANTITY:</h3>
                     <input
                         type="number"
                         name="quantity_bought"
@@ -140,7 +140,7 @@ function EditSales({ onClose, transaction, onSave }) {
                     />
 
                     <button className={styles.buttonpop} onClick={handleAddItem}>Add product</button>
-                    <h3>PAYMENT METHOD:*</h3>
+                    <h3>PAYMENT METHOD:</h3>
                     <select
                         name="payment_type"
                         className={styles.paymentmethod}
@@ -154,7 +154,7 @@ function EditSales({ onClose, transaction, onSave }) {
                     
                     {formData.payment_type === "GCash" && (
                         <>
-                            <h3>REFERENCE STRING:*</h3>
+                            <h3>REFERENCE STRING:</h3>
                             <input
                                 type="text"
                                 name="payment_refstr"
