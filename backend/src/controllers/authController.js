@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import models from "../config/db.js";
+import { createActivityLog } from "../services/activityLogService.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -26,6 +27,14 @@ export const loginUser = async (req, res) => {
       is_admin: user.is_admin
     };
 
+    await createActivityLog({
+      action: "USER_LOGIN",
+      module: "auth",
+      description: `User "${user.username}" logged in`,
+      reference_id: user.user_id,
+      performed_by: user.user_id,
+    });
+
     res.status(200).json({
       message: "Login successful",
       user: req.session.user
@@ -45,7 +54,19 @@ export const getCurrent = (req, res) => {
   });
 };
 
-export const logoutUser = (req, res) => {
+export const logoutUser = async (req, res) => {
+  const sessionUser = req.session.user;
+
+  if (sessionUser) {
+    await createActivityLog({
+      action: "USER_LOGOUT",
+      module: "auth",
+      description: `User "${sessionUser.username}" logged out`,
+      reference_id: sessionUser.user_id,
+      performed_by: sessionUser.user_id,
+    });
+  }
+
   req.session.destroy((err) => {
     if (err){
       return res.status(500).json({error: "logout failed"});

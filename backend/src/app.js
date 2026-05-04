@@ -6,6 +6,7 @@ import { productsRouter } from "./routes/products.js";
 import { transactionsRouter } from './routes/transactions.js';
 import { usersRouter } from './routes/users.js';
 import { authRouter } from './routes/auth.js';
+import { activityLogsRouter } from './routes/activityLogs.js';
 import cors from 'cors';
 
 const app = express();
@@ -40,5 +41,7 @@ app.use("/products", productsRouter);
 app.use("/transactions", transactionsRouter); 
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/activity-logs', activityLogsRouter);
 
 export default app;
+

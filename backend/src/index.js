@@ -1,7 +1,10 @@
 import bcrypt from 'bcryptjs';
+import http from 'http';
 import { testDBConnection } from './config/db.js'
 import models from './config/db.js';
 import app from './app.js'
+import { initSocket } from './config/socket.js';
+
 const port = 3000
 
 const createDefaultUser = async () => {
@@ -37,7 +40,11 @@ const startServer = async () => {
   try {
     await testDBConnection();
     await createDefaultUser();
-    app.listen(port, () => {
+
+    const httpServer = http.createServer(app);
+    initSocket(httpServer);
+
+    httpServer.listen(port, () => {
       console.log(`Example app listening on port ${port}`)
     })
 

@@ -1,24 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Navbar } from './Navbar';
 import styles from './ActivLog.module.css';
+import { useActivityLogs } from '../../hooks/useActivityLogs';
 
-
-// temporary data for visualization only, pwede na siya i-replace sa actual data nga mag-generate sa backend
-const transactions = [
-  { name: 'Wireless Earbuds Pro', datetime: '2026-04-05T10:32:00', qty: 2, type: 'remove' },
-  { name: 'USB-C Hub 7-in-1', datetime: '2026-04-04T15:15:00', qty: 1, type: 'add' },
-  { name: 'Mechanical Keyboard', datetime: '2026-04-03T11:20:00', qty: 3, type: 'remove' },
-  { name: 'Gaming Monitor 27"', datetime: '2026-04-02T09:45:00', qty: 1, type: 'add' },
-  { name: 'Webcam HD 1080p', datetime: '2026-04-01T14:05:00', qty: 10, type: 'remove' },
-  { name: 'Wireless Earbuds Pro', datetime: '2026-03-31T08:50:00', qty: 20, type: 'add' },
-  { name: 'Laptop Stand Aluminum', datetime: '2026-03-30T16:30:00', qty: 2, type: 'remove' },
-  { name: 'Noise-Cancel Headset', datetime: '2026-03-29T12:00:00', qty: 1, type: 'add' },
-  { name: 'Smart Power Strip', datetime: '2026-03-28T10:10:00', qty: 5, type: 'remove' },
-  { name: 'Ergonomic Mouse', datetime: '2026-03-27T17:45:00', qty: 15, type: 'add' },
-];
+const ACTION_BADGES = {
+  TRANSACTION_CREATED: { label: 'Created', className: 'badgeCreate' },
+  TRANSACTION_UPDATED: { label: 'Updated', className: 'badgeUpdate' },
+  PRODUCT_ADDED:       { label: 'Added',   className: 'badgeCreate' },
+  PRODUCT_UPDATED:     { label: 'Updated', className: 'badgeUpdate' },
+  USER_ADDED:          { label: 'Added',   className: 'badgeCreate' },
+  USER_ARCHIVED:       { label: 'Archived', className: 'badgeArchive' },
+  USER_LOGIN:          { label: 'Login',   className: 'badgeAuth' },
+  USER_LOGOUT:         { label: 'Logout',  className: 'badgeAuth' },
+};
 
 const ActivLog = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError, error } = useActivityLogs(page, 10);
+
+  const logs = data?.data || [];
+  const pagination = data?.pagination || {};
 
   const formatDateTime = (iso) => {
     const d = new Date(iso);
@@ -32,73 +33,95 @@ const ActivLog = () => {
     );
   };
 
-  const activityLabel = (type) => { const labels = { sale: 'Remove', restock: 'Add' }; return labels[type] || type;};
+  const getBadge = (action) => {
+    const badge = ACTION_BADGES[action] || { label: action, className: 'badgeDefault' };
+    return <span className={`${styles.badge} ${styles[badge.className]}`}>{badge.label}</span>;
+  };
 
-  const filteredTransactions = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return query ? transactions.filter((tx) =>
-          tx.name.toLowerCase().includes(query) ||
-          tx.type.toLowerCase().includes(query) ||
-          activityLabel(tx.type).toLowerCase().includes(query)
-        )
-      : transactions;
-  }, [searchQuery]);
-
-  const resultNote = searchQuery
-    ? `${filteredTransactions.length} result${filteredTransactions.length !== 1 ? 's' : ''} found`
-    : '';
+  const capitalizeModule = (mod) => {
+    if (!mod) return '—';
+    return mod.charAt(0).toUpperCase() + mod.slice(1);
+  };
 
   return (
     <>
       <Navbar />
-      <input
-        type="search"
-        placeholder="Search..."
-        className={styles.search1}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
 
-      <section id="sales" className={styles.page}>
+      <section id="activity-log" className={styles.page}>
         <div className={styles.actions}>
           <div className={styles['center-title']}>
             <h2 className={styles.title}>Activity Log</h2>
-            <p className={styles['result-note']}>{resultNote}</p>
+            {pagination.totalLogs > 0 && (
+              <p className={styles['result-note']}>
+                Showing page {pagination.currentPage} of {pagination.totalPages} ({pagination.totalLogs} total logs)
+              </p>
+            )}
           </div>
         </div>
 
         <div className={styles['table-container']}>
-          <table>
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Date&time</th>
-                <th>Quantity</th>
-                <th>Activity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.length === 0 ? (
-                <tr className={styles['empty-row']}>
-                  <td colSpan="4">No transactions found.</td>
-                </tr>
-              ) : (
-                filteredTransactions.map((tx, index) => {
-                  const qtyDisplay = tx.type === 'adjust'
-                    ? (tx.qty > 0 ? '+' + tx.qty : String(tx.qty))
-                    : tx.qty;
-                  return (
-                    <tr key={index}>
-                      <td><span className={styles.star}>&#9734;</span> {tx.name}</td>
-                      <td>{formatDateTime(tx.datetime)}</td>
-                      <td>{qtyDisplay}</td>
-                      <td>{activityLabel(tx.type)}</td>
+          {isLoading ? (
+            <div className={styles['state-message']}>
+              <p>Loading activity logs...</p>
+            </div>
+          ) : isError ? (
+            <div className={styles['state-message']}>
+              <p className={styles['error-text']}>Failed to load activity logs: {error?.message || 'Unknown error'}</p>
+            </div>
+          ) : (
+            <>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th>User</th>
+                    <th>Module</th>
+                    <th>Date &amp; Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.length === 0 ? (
+                    <tr className={styles['empty-row']}>
+                      <td colSpan="5">No activity logs found.</td>
                     </tr>
-                  );
-                })
+                  ) : (
+                    logs.map((log) => (
+                      <tr key={log.log_id}>
+                        <td>{getBadge(log.action)}</td>
+                        <td className={styles['desc-cell']}>{log.description}</td>
+                        <td>{log.performed_by_user?.username || '—'}</td>
+                        <td>{capitalizeModule(log.module)}</td>
+                        <td>{formatDateTime(log.created_at)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              {pagination.totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    className={styles['pagination-btn']}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={!pagination.hasPreviousPage}
+                  >
+                    ← Previous
+                  </button>
+                  <span className={styles['page-info']}>
+                    Page {pagination.currentPage} of {pagination.totalPages}
+                  </span>
+                  <button
+                    className={styles['pagination-btn']}
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={!pagination.hasNextPage}
+                  >
+                    Next →
+                  </button>
+                </div>
               )}
-            </tbody>
-          </table>
+            </>
+          )}
         </div>
       </section>
     </>

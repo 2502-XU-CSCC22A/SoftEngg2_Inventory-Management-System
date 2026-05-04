@@ -1,5 +1,6 @@
 import models from "../config/db.js";
 import bcrypt from "bcryptjs";
+import { createActivityLog } from "../services/activityLogService.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -52,6 +53,15 @@ export const addUser = async (req, res) => {
       is_active: true
     });
 
+    await createActivityLog({
+      action: "USER_ADDED",
+      module: "users",
+      description: `User "${username}" added with role "${role}"`,
+      reference_id: addedUser.user_id,
+      new_value: { user_id: addedUser.user_id, username, is_admin: isAdmin },
+      performed_by: req.session?.user?.user_id || null,
+    });
+
     res.status(201).json({
       message: "Adding user successful",
       user_id: addedUser.user_id,
@@ -65,6 +75,10 @@ export const addUser = async (req, res) => {
 
 export const archiveUser = async (req, res) => {
   try {
+    const targetUser = await models.users.findByPk(req.params.user_id, {
+      attributes: ['user_id', 'username', 'is_admin']
+    });
+
     const [archivedUsers] = await models.users.update(
       { is_active: false},
       { where: { 
@@ -76,6 +90,15 @@ export const archiveUser = async (req, res) => {
       if(archivedUsers === 0){
         return res.status(404).json({error: "User not found"})
       }
+
+    await createActivityLog({
+      action: "USER_ARCHIVED",
+      module: "users",
+      description: `User "${targetUser?.username || req.params.user_id}" archived`,
+      reference_id: parseInt(req.params.user_id),
+      previous_value: targetUser ? targetUser.toJSON() : null,
+      performed_by: req.session?.user?.user_id || null,
+    });
 
     res.status(200).json({message: "User removed"})
   } catch(error){

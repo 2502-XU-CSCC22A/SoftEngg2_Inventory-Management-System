@@ -12,10 +12,12 @@ dotenv.config({ path: resolve(__dirname, '../../.env') });
 let DB_URL = null;
 
 if (process.env.NODE_ENV !== "test") {
-  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@db:5432/${process.env.PG_DB}`;
+  const host = process.env.PG_HOST || 'db';
+  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${host}:5432/${process.env.PG_DB}`;
 }
 else {
-  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@db:5432/test_db`;
+  const host = process.env.PG_HOST || 'db';
+  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${host}:5432/test_db`;
 }
 
 export const sequelize = new Sequelize(DB_URL);
