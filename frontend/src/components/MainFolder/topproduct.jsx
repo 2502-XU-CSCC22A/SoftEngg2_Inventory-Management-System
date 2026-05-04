@@ -19,7 +19,6 @@ function TopProduct() {
     // Create a map of product_id to product details
     const { topProducts } = useMemo(() => {
         const transactions = transactionsQuery.data || [];
-        const products = productsQuery.data?.data || [];
         
         const productSales = {};
         
@@ -51,7 +50,7 @@ function TopProduct() {
             .slice(0, 5);
         
         return { topProducts: sortedProducts };
-    }, [transactionsQuery.data, productsQuery.data]);
+    }, [transactionsQuery.data]);
 
     if (transactionsLoading || productsLoading) return <div className={styles.loading}>Loading top products...</div>;
     if (transactionsError || productsError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
