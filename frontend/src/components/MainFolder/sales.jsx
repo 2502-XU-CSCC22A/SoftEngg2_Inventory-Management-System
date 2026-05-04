@@ -11,12 +11,14 @@ function Sales() {
     const [showeditsales, setshoweditsales] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
 
     // Use the React Query hook to fetch transactions
-    const { query, updateMutation, insertMutation } = useTransactions();
+    const { query, updateMutation, insertMutation } = useTransactions(selectedMonth, selectedYear);
     
     // Extract transactions array from the response
-    const transactions = query.data || [];
+    const transactions = query.data?.data || [];
 
     const filteredTransactions = transactions.filter(transaction =>
         (transaction.product_name || transaction.product || "")
@@ -55,6 +57,19 @@ function Sales() {
     if (isLoading) return <div className={styles.loading}>Loading transactions...</div>;
     if (isError) return <div className={styles.error}>Failed to load transactions. Please try again.</div>;
 
+
+    const monthNames = Array.from({ length: 12 }, (_, i) =>
+        new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(2026, i))
+    );
+
+    const startYear = 2026;
+    const endYear = 2126;
+
+    const futureYears = Array.from(
+        { length: endYear - startYear + 1 },
+        (_, i) => startYear + i
+    );
+
     return (
         <div>
             <Navbar/>
@@ -66,6 +81,29 @@ function Sales() {
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className={styles.add} onClick={() => setshowaddsales(true)}>ADD</button>
+            <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className={styles.yearDropdown}
+            >
+                {futureYears.map(year => (
+                    <option key={year} value={year}>
+                        {year}
+                    </option>
+                ))}
+            </select>
+
+            <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className={styles.monthDropdown}
+            >
+                {monthNames.map((name, index) => (
+                    <option key={index} value={index + 1}>
+                        {name}
+                    </option>
+                ))}
+            </select>
 
             <h1 className={styles.soldtransactions}>Sold Transactions</h1>
              
