@@ -116,7 +116,7 @@ const Available = () => {
           />
         )}
         {isAdding && (
-          <AddProduct onClose={closeAdd} onAdd={addProduct} />
+          <AddProduct onClose={closeAdd} onAdd={addProduct} productsList={queryAll.data?.data}/>
         )}
       </div>
     </div>
