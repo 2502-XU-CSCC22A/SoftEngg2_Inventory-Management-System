@@ -65,7 +65,8 @@ export const getTransactionByMonthAndYear = async (month, year) => {
             transaction_timestamp: {
                 [Op.gte]: startDate,
                 [Op.lt]: endDate,
-            }
+            },
+            voided_at: null,
         },
         include: {
             model: models.transaction_items,
