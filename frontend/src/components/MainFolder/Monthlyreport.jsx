@@ -14,7 +14,7 @@ function formatK(val) {
 }
 
 function getDaysInMonth(year, month) {
-  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+  return new Date(year, month, 0).getDate();
 }
 
 const ChartSVG = ({ data, totalDays, activeDay }) => {
@@ -149,8 +149,8 @@ const MONTH_NAMES = [ 'January','February','March','April','May','June', 'July',
 
 const Monthlyreport = () => {
   const { query } = useTransactions();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getUTCMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getUTCFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const monthlyData = useMemo(() => {
@@ -160,8 +160,8 @@ const Monthlyreport = () => {
 
     transactions.forEach(txn => {
       const date = new Date(txn.transaction_timestamp);
-      const month = date.getUTCMonth() + 1;
-      const year = date.getUTCFullYear();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
       const key = `${year}-${month}`;
       if (!grouped[key]) grouped[key] = { revenue: 0, quantity: 0, month, year };
 
@@ -202,8 +202,8 @@ const Monthlyreport = () => {
 
     transactions.forEach(txn => {
       const date = new Date(txn.transaction_timestamp);
-      if (date.getUTCMonth() + 1 !== selectedMonth || date.getUTCFullYear() !== selectedYear) return;
-      const day = date.getUTCDate();
+      if (date.getMonth() + 1 !== selectedMonth || date.getFullYear() !== selectedYear) return;
+      const day = date.getDate();
 
       txn.transaction_items?.forEach(item => {
         if (item.product_unit_price > 10_000_000) return;
@@ -220,8 +220,8 @@ const Monthlyreport = () => {
   const today = new Date();
   const totalDays = getDaysInMonth(selectedYear, selectedMonth);
   const activeDay =
-    today.getUTCFullYear() === selectedYear && today.getUTCMonth() + 1 === selectedMonth
-      ? today.getUTCDate()
+    today.getFullYear() === selectedYear && today.getMonth() + 1 === selectedMonth
+      ? today.getDate()
       : totalDays;
 
   const handleMonthSelect = (month, year) => {
