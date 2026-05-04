@@ -124,7 +124,7 @@ function EditSales({ onClose, transaction, onSave }) {
                         <option value="">Select Product</option>
                         {products.map((product) => (
                             <option key={product.product_id || product.id} value={product.product_id || product.id}>
-                                {product.product_name} - ₱{(product.product_unit_price || 0).toLocaleString()}
+                                {product.product_name} - {formatToPesos(product.product_unit_price || 0).toLocaleString()}
                             </option>
                         ))}
                     </select>
