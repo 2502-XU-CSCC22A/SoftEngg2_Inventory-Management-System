@@ -12,6 +12,11 @@ function EditAvailable({ product, onClose, onSave }) {
       return;
     }
 
+    if (quantity == "" && price == "") {
+      alert("Both fields cannot be empty.");
+      return;
+    }
+
     const updatedQuantity = quantity === "" ? product.product_quantity : Number(quantity);
     const sanitizedPrice = price === "" ? product.product_unit_price : formatToCents(price);
 
