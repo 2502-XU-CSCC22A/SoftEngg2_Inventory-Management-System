@@ -2,19 +2,15 @@ import styles from "./topproduct.module.css";
 import { Navbar } from "../MainFolder/Navbar";
 import { useMemo } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
-import { useProducts } from "../../hooks/useProducts.js";
 import { formatToPesos } from "../../utils/utils.js";
 
 function TopProduct() {
     // Use both hooks
     const { query: transactionsQuery } = useTransactions();
-    const { query: productsQuery } = useProducts();
     
     // Extract loading/error states
     const transactionsLoading = transactionsQuery.isLoading;
     const transactionsError = transactionsQuery.isError;
-    const productsLoading = productsQuery.isLoading;
-    const productsError = productsQuery.isError;
 
     // Create a map of product_id to product details
     const { topProducts } = useMemo(() => {
@@ -52,8 +48,8 @@ function TopProduct() {
         return { topProducts: sortedProducts };
     }, [transactionsQuery.data]);
 
-    if (transactionsLoading || productsLoading) return <div className={styles.loading}>Loading top products...</div>;
-    if (transactionsError || productsError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
+    if (transactionsLoading) return <div className={styles.loading}>Loading top products...</div>;
+    if (transactionsError) return <div className={styles.error}>Failed to load data. Please try again.</div>;
 
     return (
         <div className={styles.page}>
