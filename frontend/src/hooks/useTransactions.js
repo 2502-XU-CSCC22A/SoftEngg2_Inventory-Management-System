@@ -1,29 +1,26 @@
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import api from '../api/api.js';
 
-export const useTransactions = () => {
+export const useTransactions = (month = null, year = null) => {
     const queryClient = useQueryClient();
+
     const query = useQuery({
-        queryKey: ['transactions'],
+        queryKey: ['transactions', { month, year }],
         queryFn: async () => {
-            const { data } = await api.get('/transactions');
+            const endpoint = (month && year)
+                ? `/transactions/filter?month=${month}&year=${year}`
+                : '/transactions';
+
+            const { data } = await api.get(endpoint);
             return data;
-        }
+        },
+        placeholderData: (previousData) => previousData,
     });
 
     const queryAll = useQuery({
         queryKey: ['transactions', 'all'],
         queryFn: async () => {
             const { data } = await api.get('/transactions/show-all');
-            return data;
-        }
-    });
-
-    const queryByMonthAndYear = useQuery({
-        queryKey: ['transactions', 'filter'],
-        queryFn: async ({ queryKey }) => {
-            const [, , { month, year }] = queryKey;
-            const { data } = await api.get(`/transactions/filter?month=${month}&year=${year}`);
             return data;
         }
     });
@@ -46,5 +43,5 @@ export const useTransactions = () => {
         }
     })
 
-    return { query, queryAll, queryByMonthAndYear, updateMutation, insertMutation }
+    return { query, queryAll, updateMutation, insertMutation }
 };
