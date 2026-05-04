@@ -37,7 +37,7 @@ function TopProduct() {
                         productSales[productName] = {
                             name: productName,
                             quantity: item.quantity_bought,
-                            revenue: formatToPesos(item.quantity_bought * unitPrice),
+                            revenue: item.quantity_bought * unitPrice,
                             productId: productId
                         };
                     }
@@ -75,7 +75,7 @@ function TopProduct() {
                                 <span className={styles.rank}>{index + 1}</span>
                                 <span className={styles.productName}>{product.name}</span>
                                 <span className={styles.productQuantity}>{product.quantity} units</span>
-                                <span className={styles.productRevenue}>{product.revenue.toLocaleString()}</span>
+                                <span className={styles.productRevenue}>{formatToPesos(product.revenue)}</span>
                             </div>
                         ))}
                         {topProducts.length === 0 && (
