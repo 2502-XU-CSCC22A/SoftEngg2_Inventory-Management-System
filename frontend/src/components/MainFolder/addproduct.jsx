@@ -2,7 +2,7 @@ import styles from "./addproduct.module.css";
 import { formatToCents, validatePriceInput } from "../../utils/utils";
 import { useState } from "react";
 
-function AddProduct({ onClose, onAdd }) {
+function AddProduct({ onClose, onAdd, productsList }) {
     const [productName, setProductName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState("");
@@ -11,6 +11,21 @@ function AddProduct({ onClose, onAdd }) {
     const handleAdd = () => {
         if (validatePriceInput(String(price)) === false) {
             alert("Invalid price format. Please enter a valid number with up to two decimal places.");
+            return;
+        }
+
+        if (productsList.some(p => p.product_name === productName)) {
+            alert(`Product ${productName} already exists in the database.`);
+            return;
+        }
+
+        if (price <= 0) {
+            alert("Invalid price entered. Value should be bigger than zero.");
+            return;
+        }
+
+        if (quantity < 0) {
+            alert("Invalid quantity entered. Value should be zero or bigger.");
             return;
         }
 
