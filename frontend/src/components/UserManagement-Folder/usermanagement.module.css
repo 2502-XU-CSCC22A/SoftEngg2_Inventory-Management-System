@@ -99,20 +99,19 @@
   border: 1px solid rgba(168, 110, 92, 1);
   padding: 20px; 
   position: relative;
-  left: 100px;
-  top: 150px;
+  left: 200px;
+  top: 200px;
 }
 
 .tableHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 500px;
   font-size: 16px;
   font-weight: 600;
-  margin-top: 130px;
-  margin-left: 50px;
-  margin-right: 50px;
+  margin-top: 180px;
+  margin-left: 170px;
+  margin-right: 170px;
   padding: 15px 20px;
   background-color: rgba(152, 116, 96, 0.1);
   border-radius: 8px 8px 0 0;
@@ -128,24 +127,24 @@
 
 .line2 {
   border: 1px solid rgba(168, 110, 92, 1);
-  margin: 0 50px;
+  margin: 0 170px;
 }
 
 .tableBody {
-  margin: 0 50px;
+  margin: 0 170px;
   border: 1px solid rgba(168, 110, 92, 1);
   border-top: none;
   border-radius: 0 0 8px 8px;
   max-height: 400px;
   overflow-y: auto;
   background-color: white;
+  
 }
 
 .tableRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 500px;
   padding: 12px 20px;
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s;
