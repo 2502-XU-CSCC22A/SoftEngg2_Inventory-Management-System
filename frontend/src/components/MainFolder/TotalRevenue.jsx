@@ -6,7 +6,7 @@ import { formatToPesos } from '../../utils/utils.js';
 
 const TotalRevenue = () => {
   const { query } = useTransactions();
-  const [selectedYear, setSelectedYear] = useState(new Date().getUTCFullYear());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isYearPopupOpen, setIsYearPopupOpen] = useState(false);
 
   const yearlyData = useMemo(() => {
@@ -15,7 +15,7 @@ const TotalRevenue = () => {
 
     transactions.forEach(txn => {
       const date = new Date(txn.transaction_timestamp);
-      const year = date.getUTCFullYear();
+      const year = date.getFullYear();
       
       if (!years[year]) {
         years[year] = {
@@ -25,7 +25,7 @@ const TotalRevenue = () => {
         };
       }
      
-      const month = date.getUTCMonth(); // 0-11
+      const month = date.getMonth(); // 0-11
       if (!years[year].monthlyData[month]) {
         years[year].monthlyData[month] = { revenue: 0, quantity: 0 };
       }
