@@ -84,7 +84,6 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
         </clipPath>
       </defs>
 
-      {/* Y-axis */}
       {yTicks.map((tick, i) => (
         <g key={i}>
           <line
@@ -97,7 +96,6 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
         </g>
       ))}
 
-      {/* X-axis day labels */}
       {data.map((_, i) => {
         if (!xLabelIndices.has(i)) return null;
         return (
@@ -115,13 +113,11 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
       <path className={styles.chartArea} d={areaPath} fill="url(#monthlyGrad)" clipPath="url(#monthlyClip)" />
       <path className={styles.chartLine} d={linePath} clipPath="url(#monthlyClip)" />
 
-      {/* Dots only at labeled positions */}
       {data.map((val, i) => {
         if (data.length > 15 && !xLabelIndices.has(i) && i !== activeDay - 1) return null;
         return <circle key={i} className={styles.dataDot} cx={toX(i)} cy={toY(val)} />;
       })}
 
-      {/* Active day highlight */}
       {activeDay >= 1 && activeDay <= data.length && (
         <>
           <circle className={styles.activeRing} cx={toX(activeDay - 1)} cy={toY(data[activeDay - 1])} />
@@ -129,7 +125,6 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
         </>
       )}
 
-      {/* Hover tooltip */}
       {tooltip && (() => {
         const bw = 110, bh = 28;
         const bx = tooltip.x + 12 + bw > w ? tooltip.x - bw - 12 : tooltip.x + 12;
@@ -149,6 +144,7 @@ const ChartSVG = ({ data, totalDays, activeDay }) => {
   );
 };
 
+
 const MONTH_NAMES = [ 'January','February','March','April','May','June', 'July','August','September','October','November','December',];
 
 const Monthlyreport = () => {
@@ -160,14 +156,37 @@ const Monthlyreport = () => {
   const monthlyData = useMemo(() => {
     const transactions = query.data || [];
     const grouped = {};
+    let unusualTransactions = [];
+
     transactions.forEach(txn => {
       const date = new Date(txn.transaction_timestamp);
       const month = date.getUTCMonth() + 1;
       const year = date.getUTCFullYear();
       const key = `${year}-${month}`;
       if (!grouped[key]) grouped[key] = { revenue: 0, quantity: 0, month, year };
-      txn.transaction_items?.forEach(item => { grouped[key].revenue += item.quantity_bought * item.product_unit_price; grouped[key].quantity += item.quantity_bought; });
+
+      txn.transaction_items?.forEach(item => {
+        if (item.product_unit_price > 10_000_000) {
+          unusualTransactions.push({
+            transaction_id: txn.transaction_id,
+            product_name: item.product_name,
+            unit_price_cents: item.product_unit_price,
+            unit_price_pesos: item.product_unit_price / 100,
+            quantity: item.quantity_bought,
+            month, year
+          });
+          return;
+        }
+        const revenue = item.quantity_bought * item.product_unit_price;
+        grouped[key].revenue += revenue;
+        grouped[key].quantity += item.quantity_bought;
+      });
     });
+
+    if (unusualTransactions.length > 0) {
+      console.warn('⚠️ Unusually high unit prices detected ( > ₱100,000 ). These were excluded from calculations:', unusualTransactions);
+    }
+
     return grouped;
   }, [query.data]);
 
@@ -180,26 +199,30 @@ const Monthlyreport = () => {
     const transactions = query.data || [];
     const totalDays = getDaysInMonth(selectedYear, selectedMonth);
     const dayMap = {};
+
     transactions.forEach(txn => {
       const date = new Date(txn.transaction_timestamp);
       if (date.getUTCMonth() + 1 !== selectedMonth || date.getUTCFullYear() !== selectedYear) return;
       const day = date.getUTCDate();
-      if (!dayMap[day]) dayMap[day] = 0;
+
       txn.transaction_items?.forEach(item => {
-        dayMap[day] += item.quantity_bought * item.product_unit_price;
+        if (item.product_unit_price > 10_000_000) return;
+        const revenue = item.quantity_bought * item.product_unit_price;
+        dayMap[day] = (dayMap[day] || 0) + revenue;
       });
     });
-    return Array.from({ length: totalDays }, (_, i) => dayMap[i + 1] || 0);
+
+    return Array.from({ length: totalDays }, (_, i) => (dayMap[i + 1] || 0) / 100);
   }, [query.data, selectedMonth, selectedYear]);
 
-  const availableMonths = useMemo(() => {
-    return Object.values(monthlyData)
-      .sort((a, b) => b.year !== a.year ? b.year - a.year : b.month - a.month);
-  }, [monthlyData]);
+  const availableMonths = useMemo(() => { return Object.values(monthlyData) .sort((a, b) => b.year !== a.year ? b.year - a.year : b.month - a.month); }, [monthlyData]);
 
   const today = new Date();
   const totalDays = getDaysInMonth(selectedYear, selectedMonth);
-  const activeDay = today.getUTCFullYear() === selectedYear && today.getUTCMonth() + 1 === selectedMonth ? today.getUTCDate() : totalDays;
+  const activeDay =
+    today.getUTCFullYear() === selectedYear && today.getUTCMonth() + 1 === selectedMonth
+      ? today.getUTCDate()
+      : totalDays;
 
   const handleMonthSelect = (month, year) => {
     setSelectedMonth(month);
@@ -208,7 +231,7 @@ const Monthlyreport = () => {
   };
 
   if (query.isLoading) return <div className={styles.loadingState}>Loading monthly data...</div>;
-  if (query.isError) return <div className={styles.errorState}>Failed to load transactions.</div>;
+  if (query.isError) return <div className={styles.errorState}>Failed to load transactions. Please log in.</div>;
 
   return (
     <>
@@ -221,13 +244,13 @@ const Monthlyreport = () => {
             <p className={styles.date}>{MONTH_NAMES[selectedMonth - 1]} {selectedYear}</p>
           </div>
           <button className={styles.revenueBtn} onClick={() => { window.location.href = '/totalrevenue'; }}>
-            Yearly Revenue
+            Overall Revenue
           </button>
         </div>
 
         <div className={styles.rightPanel}>
           <div className={styles.chartBox}>
-            <ChartSVG data={dailyChartData} totalDays={totalDays} activeDay={activeDay} />
+            <ChartSVG key={`${selectedYear}-${selectedMonth}`} data={dailyChartData} totalDays={totalDays} activeDay={activeDay} />
           </div>
 
           <div className={styles.info}>
@@ -278,7 +301,11 @@ const Monthlyreport = () => {
                 <p className={styles.noData}>No transactions yet.</p>
               ) : (
                 availableMonths.map(({ month, year }) => (
-                  <button key={`${year}-${month}`} className={`${styles.monthOption} ${selectedMonth === month && selectedYear === year ? styles.monthOptionActive : ''}`} onClick={() => handleMonthSelect(month, year)}>
+                  <button
+                    key={`${year}-${month}`}
+                    className={`${styles.monthOption} ${selectedMonth === month && selectedYear === year ? styles.monthOptionActive : ''}`}
+                    onClick={() => handleMonthSelect(month, year)}
+                  >
                     {MONTH_NAMES[month - 1]} {year}
                   </button>
                 ))
