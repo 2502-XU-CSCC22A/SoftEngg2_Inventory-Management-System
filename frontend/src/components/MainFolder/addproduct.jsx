@@ -14,6 +14,11 @@ function AddProduct({ onClose, onAdd, productsList }) {
             return;
         }
 
+        if (productName.length === 0) {
+            alert("Product name cannot be empty.");
+            return;
+        }
+
         if (productsList.some(p => p.product_name === productName)) {
             alert(`Product ${productName} already exists in the database.`);
             return;
