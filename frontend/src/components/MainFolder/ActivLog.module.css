@@ -187,3 +187,14 @@ tbody tr:hover {
   width: 100%;
   min-height: 0;
 }
+
+.filters {
+    margin: 16px auto;
+    display: flex;
+    gap: 1rem;
+}
+
+.filters select {
+    padding: 1rem;
+    border-radius: 8px;
+}
