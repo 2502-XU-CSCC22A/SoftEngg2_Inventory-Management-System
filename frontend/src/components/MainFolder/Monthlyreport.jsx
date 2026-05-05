@@ -159,7 +159,7 @@ const Monthlyreport = () => {
     let unusualTransactions = [];
 
     transactions.forEach(txn => {
-      const date = new Date(txn.transaction_timestamp);
+      const date = new Date(txn.created_at);
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
       const key = `${year}-${month}`;
@@ -201,7 +201,7 @@ const Monthlyreport = () => {
     const dayMap = {};
 
     transactions.forEach(txn => {
-      const date = new Date(txn.transaction_timestamp);
+      const date = new Date(txn.created_at);
       if (date.getMonth() + 1 !== selectedMonth || date.getFullYear() !== selectedYear) return;
       const day = date.getDate();
 
