@@ -15,10 +15,6 @@ export default class transactions extends Model {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    transaction_timestamp: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     payment_type: {
       type: DataTypes.STRING(255),
       allowNull: false
