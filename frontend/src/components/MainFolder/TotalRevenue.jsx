@@ -14,7 +14,7 @@ const TotalRevenue = () => {
     const years = {};
 
     transactions.forEach(txn => {
-      const date = new Date(txn.transaction_timestamp);
+      const date = new Date(txn.created_at);
       const year = date.getFullYear();
       
       if (!years[year]) {

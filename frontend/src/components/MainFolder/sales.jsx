@@ -133,7 +133,7 @@ function Sales() {
                             <div className={styles.cell}>
                                 {transaction.transaction_items?.map(item => item.product_name || item.product_id).join(', ') || transaction.product}
                             </div>
-                            <div className={styles.cell}>{formatDateTime(transaction.transaction_timestamp || transaction.datetime)}</div>
+                            <div className={styles.cell}>{formatDateTime(transaction.created_at || transaction.datetime)}</div>
                             <div className={styles.cell}>
                                 <span className={styles.methodBadge}>{transaction.payment_type}</span>
                                 {transaction.payment_type === "GCash" && transaction.payment_refstr && (
