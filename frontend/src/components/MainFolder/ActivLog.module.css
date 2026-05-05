@@ -15,7 +15,7 @@
 }
 
 * { box-sizing: border-box; }
-html,body { height:100%; }
+html,body { height:100vh; }
 body {
   font-family: var(--font-sans);
   margin: 0;
@@ -23,7 +23,12 @@ body {
   color: #333;
   -webkit-font-smoothing:antialiased;
   line-height: 1.45;
-  padding-bottom: 40px;
+}
+
+.container-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 
@@ -88,6 +93,10 @@ body {
   max-width: var(--max-width);
   overflow: auto;
   padding: 0 8px;
+
+  flex: 1;
+  width: 100%;
+  min-height: 0;
 }
 
 table {
@@ -101,6 +110,9 @@ thead tr {
 }
 
 th {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   padding: 18px 20px 14px;
   text-align: left;
   font-size: 14px;
@@ -166,3 +178,12 @@ tbody tr:hover {
 :focus { outline: 3px solid rgba(152,116,96,0.12); outline-offset: 3px; }
 .center { text-align:center; }
 .hidden { display:none !important; }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+}

@@ -1,24 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Navbar } from './Navbar';
 import styles from './ActivLog.module.css';
+import { useTransactions } from '../../hooks/useTransactions';
 
 
 // temporary data for visualization only, pwede na siya i-replace sa actual data nga mag-generate sa backend
-const transactions = [
-  { name: 'Wireless Earbuds Pro', datetime: '2026-04-05T10:32:00', qty: 2, type: 'remove' },
-  { name: 'USB-C Hub 7-in-1', datetime: '2026-04-04T15:15:00', qty: 1, type: 'add' },
-  { name: 'Mechanical Keyboard', datetime: '2026-04-03T11:20:00', qty: 3, type: 'remove' },
-  { name: 'Gaming Monitor 27"', datetime: '2026-04-02T09:45:00', qty: 1, type: 'add' },
-  { name: 'Webcam HD 1080p', datetime: '2026-04-01T14:05:00', qty: 10, type: 'remove' },
-  { name: 'Wireless Earbuds Pro', datetime: '2026-03-31T08:50:00', qty: 20, type: 'add' },
-  { name: 'Laptop Stand Aluminum', datetime: '2026-03-30T16:30:00', qty: 2, type: 'remove' },
-  { name: 'Noise-Cancel Headset', datetime: '2026-03-29T12:00:00', qty: 1, type: 'add' },
-  { name: 'Smart Power Strip', datetime: '2026-03-28T10:10:00', qty: 5, type: 'remove' },
-  { name: 'Ergonomic Mouse', datetime: '2026-03-27T17:45:00', qty: 15, type: 'add' },
-];
-
 const ActivLog = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
+  const { queryAll } = useTransactions(selectedMonth, selectedYear);
+
+  const transactions = queryAll.data?.data || [];
 
   const formatDateTime = (iso) => {
     const d = new Date(iso);
@@ -32,76 +25,139 @@ const ActivLog = () => {
     );
   };
 
-  const activityLabel = (type) => { const labels = { sale: 'Remove', restock: 'Add' }; return labels[type] || type;};
+  const logs = transactions.flatMap(txn => {
+    const entries = [];
 
-  const filteredTransactions = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    return query ? transactions.filter((tx) =>
-          tx.name.toLowerCase().includes(query) ||
-          tx.type.toLowerCase().includes(query) ||
-          activityLabel(tx.type).toLowerCase().includes(query)
-        )
-      : transactions;
-  }, [searchQuery]);
+    if (txn.prev_txn_id) {
+      entries.push({
+        id: txn.transaction_id,
+        activityType: 'correction',
+        details: `Adjusted sale #${txn.prev_txn_id} as sale #${txn.transaction_id}`,
+        doneAt: txn.created_at,
+        doneBy: txn.created_by_user.username,
+        transaction_details: txn,
+      });
+    }
+    else {
+      entries.push({
+        id: txn.transaction_id,
+        activityType: 'sale',
+        details: `Create sale #${txn.transaction_id}`,
+        doneAt: txn.created_at,
+        doneBy: txn.created_by_user.username,
+        transaction_details: txn,
+      });
+    }
 
-  const resultNote = searchQuery
-    ? `${filteredTransactions.length} result${filteredTransactions.length !== 1 ? 's' : ''} found`
-    : '';
+    if (txn.voided_at) {
+      entries.push({
+        id: txn.transaction_id,
+        activityType: 'voided',
+        details: `Voided sale #${txn.transaction_id}`,
+        doneAt: txn.voided_at,
+        doneBy: txn.created_by_user.username, // change to voided_by later
+        transaction_details: txn,
+      });
+    }
 
+    return entries;
+  });
+  
+  const activityPriority = {
+    sale: 3,
+    voided: 2,
+    correction: 1
+  };
+
+  const sortedLogs = logs.sort((a, b) => {
+    const dateA = new Date(a.doneAt).getTime();
+    const dateB = new Date(b.doneAt).getTime();
+
+    if (dateB === dateA) {
+      const priorityA = activityPriority[a.activityType] || 99;
+      const priorityB = activityPriority[b.activityType] || 99;
+
+      return priorityA - priorityB;
+    }
+
+    return dateB - dateA;
+  }).map((log, index) => ({ ...log, log_id: index + 1 }));
+
+  const monthNames = Array.from({ length: 12 }, (_, i) =>
+    new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(2026, i))
+  );
+
+  const startYear = 2026;
+  const endYear = 2126;
+
+  const futureYears = Array.from(
+    { length: endYear - startYear + 1 },
+    (_, i) => startYear + i
+  );
+
+  
   return (
-    <>
+    <div className={styles['container-root']}>
       <Navbar />
-      <input
-        type="search"
-        placeholder="Search..."
-        className={styles.search1}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-
       <section id="sales" className={styles.page}>
         <div className={styles.actions}>
           <div className={styles['center-title']}>
             <h2 className={styles.title}>Activity Log</h2>
-            <p className={styles['result-note']}>{resultNote}</p>
           </div>
         </div>
-
+        <div className={styles.filters}>
+          <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className={styles.yearDropdown}
+          >
+              {futureYears.map(year => (
+                  <option key={year} value={year}>
+                      {year}
+                  </option>
+              ))}
+          </select>
+        
+          <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className={styles.monthDropdown}
+          >
+            {monthNames.map((name, index) => (
+                <option key={index} value={index + 1}>
+                    {name}
+                </option>
+            ))}
+          </select>
+        </div>
         <div className={styles['table-container']}>
           <table>
             <thead>
               <tr>
-                <th>Product</th>
-                <th>Date&time</th>
-                <th>Quantity</th>
+                <th>ID</th>
                 <th>Activity</th>
+                <th>Done at</th>
+                <th>Done by</th>
+                <th>Activity Description</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.length === 0 ? (
-                <tr className={styles['empty-row']}>
-                  <td colSpan="4">No transactions found.</td>
-                </tr>
-              ) : (
-                filteredTransactions.map((tx, index) => {
-                  const qtyDisplay = tx.type === 'adjust'
-                    ? (tx.qty > 0 ? '+' + tx.qty : String(tx.qty))
-                    : tx.qty;
-                  return (
-                    <tr key={index}>
-                      <td><span className={styles.star}>&#9734;</span> {tx.name}</td>
-                      <td>{formatDateTime(tx.datetime)}</td>
-                      <td>{qtyDisplay}</td>
-                      <td>{activityLabel(tx.type)}</td>
-                    </tr>
-                  );
-                })
-              )}
+              {
+                sortedLogs.map(log => (
+                  <tr key={log.log_id}>
+                    <td>{log.id}</td>
+                    <td>{log.activityType}</td>
+                    <td>{formatDateTime(log.doneAt)}</td>
+                    <td>{log.doneBy}</td>
+                    <td>{log.details}</td>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 
