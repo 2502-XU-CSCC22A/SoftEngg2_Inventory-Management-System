@@ -10,7 +10,6 @@ import { getValidProduct, getValidUser, insertTransactionItem, isPayloadIdentica
 
 // TODO: [WARNING!]: REFACTOR AS SOON AS SESSION STORAGE IS POSSIBLE
 export const insertTransaction = async (data, t, userId) => {
-    data.transaction_timestamp = Date.now();
     data.created_by = userId;
 
     const { transaction_items, ...transactionData } = data  
@@ -36,7 +35,6 @@ export const insertTransaction = async (data, t, userId) => {
 }
 
 export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
-    updatedPayload.transaction_timestamp = Date.now();
     
     // rollback items
     for (const item of oldTxn.transaction_items) {
@@ -47,11 +45,12 @@ export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
         })
     }
 
+    const syncedTimestamp = new Date();
+
     const s = await models.transactions.findByPk(oldTxn.transaction_id);
-    await s.update({ voided_at: Date.now() }, { transaction: t });
+    await s.update({ voided_at: syncedTimestamp }, { transaction: t });
     
-    const newTxn = await insertTransaction(updatedPayload, t, userId);
-    // TODO: Modify above line once a user_id fetching function is created
+    const newTxn = await insertTransaction({...updatedPayload, created_at: syncedTimestamp }, t, userId);
 
     return newTxn;
 }
@@ -62,7 +61,7 @@ export const getTransactionByMonthAndYear = async (month, year) => {
 
     const transactions = await models.transactions.findAll({
         where: {
-            transaction_timestamp: {
+            created_at: {
                 [Op.gte]: startDate,
                 [Op.lt]: endDate,
             },
@@ -72,7 +71,35 @@ export const getTransactionByMonthAndYear = async (month, year) => {
             model: models.transaction_items,
             as: "transaction_items",
         },
-        order: [['transaction_timestamp', 'DESC']]
+        order: [['created_at', 'DESC']]
+    })
+
+    return transactions;
+}
+
+export const getAllTransactionsByMonthAndYear = async (month, year) => {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const transactions = await models.transactions.findAll({
+        where: {
+            created_at: {
+                [Op.gte]: startDate,
+                [Op.lt]: endDate,
+            },
+        },
+        include: [
+            {
+                model: models.transaction_items,
+                as: "transaction_items",
+            },
+            {
+                model: models.users,
+                as: "created_by_user",
+                attributes: ['username']
+            }
+        ],
+        order: [['created_at', 'DESC']]
     })
 
     return transactions;
