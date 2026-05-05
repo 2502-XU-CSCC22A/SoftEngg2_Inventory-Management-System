@@ -20,11 +20,11 @@ function Sales() {
     // Extract transactions array from the response
     const transactions = query.data?.data || [];
 
-    const filteredTransactions = transactions.filter(transaction =>
-        (transaction.product_name || transaction.product || "")
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-    );
+    const filteredTransactions = transactions.filter(transaction => {
+        return transaction.transaction_items.some(item =>
+            (item.product_name || "").toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    });
 
     const formatDateTime = (datetime) => {
         if (!datetime) return "N/A";
