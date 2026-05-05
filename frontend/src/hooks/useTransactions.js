@@ -18,9 +18,12 @@ export const useTransactions = (month = null, year = null) => {
     });
 
     const queryAll = useQuery({
-        queryKey: ['transactions', 'all'],
+        queryKey: ['transactions', 'all', { month, year }],
         queryFn: async () => {
-            const { data } = await api.get('/transactions/show-all');
+            const endpoint = (month && year)
+                ? `/transactions/show-all/filter?month=${month}&year=${year}`
+                : '/transactions/show-all';
+            const { data } = await api.get(endpoint);
             return data;
         }
     });
