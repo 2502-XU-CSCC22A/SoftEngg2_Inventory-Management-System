@@ -28,9 +28,6 @@
     height: 50px;
     font-size: 14px;
     cursor: pointer;
-    position: absolute;
-    top: 190px;
-    left: 70px;
 }
 
 .add:hover {
@@ -43,7 +40,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 70px;
     margin-left: 50px;
     margin-right: 50px;
     padding: 15px 20px;
@@ -159,4 +155,23 @@
     color: #f59e0b;
     margin-top: 4px;
     font-family: monospace;
+}
+
+.actions {
+    display: flex;
+    margin-left: 50px;
+    margin-right: 50px;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-basis: 100%;
+    margin-bottom: 1rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+}
+
+.filters select {
+    border-radius: 8px;
 }
