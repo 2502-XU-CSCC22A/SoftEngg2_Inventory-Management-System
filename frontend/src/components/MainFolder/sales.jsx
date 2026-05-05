@@ -80,32 +80,38 @@ function Sales() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className={styles.add} onClick={() => setshowaddsales(true)}>ADD</button>
-            <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className={styles.yearDropdown}
-            >
-                {futureYears.map(year => (
-                    <option key={year} value={year}>
-                        {year}
-                    </option>
-                ))}
-            </select>
-
-            <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className={styles.monthDropdown}
-            >
-                {monthNames.map((name, index) => (
-                    <option key={index} value={index + 1}>
-                        {name}
-                    </option>
-                ))}
-            </select>
 
             <h1 className={styles.soldtransactions}>Sold Transactions</h1>
+
+            <div className={styles.actions}>
+                <button className={styles.add} onClick={() => setshowaddsales(true)}>ADD</button>
+
+                <div className={styles.filters}>
+                    <select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(Number(e.target.value))}
+                        className={styles.yearDropdown}
+                    >
+                        {futureYears.map(year => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                        className={styles.monthDropdown}
+                    >
+                        {monthNames.map((name, index) => (
+                            <option key={index} value={index + 1}>
+                                {name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
              
             <div className={styles.tableHeader}>
                 <div className={styles.headerCell}>Products</div>
