@@ -1,18 +1,18 @@
 .loginpage {
     display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
     background-color: rgb(223, 202, 188);
 }
 
 .logincontainer {
+    display: flex;
+    flex-direction: column;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    padding-top: 80px;
-    margin: 150px auto;
-    max-width: 350px;
-    height: 508px;
+    padding: 1rem;
 }
 
 .usernamefont {
