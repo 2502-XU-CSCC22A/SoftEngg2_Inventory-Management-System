@@ -1,214 +1,243 @@
-import { useState } from "react";
-import styles from "./editsales.module.css";
-import { useProducts } from "../../hooks/useProducts.js";
-import { formatToPesos } from "../../utils/utils.js"
+/* editsales.module.css */
 
-function EditSales({ onClose, transaction, onSave }) {
-    const [formData, setFormData] = useState({
-        payment_type: "",
-        payment_refstr: "",
-        transaction_items: [...transaction.transaction_items],
-    });
-
-    const [transactionItem, setTransactionItem] = useState({
-        product_id: 1,
-        quantity_bought: 1,
-    })
-
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-    
-    // Fetch products for the dropdown
-    const { query } = useProducts();
-    const products = query.data?.data || [];
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        
-        setFormData(prev => ({ ...prev, [name]: value }));
-        setError("");
-    };
-
-    const handleChangeItem = (e) => {
-        const { name, value } = e.target;
-        const correctedVal = value === "" ? "" : Number(value);
-        setTransactionItem(prev => ({ ...prev, [name]: correctedVal }));
-    }
-
-    const handleAddItem = () => {
-        // EXPECTED PAYLOAD: { product_id: 1, quantity_bought: 2 };
-        console.log(transactionItem.product_id, typeof transactionItem.product_id);
-
-        if (formData.transaction_items.some(item => item.product_id === transactionItem.product_id)) {
-            alert("This product has already been added. Please edit the quantity from the added products section.");
-            return;
-        }
-
-        if (!transactionItem.product_id || !transactionItem.quantity_bought) {
-            alert("Please select a product and enter a valid quantity before adding.");
-            return;
-        }
-
-        if (transactionItem.quantity_bought <= 0) {
-            alert("Quantity must be at least 1.");
-            return;
-        }
-
-        const product = products.find(p => p.product_id === parseInt(transactionItem.product_id));
-
-        if (product && transactionItem.quantity_bought > product.product_quantity) {
-            alert(`Only ${product.product_quantity} units of ${product.product_name} are available in stock.`);
-            return;
-        }
-
-        setFormData(prev => ({ ...prev, transaction_items: [...prev.transaction_items, { ...transactionItem }] }));
-        setTransactionItem({ product_id: "", quantity_bought: "" });
-        setError("");
-    }
-
-    const handleRemoveItem = (itemId) => {
-        setFormData(prev => ({ 
-            ...prev, 
-            transaction_items: prev.transaction_items.filter(item => item.product_id !== itemId) 
-        }));
-    }
-
-    const handleSave = async () => {
-        if (!formData.payment_type) {
-            setError("Please fill in all required fields.");
-            return;
-        }
-
-        if (formData.payment_type === "GCash" && !formData.payment_refstr) {
-            setError("Reference string is required for GCash payments.");
-            return;
-        }
-
-        setLoading(true);
-        try {
-            const updatedData = {
-                ...formData,
-                transaction_id: transaction.transaction_id
-            };
-            
-            await onSave(updatedData);
-            onClose();
-        } catch (err) {
-            setError("Failed to update transaction. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className={styles.editpopsbg}>
-            <div className={styles.editpops}>
-                <div className={styles.firsthalf}>
-                    <h1 className={styles.producttitle}>EDIT TRANSACTION</h1>
-                    <h3 className={styles.message}>Update the transaction details below</h3>
-
-                    {error && (
-                        <div className={styles.errorMessage} style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>
-                            {error}
-                        </div>
-                    )}
-
-                    <h3>PRODUCT:</h3>
-                    <select
-                        name="product_id"
-                        className={styles.input}
-                        value={transactionItem.product_id}
-                        onChange={handleChangeItem}
-                        disabled={query.isLoading}
-                    >
-                        <option value="">Select Product</option>
-                        {products.map((product) => (
-                            <option key={product.product_id || product.id} value={product.product_id || product.id}>
-                                {product.product_name} - {formatToPesos(product.product_unit_price || 0).toLocaleString()}
-                            </option>
-                        ))}
-                    </select>
-                    
-                    <h3>QUANTITY:</h3>
-                    <input
-                        type="number"
-                        name="quantity_bought"
-                        className={styles.input}
-                        value={transactionItem.quantity_bought}
-                        onChange={handleChangeItem}
-                        min="1"
-                    />
-
-                    <button className={styles.buttonpop} onClick={handleAddItem}>Add product</button>
-                    <h3>PAYMENT METHOD:</h3>
-                    <select
-                        name="payment_type"
-                        className={styles.paymentmethod}
-                        value={formData.payment_type}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Method</option>
-                        <option value="Cash">Cash</option>
-                        <option value="GCash">GCash</option>
-                    </select>
-                    
-                    {formData.payment_type === "GCash" && (
-                        <>
-                            <h3>REFERENCE STRING:</h3>
-                            <input
-                                type="text"
-                                name="payment_refstr"
-                                placeholder="Enter GCash Reference Number"
-                                className={styles.input}
-                                value={formData.payment_refstr}
-                                onChange={handleChange}
-                            />
-                        </>
-                    )}
-
-                    <button
-                        className={styles.buttonpop}
-                        onClick={handleSave}
-                        disabled={loading || query.isLoading}
-                    >
-                        {loading ? "Saving..." : "Save Changes"}
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className={styles.buttonpop}
-                    >
-                        Cancel
-                    </button>
-                </div>
-                <div className={styles.secondhalf}>
-                    <h1 className={styles.producttitle}>ADDED PRODUCTS</h1>
-                    <div className={styles.summary}>
-                        { formData.transaction_items.map(item => {
-                            const product = products.find(p => p.product_id === parseInt(item.product_id));
-                            return (
-                                <div key={item.product_id} className={styles.summaryItem}>
-                                    <span>
-                                        {query.isLoading
-                                            ? "Loading product..."
-                                            : (product ? product.product_name : "Unknown Product")}
-                                    </span>
-                                    <span>Qty: {item.quantity_bought}</span>
-                                    <button onClick={() => handleRemoveItem(item.product_id)} className={styles.removeButton}>Remove</button>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div className={styles.totalAmount}>
-                        Total: {query.isLoading ? "Calculating..." : formatToPesos(formData.transaction_items.reduce((total, item) => {
-                            const product = products.find(p => p.product_id === parseInt(item.product_id));
-                            const price = product ? product.product_unit_price : 0;
-                            return total + (price * item.quantity_bought);
-                        }, 0))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+.editpopsbg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(139, 94, 60, 0.9);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
 }
 
-export default EditSales;
+.editpops {
+  display: flex;
+  gap: 25px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #fff9f5 0%, #ffffff 100%);
+  padding: 30px;
+  border-radius: 28px;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 85%;
+  overflow-y: auto;
+  color: #4a3b2f;
+  font-size: 14px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(196, 164, 132, 0.3);
+}
+
+.firsthalf, .secondhalf {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+
+.producttitle {
+  font-size: 24px;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 15px 0;
+  background: linear-gradient(135deg, #8B5E3C 0%, #a0846b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  border-bottom: 2px solid rgba(196, 164, 132, 0.3);
+  padding-bottom: 12px;
+}
+
+.firsthalf h3, .secondhalf h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 8px 0 0 0;
+  color: #8B5E3C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input, .paymentmethod {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid rgba(196, 164, 132, 0.3);
+  border-radius: 50px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input:focus, .paymentmethod:focus {
+  outline: none;
+  border-color: #C4A484;
+  box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.1);
+}
+
+.input:hover, .paymentmethod:hover {
+  border-color: rgba(196, 164, 132, 0.6);
+}
+
+.buttonpop {
+  background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.2);
+}
+
+.buttonpop:hover {
+  background: linear-gradient(135deg, #8B5E3C 0%, #6b462a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+}
+
+.firsthalf .buttonpop:first-of-type {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.firsthalf .buttonpop:first-of-type:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.firsthalf .buttonpop:nth-of-type(2) {
+  background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
+}
+
+.firsthalf .buttonpop:last-of-type {
+  background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+}
+
+.firsthalf .buttonpop:last-of-type:hover {
+  background: linear-gradient(135deg, #da190b 0%, #b91c0c 100%);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+  border: 2px solid rgba(196, 164, 132, 0.2);
+  background: linear-gradient(135deg, #fef9f5 0%, #fdf5ef 100%);
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 20px;
+  min-height: 250px;
+  max-height: 400px;
+}
+
+.summaryItem {
+  background: white;
+  padding: 12px 15px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(196, 164, 132, 0.2);
+  transition: all 0.2s ease;
+}
+
+.summaryItem:hover {
+  border-color: #C4A484;
+  transform: translateX(2px);
+}
+
+.removeButton {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.removeButton:hover {
+  background: linear-gradient(135deg, #ff4757 0%, #e63946 100%);
+  transform: scale(1.02);
+}
+
+.totalAmount {
+  margin-top: 15px;
+  padding: 15px;
+  background: linear-gradient(135deg, #8B5E3C 0%, #a0846b 100%);
+  color: white;
+  border-radius: 50px;
+  font-weight: 800;
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.errorMessage {
+  background: linear-gradient(135deg, #ffe5e5 0%, #ffd4d4 100%);
+  padding: 10px 15px;
+  border-radius: 50px;
+  font-size: 13px;
+  margin-bottom: 15px;
+  border-left: 4px solid #f44336;
+  color: #c0392b;
+  font-weight: 600;
+  text-align: center;
+}
+
+.message {
+  font-size: 13px;
+  text-align: center;
+  color: #a8896e;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.summary:empty::before {
+  content: "No products added yet";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #a8896e;
+  font-style: italic;
+  text-align: center;
+  font-size: 14px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(196, 164, 132, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #C4A484, #8B5E3C);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .editpops {
+    flex-direction: column;
+    max-width: 95%;
+    padding: 20px;
+  }
+  
+  .producttitle {
+    font-size: 20px;
+  }
+  
+  .totalAmount {
+    font-size: 16px;
+  }
+}
