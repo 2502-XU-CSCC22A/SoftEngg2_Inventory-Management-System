@@ -24,10 +24,14 @@ export default class products extends Model {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    product_img_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     is_still_offered: {
       type: DataTypes.BOOLEAN,
       allowNull: false
-    }
+    },
   }, {
     sequelize,
     tableName: 'products',
