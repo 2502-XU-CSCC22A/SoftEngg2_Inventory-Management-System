@@ -47,7 +47,7 @@ function UserManagement() {
     if (isError) return <div className={styles.error}>Failed to load users. Please try again.</div>;
 
     return (
-        <div>
+          <div className={styles.usermanagementPage}>
             <div className={styles.header}>
                 <h1 className={styles.usermantitle1}>User Management</h1>
                 <button className={styles.backbutton} onClick={() => navigate("/welcomeadmin")}>Back</button>
