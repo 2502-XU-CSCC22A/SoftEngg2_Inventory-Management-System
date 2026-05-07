@@ -441,3 +441,9 @@ html, body, #root {
   align-items: center;
   gap: 4px;
 }
+
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
