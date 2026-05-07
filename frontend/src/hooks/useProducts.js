@@ -42,5 +42,15 @@ export const useProducts = () => {
         },
     });
 
-    return { query, queryAll, updateMutation, insertMutation };
+    const updateImageMutation = useMutation({
+        mutationFn: async ({ productId, formData }) => {
+            console.log("im here");
+            return api.patch(`/products/${productId}/image`, formData)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+        }
+    })
+
+    return { query, queryAll, updateMutation, insertMutation, updateImageMutation };
 }
