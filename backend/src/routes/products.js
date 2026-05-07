@@ -4,7 +4,7 @@ export const productsRouter = express.Router();
 import models from "../config/db.js";
 import { Op } from "sequelize";
 import { validate, checkValidQuery } from "../middleware/productsMiddleware.js";
-import { insertNewProduct, updateExistingProduct } from "../controllers/productsController.js";
+import { insertNewProduct, updateExistingProduct, updateProductImage } from "../controllers/productsController.js";
 import { insertProductSchema, updateProductSchema } from "../schemas/schemas.js";
 
 // -> get all offered products
@@ -46,3 +46,5 @@ productsRouter.post('/', upload.single('image'), validate(insertProductSchema), 
 
 // update any of the product details (except for product_id)
 productsRouter.patch('/:productId', validate(updateProductSchema), updateExistingProduct);
+
+productsRouter.patch('/:productId/image', upload.single('image'), updateProductImage); 
