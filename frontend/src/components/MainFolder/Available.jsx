@@ -5,8 +5,10 @@ import AddProduct from './addproduct';
 import styles from './Available.module.css';
 import { useProducts } from '../../hooks/useProducts.js';
 import { formatToPesos } from '../../utils/utils.js';
+import fallback from "../../assets/fallback.png"
 
 const Available = () => {
+  const API_BASE_URL = 'http://localhost:3000';
   const { query, queryAll, updateMutation, insertMutation } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,6 +91,7 @@ const Available = () => {
               {filteredProducts.map((product) => (
                 <div key={product.product_id} className={styles[`${product.is_still_offered ? 'product-card' : 'product-card-hidden'}`]}>
                   <div className={styles['card-content']}>
+                    <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
                     <h3 className={styles['product-name']}>{product.product_name}</h3>
                     <div className={styles['product-details']}>
                       <p className={styles.quantity}>Quantity: {product.product_quantity}</p>
