@@ -184,7 +184,7 @@ const Monthlyreport = () => {
     });
 
     if (unusualTransactions.length > 0) {
-      console.warn('⚠️ Unusually high unit prices detected ( > ₱100,000 ). These were excluded from calculations:', unusualTransactions);
+      console.warn(' Unusually high unit prices detected ( > ₱100,000 ). These were excluded from calculations:', unusualTransactions);
     }
 
     return grouped;
@@ -230,8 +230,38 @@ const Monthlyreport = () => {
     setIsPopupOpen(false);
   };
 
-  if (query.isLoading) return <div className={styles.loadingState}>Loading monthly data...</div>;
-  if (query.isError) return <div className={styles.errorState}>Failed to load transactions. Please log in.</div>;
+  const handleExport = () => {
+    const transactions = query.data || [];
+    const rows = [['Transaction ID', 'Date', 'Product', 'Quantity', 'Unit Price', 'Revenue']];
+
+    transactions.forEach(txn => {
+      const date = new Date(txn.created_at);
+      if (date.getMonth() + 1 !== selectedMonth || date.getFullYear() !== selectedYear) return;
+      txn.transaction_items?.forEach(item => {
+        if (item.product_unit_price > 10_000_000) return;
+        rows.push([
+          txn.transaction_id,
+          date.toLocaleDateString('en-US'),
+          item.product_name,
+          item.quantity_bought,
+          (item.product_unit_price / 100).toFixed(2),
+          ((item.quantity_bought * item.product_unit_price) / 100).toFixed(2),
+        ]);
+      });
+    });
+
+    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `monthly_report_${MONTH_NAMES[selectedMonth - 1]}_${selectedYear}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  if (query.isLoading) return <div className={styles.loadingState}>Loading monthly data</div>;
+  if (query.isError) return <div className={styles.errorState}>Failed to load transactions, log in is needed.</div>;
 
   return (
     <>
@@ -245,6 +275,9 @@ const Monthlyreport = () => {
           </div>
           <button className={styles.revenueBtn} onClick={() => { window.location.href = '/totalrevenue'; }}>
             Overall Revenue
+          </button>
+          <button className={styles.exportBtn} onClick={handleExport}>
+            Export Monthly Revenue into CSV
           </button>
         </div>
 

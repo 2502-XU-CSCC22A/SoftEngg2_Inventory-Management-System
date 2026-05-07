@@ -1,27 +1,27 @@
-/* ── Reset ───────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* ── Layout ──────────────────────────────────── */
 .container {
   display: flex;
   height: calc(100vh - 55px);
   overflow: hidden;
+  background: #e8d3b8;
 }
 
-/* ── Left Panel ──────────────────────────────── */
 .left-panel {
   width: 38%;
-  background: #f4eedf;
+  background: #d9bfa0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   padding: 48px 32px;
 }
 
@@ -29,23 +29,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: center;
 }
 
 .left-panel h1 {
-  font-size: 64px;
+  font-family: 'Playfair Display', serif;
+  font-size: 58px;
   font-weight: 900;
-  color: #1a1a1a;
+  color: #2d1e10;
   line-height: 1;
   letter-spacing: -2px;
 }
 
 .date {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 400;
-  color: #777;
-  letter-spacing: 0.02em;
+  color: #7a5535;
+  letter-spacing: 0.03em;
 }
 
 .year-selector-btn {
@@ -63,40 +64,29 @@
   transition: opacity 0.15s ease;
 }
 
-.year-selector-btn:hover {
-  opacity: 0.7;
-}
+.year-selector-btn:hover { opacity: 0.65; }
 
 .year-selector-btn svg {
   width: 36px;
   height: 36px;
 }
 
-
-
 .back-btn {
-  background: #24a0ed;
+  background: #3b82f6;
   color: #fff;
   border: none;
   padding: 11px 36px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  width: auto;
+  font-weight: 600;
   margin-top: 8px;
   transition: background 0.2s ease, transform 0.1s ease;
 }
 
-.back-btn:hover {
-  background: #1a8fd4;
-}
+.back-btn:hover { background: #2563eb; }
+.back-btn:active { transform: scale(0.98); }
 
-.back-btn:active {
-  transform: scale(0.98);
-}
-
-/* ── Right Panel ─────────────────────────────── */
 .right-panel {
   width: 62%;
   background: #ffffff;
@@ -106,23 +96,24 @@
   overflow-y: auto;
 }
 
-/* ── Chart Box ───────────────────────────────── */
 .chart-box {
   width: 100%;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
+  border: 1.5px solid #eed9c4;
+  border-radius: 12px;
   margin-bottom: 28px;
   padding: 20px 20px 12px;
-  background: #fff;
+  background: #fffcf8;
   flex-shrink: 0;
 }
 
 .chart-title {
   font-size: 13px;
-  font-weight: 600;
-  color: #8b5e3c;
+  font-weight: 700;
+  color: #8b6343;
   margin-bottom: 16px;
   text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .chart-container {
@@ -147,8 +138,8 @@
 .chart-bar {
   width: 100%;
   max-width: 40px;
-  background: linear-gradient(to top, #7dc4d8, #5ab4cc);
-  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, #c9a882, #e8c9a0);
+  border-radius: 6px 6px 0 0;
   transition: height 0.35s ease, background 0.2s ease;
   position: relative;
   cursor: pointer;
@@ -156,7 +147,7 @@
 }
 
 .chart-bar:hover {
-  background: linear-gradient(to top, #5ab4cc, #3a9ab8);
+  background: linear-gradient(to top, #8b6343, #c9a882);
 }
 
 .chart-tooltip {
@@ -164,7 +155,7 @@
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  background: #1a1a1a;
+  background: #2d1e10;
   color: #fff;
   padding: 4px 8px;
   border-radius: 6px;
@@ -177,19 +168,15 @@
   z-index: 10;
 }
 
-.chart-bar:hover .chart-tooltip {
-  opacity: 1;
-}
+.chart-bar:hover .chart-tooltip { opacity: 1; }
 
 .chart-label {
   font-size: 9px;
   margin-top: 6px;
-  color: #bbb;
+  color: #b09070;
   text-align: center;
-  font-family: Arial, sans-serif;
 }
 
-/* ── Info Section ────────────────────────────── */
 .info {
   display: flex;
   flex-direction: column;
@@ -203,11 +190,11 @@
 }
 
 .section-title {
+  font-family: 'Playfair Display', serif;
   font-size: 20px;
   font-weight: 700;
-  color: #8b5e3c;
+  color: #6b4226;
   margin-bottom: 0;
-  text-align: left;
 }
 
 .info-item {
@@ -215,12 +202,7 @@
   align-items: center;
   gap: 14px;
   padding-bottom: 20px;
-  background: transparent;
-  border-radius: 0;
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 0;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #f0e6d8;
   margin-bottom: 20px;
 }
 
@@ -230,45 +212,41 @@
 }
 
 .star-icon {
-  color: #bbbbbb;
-  font-size: 22px;
+  color: #c9a882;
+  font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
-  margin-right: 0;
 }
 
-.info-text {
-  flex: 1;
-}
+.info-text { flex: 1; }
 
 .label {
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #2d1e10;
   margin: 0;
   line-height: 1.3;
 }
 
 .sub-label {
   font-size: 12px;
-  color: #999;
-  margin: 3px 0 0 0;
+  color: #9a7a5a;
+  margin: 3px 0 0;
   line-height: 1.3;
 }
 
 .value {
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #22c55e;
   margin-left: auto;
   white-space: nowrap;
 }
 
-/* ── Year Popup ──────────────────────────────── */
 .year-popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(27, 31, 38, 0.35);
+  background: rgba(45, 30, 16, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -278,10 +256,11 @@
 
 .year-popup-card {
   width: min(500px, 100%);
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 28px 70px rgba(24, 36, 60, 0.16);
+  background: #fffcf8;
+  border-radius: 20px;
+  box-shadow: 0 28px 70px rgba(90, 60, 30, 0.2);
   padding: 28px;
+  border: 1px solid #eed9c4;
 }
 
 .year-popup-header {
@@ -292,9 +271,10 @@
 }
 
 .year-popup-header h3 {
+  font-family: 'Playfair Display', serif;
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #2d1e10;
 }
 
 .close-popup {
@@ -303,52 +283,48 @@
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  color: #888;
+  color: #9a7a5a;
   padding: 4px;
   transition: color 0.15s ease;
 }
 
-.close-popup:hover {
-  color: #333;
-}
+.close-popup:hover { color: #2d1e10; }
 
 .year-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 12px;
 }
 
 .year-option {
-  background: #f4ece0;
-  border: 1.5px solid #d7c8b4;
-  border-radius: 14px;
-  color: #3f3a32;
-  font-size: 16px;
+  background: #f4ebe0;
+  border: 1.5px solid #d4bc9e;
+  border-radius: 12px;
+  color: #3d2810;
+  font-size: 15px;
   font-weight: 600;
-  padding: 15px 0;
+  padding: 14px 0;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
 }
 
 .year-option:hover {
-  background: #ede3d1;
-  border-color: #c4b09a;
+  background: #e8d5b8;
+  border-color: #c4a07a;
   transform: translateY(-1px);
 }
 
-.year-option:active {
-  transform: translateY(0);
-}
+.year-option:active { transform: translateY(0); }
 
 .year-option.active {
-  background: #8b5e3c;
-  border-color: #8b5e3c;
+  background: #6b4226;
+  border-color: #6b4226;
   color: #fff;
 }
 
 .year-option.active:hover {
-  background: #7a5234;
-  border-color: #7a5234;
+  background: #5a3820;
+  border-color: #5a3820;
 }
 
 /* ── States ──────────────────────────────────── */
@@ -359,9 +335,29 @@
   justify-content: center;
   height: calc(100vh - 55px);
   font-size: 16px;
-  color: #888;
+  color: #9a7a5a;
+  background: #e8d3b8;
 }
 
-.error {
-  color: #e05c5c;
+.error { color: #e05c5c; }
+
+.export-btn {
+  background: transparent;
+  color: #6b4226;
+  border: 1.5px solid #c9a882;
+  padding: 10px 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
+
+.export-btn:hover {
+  background: #6b4226;
+  color: #fff;
+  border-color: #6b4226;
+}
+
+.export-btn:active { transform: scale(0.98); }

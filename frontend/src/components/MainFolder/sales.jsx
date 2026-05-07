@@ -71,8 +71,9 @@ function Sales() {
     );
 
     return (
-        <div>
+        <div className={styles.page}>
             <Navbar/>
+            <div className={styles.main}>
             <input
                 type="search"
                 placeholder="Search..."
@@ -157,6 +158,7 @@ function Sales() {
                     ))
                 )}
             </div>
+            </div>
          
             {showaddsales && <AddSales
                 onClose={() => setshowaddsales(false)}
@@ -173,7 +175,8 @@ function Sales() {
                     onSave={handleEditTransaction}
                 />
             )}
-        </div>  
+        </div> 
+        
     );
 }
 
