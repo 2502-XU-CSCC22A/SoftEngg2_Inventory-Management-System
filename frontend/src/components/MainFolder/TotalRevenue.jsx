@@ -74,11 +74,42 @@ const TotalRevenue = () => {
   const handleBack = () => {
     window.history.back();
   };
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+  const handleExport = () => {
+    const transactions = query.data || [];
+    const rows = [['Transaction ID', 'Date', 'Product', 'Quantity', 'Unit Price', 'Revenue', 'Month']];
+
+    transactions.forEach(txn => {
+      const date = new Date(txn.created_at);
+      if (date.getFullYear() !== selectedYear) return;
+      txn.transaction_items?.forEach(item => {
+        rows.push([
+          txn.transaction_id,
+          date.toLocaleDateString('en-US'),
+          item.product_name,
+          item.quantity_bought,
+          (item.product_unit_price / 100).toFixed(2),
+          ((item.quantity_bought * item.product_unit_price) / 100).toFixed(2),
+          monthNames[date.getMonth()],
+        ]);
+      });
+    });
+
+    const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `total_revenue_${selectedYear}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
 
   if (query.isLoading) return <div className={styles.loading}>Loading yearly data...</div>;
   if (query.isError) return <div className={styles.error}>Failed to load transactions.</div>;
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   return (
     <>
@@ -92,6 +123,9 @@ const TotalRevenue = () => {
           </div>
           <button className={styles['back-btn']} onClick={handleBack}>
             Back
+          </button>
+          <button className={styles['export-btn']} onClick={handleExport}>
+            Export Yearly Revenue into CSV
           </button>
         </div>
 
