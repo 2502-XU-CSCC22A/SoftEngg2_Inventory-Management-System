@@ -1,11 +1,33 @@
 import models from "../config/db.js";
+import sharp from "sharp";
+import fs from "fs";
+import path from "path";
 
 export const insertNewProduct = async (req, res) => {
     try {
-        await models.products.create(req.body);
-        return res.json({
+        const { product_name, product_unit_price, product_quantity } = req.body;
+
+        const origPath = req.file.path;
+        const modFileName = `sqr_${req.file.filename}`;
+        const newPath = path.join(req.file.destination, modFileName);
+
+        await sharp(origPath).resize(300, 300, {
+            fit: "cover",
+            position: sharp.strategy.entropy,
+        }).toFormat('webp').toFile(newPath);
+
+        fs.unlinkSync(origPath);
+
+        const product = await models.products.create({
+            product_name,
+            product_unit_price,
+            product_quantity,
+            product_img_url: modFileName ? modFileName : 'lebron.png',
+            is_still_offered: true,
+        });
+        return res.status(201).json({
             message: "Product added successfully.",
-            data: req.body,
+            data: product,
         })
     }
     catch (err) {
