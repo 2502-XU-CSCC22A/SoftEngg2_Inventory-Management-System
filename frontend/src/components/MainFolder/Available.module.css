@@ -330,6 +330,34 @@ html, body, #root {
   letter-spacing: 0.3px;
 }
 
+.img-container {
+  position: relative;
+  width: 100%;
+}
+
+.img-container img {
+  display: block;
+  width: 100%;
+}
+
+.upload-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: lightblue;
+  border-radius: 50%;
+  z-index: 1000;
+}
+
+.upload-icon {
+  margin: 0 auto;
+}
+
 .show {
   background-color: #22c55e;
   color: white;
