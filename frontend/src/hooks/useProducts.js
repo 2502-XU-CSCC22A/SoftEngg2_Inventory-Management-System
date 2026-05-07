@@ -31,7 +31,11 @@ export const useProducts = () => {
 
     const insertMutation = useMutation({
         mutationFn: async (newProduct) => {
-            return api.post('/products', newProduct);
+            return api.post('/products', newProduct, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
