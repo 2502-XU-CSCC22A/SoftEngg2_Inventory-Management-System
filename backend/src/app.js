@@ -6,9 +6,18 @@ import { productsRouter } from "./routes/products.js";
 import { transactionsRouter } from './routes/transactions.js';
 import { usersRouter } from './routes/users.js';
 import { authRouter } from './routes/auth.js';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import cors from 'cors';
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const uploadsPath = path.resolve('/app/uploads');
+
+app.use('/images', express.static(uploadsPath));
 
 app.use(cors({
   origin: 'http://localhost:5173',
