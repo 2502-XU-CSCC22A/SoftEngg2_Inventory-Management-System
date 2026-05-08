@@ -1,23 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from "../api/api.js";
 
-export const useProducts = () => {
+export const useProducts = (is_still_offered = undefined) => {
+    // unified products query
     const queryClient = useQueryClient();
     const query = useQuery({
-        queryKey: ['products'],
+        queryKey: ['products', { is_still_offered }],
         queryFn: async () => {
-            const { data } = await api.get('/products');
+            const endpoint = (is_still_offered !== undefined) 
+                ? `products?is_still_offered=${is_still_offered}`
+                : `products`
+            const { data } = await api.get(endpoint);
             return data;
         }
-    });
-
-    const queryAll = useQuery({
-        queryKey: ['products', 'all'],
-        queryFn: async () => {
-            const { data } = await api.get('/products/show-hidden');
-            return data;
-        }
-    });
+    })
 
     // The Updater (Mutation)
     const updateMutation = useMutation({
@@ -52,5 +48,5 @@ export const useProducts = () => {
         }
     })
 
-    return { query, queryAll, updateMutation, insertMutation, updateImageMutation };
+    return { query, updateMutation, insertMutation, updateImageMutation };
 }
