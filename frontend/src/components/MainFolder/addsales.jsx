@@ -11,8 +11,8 @@ function AddSales({ onClose, onAdd }) {
     });
 
     const [transactionItem, setTransactionItem] = useState({
-        product_id: 1,
-        quantity_bought: 1,
+        product_id: "",
+        quantity_bought: "",
     })
 
     const [error, setError] = useState("");
@@ -35,9 +35,13 @@ function AddSales({ onClose, onAdd }) {
 
     const handleAddItem = () => {
         // EXPECTED PAYLOAD: { product_id: 1, quantity_bought: 2 };
-        console.log(transactionItem.product_id, typeof transactionItem.product_id);
         if(formData.transaction_items.some(item => item.product_id === transactionItem.product_id)) {
-            alert("This product has already been added. Please edit the quantity from the added products section.");
+            alert("This product has already been added.");
+            return;
+        }
+
+        if (!Number.isInteger(transactionItem.quantity_bought)) {
+            alert("Quantity should be an integer.");
             return;
         }
 
@@ -130,7 +134,7 @@ function AddSales({ onClose, onAdd }) {
                         disabled={query.isLoading}
                     >
                         <option value="">Select Product</option>
-                        {products.map((product) => (
+                        {products.map((product) => (product.product_quantity > 0 &&
                             <option key={product.product_id || product.id} value={product.product_id || product.id}>
                                 {product.product_name} - {formatToPesos(product.product_unit_price || 0).toLocaleString()}
                             </option>

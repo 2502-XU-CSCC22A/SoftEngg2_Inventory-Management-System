@@ -11,8 +11,8 @@ function EditSales({ onClose, transaction, onSave }) {
     });
 
     const [transactionItem, setTransactionItem] = useState({
-        product_id: 1,
-        quantity_bought: 1,
+        product_id: "",
+        quantity_bought: "",
     })
 
     const [error, setError] = useState("");
@@ -37,10 +37,13 @@ function EditSales({ onClose, transaction, onSave }) {
 
     const handleAddItem = () => {
         // EXPECTED PAYLOAD: { product_id: 1, quantity_bought: 2 };
-        console.log(transactionItem.product_id, typeof transactionItem.product_id);
-
         if (formData.transaction_items.some(item => item.product_id === transactionItem.product_id)) {
-            alert("This product has already been added. Please edit the quantity from the added products section.");
+            alert("This product has already been added.");
+            return;
+        }
+
+        if (formData.transaction_items.some(item => !Number.isInteger(item.quantity_bought))) {
+            alert("Quantity should be an integer.");
             return;
         }
 
