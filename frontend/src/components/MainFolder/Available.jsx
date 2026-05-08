@@ -6,10 +6,11 @@ import styles from './Available.module.css';
 import { useProducts } from '../../hooks/useProducts.js';
 import { formatToPesos } from '../../utils/utils.js';
 import fallback from "../../assets/fallback.png"
+import { MdFileUpload } from 'react-icons/md';
 
 const Available = () => {
   const API_BASE_URL = 'http://localhost:3000';
-  const { query, queryAll, updateMutation, insertMutation } = useProducts();
+  const { query, queryAll, updateMutation, insertMutation, updateImageMutation } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -60,6 +61,53 @@ const Available = () => {
     product.product_id.toString().includes(searchTerm)
   );
 
+  const handleChangeImage = (e, productId) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    const img = new Image();
+
+    img.onload = () => {
+      const width = img.width;
+      const height = img.height;
+
+      if (width < 300 || height < 300) {
+        alert(`Image too small! Please upload an image at least 300x300. Yours is ${width}x${height}.`);
+        e.target.value = "";
+        URL.revokeObjectURL(objectUrl);
+        return;
+      }
+
+      // Example B: Reject extreme panoramas (e.g., width is more than 2x the height)
+      if (width / height > 2 || height / width > 2) {
+        alert("Image is too stretched! Please pick a more proportional photo.");
+        e.target.value = "";
+        URL.revokeObjectURL(objectUrl);
+        return;
+      }
+
+      URL.revokeObjectURL(objectUrl);
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      for (let [key, value] of formData.entries()) {
+        console.log(`Sending FormData -> Key: ${key}, Value:`, value);
+      }
+
+      updateImageMutation.mutate({ productId, formData });
+
+      e.target.value = "";
+    };
+
+    img.src = objectUrl;
+  };
+
   return (
     <div className={styles.wrapper}>
       <Navbar />
@@ -91,7 +139,11 @@ const Available = () => {
               {filteredProducts.map((product) => (
                 <div key={product.product_id} className={styles[`${product.is_still_offered ? 'product-card' : 'product-card-hidden'}`]}>
                   <div className={styles['card-content']}>
-                    <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
+                    <div className={styles['img-container']}>
+                      <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
+                      <input id={`upload-file-${product.product_id}`} type="file" id="actual-btn" hidden onChange={(e) => handleChangeImage(e, product.product_id)}/>
+                      <label htmlFor='actual-btn' className={styles["upload-btn"]}> <MdFileUpload className={styles['upload-icon']}/> </label>
+                    </div>
                     <h3 className={styles['product-name']}>{product.product_name}</h3>
                     <div className={styles['product-details']}>
                       <p className={styles.quantity}>Quantity: {product.product_quantity}</p>

@@ -28,6 +28,10 @@ export default class products extends Model {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    product_img_hash: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     is_still_offered: {
       type: DataTypes.BOOLEAN,
       allowNull: false
