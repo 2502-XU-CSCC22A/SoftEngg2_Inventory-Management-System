@@ -141,7 +141,6 @@ const Available = () => {
                   <div className={styles['card-content']}>
                     <div className={styles['img-container']}>
                       <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
-                      
                       {
                         product.is_still_offered && (
                           <>
