@@ -10,16 +10,17 @@ import { MdFileUpload } from 'react-icons/md';
 
 const Available = () => {
   const API_BASE_URL = 'http://localhost:3000';
-  const { query, queryAll, updateMutation, insertMutation, updateImageMutation } = useProducts();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [showStillOffered, setShowStillOffered] = useState(true);
 
-  const isLoading = query.isLoading || (isChecked && queryAll.isLoading);
-  const isError = query.isError || (isChecked && queryAll.isError);
+  const { query, updateMutation, insertMutation, updateImageMutation } = useProducts(showStillOffered);
+  const { query: queryAll } = useProducts(undefined);
+
+  const isLoading = query.isLoading
+  const isError = query.isError 
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading products.</div>;
@@ -43,7 +44,7 @@ const Available = () => {
   };
 
   const handleToggle = () => {
-    setIsChecked(!isChecked);
+    setShowStillOffered(prev => !prev);
   };
 
   const saveProduct = (updatedValues) => {
@@ -56,7 +57,9 @@ const Available = () => {
     closeAdd();
   }
 
-  const filteredProducts = ((isChecked ? queryAll.data?.data : query.data?.data) || []).filter(product =>
+  const productsData = query.data?.data || [];
+
+  const filteredProducts = productsData.filter(product =>
     product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.product_id.toString().includes(searchTerm)
   );
@@ -123,8 +126,8 @@ const Available = () => {
             />
             <div className={styles['action-buttons']}>
               <span className={styles['show-hidden-box']}>
-                <input id="show-hidden" htmlFor="show-hidden" type="checkbox" checked={isChecked} onChange={handleToggle} />
-                <label htmlFor="show-hidden" className={styles['show-hidden-label']}>Show Hidden</label>
+                <input id="show-hidden" htmlFor="show-hidden" type="checkbox" checked={showStillOffered} onChange={handleToggle} />
+                <label htmlFor="show-hidden" className={styles['show-hidden-label']}>Show Available Only</label>
               </span>
               <button className={styles.add} onClick={openAdd}>ADD</button>
             </div>

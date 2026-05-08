@@ -19,7 +19,7 @@ function AddSales({ onClose, onAdd }) {
     const [loading, setLoading] = useState(false);
     
     // Fetch products for the dropdown
-    const { query } = useProducts();
+    const { query } = useProducts(true);
     const products = query.data?.data || [];
 
     const handleChange = (e) => {
