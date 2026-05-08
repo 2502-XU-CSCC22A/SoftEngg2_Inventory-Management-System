@@ -17,11 +17,12 @@ productsRouter.get('/', async (req, res) => {
     products = await models.products.findAll({
       where: {
         is_still_offered: is_still_offered === "true",
-      }
+      },
+      order: [["product_name", "ASC"]],
     })
   }
   else {
-    products = await models.products.findAll({})
+    products = await models.products.findAll({ order: [["product_name", "ASC"]]})
   }
 
   return res.status(200).json({ message: "Products fetched successfully.", data: products })
