@@ -7,38 +7,24 @@ import { validate, checkValidQuery } from "../middleware/productsMiddleware.js";
 import { insertNewProduct, updateExistingProduct, updateProductImage } from "../controllers/productsController.js";
 import { insertProductSchema, updateProductSchema } from "../schemas/schemas.js";
 
-// -> get all offered products
+// unified get products route 
 productsRouter.get('/', async (req, res) => {
-  const products = await models.products.findAll({
-    where: {
-      is_still_offered: true,
-    }
-  });
-  return res.status(200).json({ message: "Products fetched successfully.", data: products});
-})
+  const { is_still_offered } = req.query;
 
-productsRouter.get('/show-hidden', async (req, res) => {
-  const products = await models.products.findAll({})
-  return res.status(200).json({ message: "Products fetched successfully.", data: products });
-})
+  let products = null;
 
-productsRouter.get('/search', checkValidQuery(), async (req, res) => {
-  try {
-    const { name } = req.query;
-    const products = await models.products.findAll({
+  if (is_still_offered !== undefined) {
+    products = await models.products.findAll({
       where: {
-        product_name: {
-          [Op.iLike]: `%${name}%`
-        },
-        is_still_offered: true,
+        is_still_offered: is_still_offered === "true",
       }
-    });
-    return res.status(200).json({ message: "Product fetched successfully", data: products });
+    })
   }
-  catch (error) {
-    console.error("Error fetching products by name:", error);
-    return res.status(error.status || 500).json({ message: "An error occurred while fetching products." });
+  else {
+    products = await models.products.findAll({})
   }
+
+  return res.status(200).json({ message: "Products fetched successfully.", data: products })
 })
 
 // -> add new product
