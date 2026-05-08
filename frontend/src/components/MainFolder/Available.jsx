@@ -141,8 +141,15 @@ const Available = () => {
                   <div className={styles['card-content']}>
                     <div className={styles['img-container']}>
                       <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
-                      <input id={`upload-file-${product.product_id}`} type="file" id="actual-btn" hidden onChange={(e) => handleChangeImage(e, product.product_id)}/>
-                      <label htmlFor='actual-btn' className={styles["upload-btn"]}> <MdFileUpload className={styles['upload-icon']}/> </label>
+                      
+                      {
+                        product.is_still_offered && (
+                          <>
+                            <input id={`upload-file-${product.product_id}`} type="file" id="actual-btn" hidden onChange={(e) => handleChangeImage(e, product.product_id)} />
+                            <label htmlFor='actual-btn' className={styles['upload-btn']}> <MdFileUpload className={styles['upload-icon']} /> </label>
+                          </>
+                        )
+                      }
                     </div>
                     <h3 className={styles['product-name']}>{product.product_name}</h3>
                     <div className={styles['product-details']}>
