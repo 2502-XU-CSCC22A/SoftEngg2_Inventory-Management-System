@@ -34,6 +34,7 @@ export const useTransactions = (month = null, year = null) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            queryClient.invalidateQueries({ queryKey: ['products'] });
         }
     });
 
@@ -43,6 +44,7 @@ export const useTransactions = (month = null, year = null) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            queryClient.invalidateQueries({ queryKey: ['products']});
         }
     })
 
