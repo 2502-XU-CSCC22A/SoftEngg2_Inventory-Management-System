@@ -40,7 +40,6 @@ export const useProducts = (is_still_offered = undefined) => {
 
     const updateImageMutation = useMutation({
         mutationFn: async ({ productId, formData }) => {
-            console.log("im here");
             return api.patch(`/products/${productId}/image`, formData)
         },
         onSuccess: () => {
