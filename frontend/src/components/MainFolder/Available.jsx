@@ -14,9 +14,9 @@ const Available = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [showStillOffered, setShowStillOffered] = useState(true);
+  const [showStillOffered, setShowStillOffered] = useState(false);
 
-  const { query, updateMutation, insertMutation, updateImageMutation } = useProducts(showStillOffered);
+  const { query, updateMutation, insertMutation, updateImageMutation } = useProducts(!showStillOffered);
   const { query: queryAll } = useProducts(undefined);
 
   const isLoading = query.isLoading
@@ -127,7 +127,7 @@ const Available = () => {
             <div className={styles['action-buttons']}>
               <span className={styles['show-hidden-box']}>
                 <input id="show-hidden" htmlFor="show-hidden" type="checkbox" checked={showStillOffered} onChange={handleToggle} />
-                <label htmlFor="show-hidden" className={styles['show-hidden-label']}>Show Available Only</label>
+                <label htmlFor="show-hidden" className={styles['show-hidden-label']}>Show Hidden Only</label>
               </span>
               <button className={styles.add} onClick={openAdd}>ADD</button>
             </div>
