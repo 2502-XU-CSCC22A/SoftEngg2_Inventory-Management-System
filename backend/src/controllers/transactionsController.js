@@ -35,7 +35,6 @@ export const insertTransaction = async (data, t, userId) => {
 }
 
 export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
-    
     // rollback items
     for (const item of oldTxn.transaction_items) {
         const product = await getValidProduct(item.product_id, t);
@@ -49,6 +48,16 @@ export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
 
     const s = await models.transactions.findByPk(oldTxn.transaction_id);
     await s.update({ voided_at: syncedTimestamp }, { transaction: t });
+
+    for (const item of updatedPayload.transaction_items) {
+        const product = await models.products.findByPk(item.product_id, { transaction: t });
+        
+        if (product.product_quantity < item.quantity_bought) {
+            const error = new Error(`Insufficient stocks for ${product.product_name}. Only ${product.product_quantity} are available`);
+            error.status = 400;
+            throw error;
+        }
+    }
     
     const newTxn = await insertTransaction({...updatedPayload, created_at: syncedTimestamp }, t, userId);
 
