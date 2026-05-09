@@ -9,6 +9,19 @@
   position: relative;
   z-index: 100;
 }
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 70px;
+  width: 280px;
+  border-radius: 0px;
+  object-fit: cover;
+  background: white;
+  padding: 4px;
+}
 
 .nav {
   display: flex;
