@@ -110,6 +110,11 @@
   position: relative;
 }
 
+.welcomeLogo {
+  height: 90px;
+  width: auto;
+  margin-bottom: -5px;
+}
 .welcome {
   font-size: 36px;
   font-weight: 800;
