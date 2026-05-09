@@ -27,12 +27,15 @@
   font-size: 14px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(196, 164, 132, 0.3);
+  min-height: 0;
 }
 
 .firsthalf, .secondhalf {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
+  min-height: 0;
   gap: 12px;
 }
 
@@ -129,7 +132,7 @@
   flex: 1;
   overflow-y: auto;
   border-radius: 20px;
-  min-height: 250px;
+  min-height: 0;
   max-height: 400px;
 }
 
@@ -138,6 +141,7 @@
   padding: 12px 15px;
   border-radius: 16px;
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
   align-items: center;
   border: 1px solid rgba(196, 164, 132, 0.2);
@@ -238,4 +242,41 @@
   .totalAmount {
     font-size: 16px;
   }
+}
+
+.qty-stepper {
+  display: flex;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.qty-stepper button {
+  width: 30px;
+  padding: 0;
+  border-radius: 0;
+}
+
+.qty-stepper input {
+  border-radius: 0;
+  text-align: center;
+  width: 55px;
+  padding: 0;
+}
+
+.qty-stepper input::-webkit-outer-spin-button,
+.qty-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.qty-stepper input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.product-name {
+  display: block;
+  flex: 1 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
