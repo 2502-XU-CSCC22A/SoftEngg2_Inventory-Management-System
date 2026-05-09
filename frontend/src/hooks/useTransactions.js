@@ -30,21 +30,43 @@ export const useTransactions = (month = null, year = null) => {
 
     const updateMutation = useMutation({
         mutationFn: async ({ transaction_id, ...payload }) => {
-            return api.patch(`/transactions/${transaction_id}`, payload);
+            try {
+                const { data } = await api.patch(`/transactions/${transaction_id}`, payload);
+                return data;
+            }
+            catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Something went wrong.");
+                }
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
             queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
         }
     });
 
     const insertMutation = useMutation({
         mutationFn: async (newTransaction) => {
-            return api.post('/transactions', newTransaction);
+            try {
+                const { data } = await api.post('/transactions', newTransaction);
+                return data;
+            }
+            catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Something went wrong.");
+                }
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
             queryClient.invalidateQueries({ queryKey: ['products']});
+        },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
         }
     })
 
