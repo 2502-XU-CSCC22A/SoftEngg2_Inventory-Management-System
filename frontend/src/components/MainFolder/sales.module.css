@@ -187,7 +187,7 @@
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);
   border-radius: 0 0 16px 16px;
-  max-height: 400px;
+  max-height: 280px;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(196, 164, 132, 0.2);
