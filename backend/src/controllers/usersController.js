@@ -35,11 +35,11 @@ export const addUser = async (req, res) => {
     const existingUser = await models.users.findOne({
       where: {
         username: username,
-        is_active: true
+        //is_active: true
       }
     });
     if (existingUser){
-      return res.status(409).json({error: 'Username already exists'})
+      return res.status(409).json({error: 'Username exists. Please choose another one'})
     }
 
     const salt = await bcrypt.genSalt(10);
