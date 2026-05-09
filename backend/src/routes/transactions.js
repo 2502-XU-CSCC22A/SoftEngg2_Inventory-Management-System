@@ -99,7 +99,7 @@ transactionsRouter.patch('/:transactionId',
       }
     }
     catch (error) {
-      console.error("Error in patch: ", error);
+      console.error("Error in patch: ", error.message);
       return res.status(error.status || 500).json({ message: error.message });
     }
 })

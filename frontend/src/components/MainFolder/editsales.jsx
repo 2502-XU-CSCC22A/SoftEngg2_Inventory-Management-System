@@ -5,14 +5,19 @@ import { formatToPesos } from "../../utils/utils.js"
 
 function EditSales({ onClose, transaction, onSave }) {
     const [formData, setFormData] = useState({
-        payment_type: "",
-        payment_refstr: "",
-        transaction_items: [...transaction.transaction_items],
+        payment_type: transaction.payment_type || "",
+        payment_refstr: transaction.payment_refstr || "",
+        transaction_items: transaction.transaction_items.map(item => ({
+            ...item,
+            // Checks for quantity_bought, falls back to quantity, defaults to 1 if both fail
+            quantity_bought: item.quantity_bought !== undefined
+                ? parseInt(item.quantity_bought)
+                : (item.quantity !== undefined ? parseInt(item.quantity) : 1)
+        })),
     });
 
     const [transactionItem, setTransactionItem] = useState({
-        product_id: 1,
-        quantity_bought: 1,
+        product_id: "",
     })
 
     const [error, setError] = useState("");
@@ -37,34 +42,77 @@ function EditSales({ onClose, transaction, onSave }) {
 
     const handleAddItem = () => {
         // EXPECTED PAYLOAD: { product_id: 1, quantity_bought: 2 };
-        console.log(transactionItem.product_id, typeof transactionItem.product_id);
-
         if (formData.transaction_items.some(item => item.product_id === transactionItem.product_id)) {
-            alert("This product has already been added. Please edit the quantity from the added products section.");
+            alert("This product has already been added.");
             return;
         }
 
-        if (!transactionItem.product_id || !transactionItem.quantity_bought) {
+        if (!transactionItem.product_id) {
             alert("Please select a product and enter a valid quantity before adding.");
             return;
         }
 
-        if (transactionItem.quantity_bought <= 0) {
-            alert("Quantity must be at least 1.");
-            return;
-        }
-
-        const product = products.find(p => p.product_id === parseInt(transactionItem.product_id));
-
-        if (product && transactionItem.quantity_bought > product.product_quantity) {
-            alert(`Only ${product.product_quantity} units of ${product.product_name} are available in stock.`);
-            return;
-        }
-
-        setFormData(prev => ({ ...prev, transaction_items: [...prev.transaction_items, { ...transactionItem }] }));
+        setFormData(prev => ({ ...prev, transaction_items: [...prev.transaction_items, { product_id: transactionItem.product_id, quantity_bought: 1 }] }));
         setTransactionItem({ product_id: "", quantity_bought: "" });
         setError("");
     }
+
+    const handleChangeValue = (productId, value, isAbsolute = false) => {
+        const item = formData.transaction_items.find(i => i.product_id === productId);
+        const product = products.find(p => p.product_id === parseInt(productId));
+
+        const origItem = transaction.transaction_items.find(
+            (i) => parseInt(i.product_id) === parseInt(productId)
+        );
+
+        const origQty = origItem ? parseInt(origItem.quantity_bought) : 0;
+
+        const maxAllowed = product.product_quantity + origQty;
+
+        let newQty;
+
+        if (isAbsolute) {
+            if (value === "") {
+                newQty = "";
+            } else {
+                newQty = parseInt(value);
+                if (isNaN(newQty)) newQty = 1;
+            }
+        } else {
+            const currentQty = item.quantity_bought === "" ? 0 : parseInt(item.quantity_bought);
+            newQty = currentQty + value;
+        }
+
+        if (newQty !== "") {
+            if (newQty < 1) newQty = 1; // Prevent 0 or negatives
+
+            if (newQty > maxAllowed) {
+                alert(`Stock limit reached. Only ${maxAllowed} available.`);
+                newQty = maxAllowed;
+            }
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            transaction_items: prev.transaction_items.map(item =>
+                item.product_id === productId ? { ...item, quantity_bought: newQty } : item
+            )
+        }));
+    }
+
+    const handleOffFocus = (productId) => {
+        // input goes to 1 after left empty on off-focus
+        setFormData(prev => ({
+            ...prev,
+            transaction_items: prev.transaction_items.map(item =>
+                (item.product_id === productId && item.quantity_bought === "")
+                    ? { ...item, quantity_bought: 1 } // Default back to 1 if left empty
+                    : item
+            )
+        }));
+    }
+
+    
 
     const handleRemoveItem = (itemId) => {
         setFormData(prev => ({ 
@@ -81,6 +129,11 @@ function EditSales({ onClose, transaction, onSave }) {
 
         if (formData.payment_type === "GCash" && !formData.payment_refstr) {
             setError("Reference string is required for GCash payments.");
+            return;
+        }
+        
+        if (formData.transaction_items.length === 0) {
+            setError("Please do not leave your products list empty.");
             return;
         }
 
@@ -128,16 +181,6 @@ function EditSales({ onClose, transaction, onSave }) {
                             </option>
                         ))}
                     </select>
-                    
-                    <h3>QUANTITY:</h3>
-                    <input
-                        type="number"
-                        name="quantity_bought"
-                        className={styles.input}
-                        value={transactionItem.quantity_bought}
-                        onChange={handleChangeItem}
-                        min="1"
-                    />
 
                     <button className={styles.buttonpop} onClick={handleAddItem}>Add product</button>
                     <h3>PAYMENT METHOD:</h3>
@@ -151,21 +194,16 @@ function EditSales({ onClose, transaction, onSave }) {
                         <option value="Cash">Cash</option>
                         <option value="GCash">GCash</option>
                     </select>
-                    
-                    {formData.payment_type === "GCash" && (
-                        <>
-                            <h3>REFERENCE STRING:</h3>
-                            <input
-                                type="text"
-                                name="payment_refstr"
-                                placeholder="Enter GCash Reference Number"
-                                className={styles.input}
-                                value={formData.payment_refstr}
-                                onChange={handleChange}
-                            />
-                        </>
-                    )}
-
+                    <h3>REFERENCE STRING:</h3>
+                    <input
+                        type="text"
+                        name="payment_refstr"
+                        placeholder="Enter GCash Reference Number"
+                        className={styles.input}
+                        value={formData.payment_type === "GCash" ? formData.payment_refstr : ""}
+                        onChange={handleChange}
+                        disabled={formData.payment_type !== "GCash"}
+                    />
                     <button
                         className={styles.buttonpop}
                         onClick={handleSave}
@@ -187,12 +225,16 @@ function EditSales({ onClose, transaction, onSave }) {
                             const product = products.find(p => p.product_id === parseInt(item.product_id));
                             return (
                                 <div key={item.product_id} className={styles.summaryItem}>
-                                    <span>
+                                    <span className={styles['product-name']}>
                                         {query.isLoading
                                             ? "Loading product..."
                                             : (product ? product.product_name : "Unknown Product")}
                                     </span>
-                                    <span>Qty: {item.quantity_bought}</span>
+                                    <div className={styles['qty-stepper']}>
+                                        <button type="button" className={styles['stepper-down']} onClick={() => handleChangeValue(item.product_id, -1)} onBlur={() => handleOffFocus(item.product_id)}>-</button>
+                                        <input type="number" value={item.quantity_bought} onChange={(e) => handleChangeValue(item.product_id, e.target.value, true)}/>
+                                        <button type="button" className={styles['stepper-up']} onClick={() => handleChangeValue(item.product_id, 1)} onBlur={() => handleOffFocus(item.product_id)}>+</button>
+                                    </div>
                                     <button onClick={() => handleRemoveItem(item.product_id)} className={styles.removeButton}>Remove</button>
                                 </div>
                             )
