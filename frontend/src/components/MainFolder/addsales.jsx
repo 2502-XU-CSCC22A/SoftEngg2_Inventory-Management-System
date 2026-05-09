@@ -12,7 +12,6 @@ function AddSales({ onClose, onAdd }) {
 
     const [transactionItem, setTransactionItem] = useState({
         product_id: "",
-        quantity_bought: "",
     })
 
     const [error, setError] = useState("");
@@ -40,31 +39,62 @@ function AddSales({ onClose, onAdd }) {
             return;
         }
 
-        if (!Number.isInteger(transactionItem.quantity_bought)) {
-            alert("Quantity should be an integer.");
+        if(!transactionItem.product_id) {
+            alert("Please select a product.");
             return;
         }
 
-        if(!transactionItem.product_id || !transactionItem.quantity_bought) {
-            alert("Please select a product and enter a valid quantity before adding.");
-            return;
-        }
-
-        if(transactionItem.quantity_bought <= 0) {
-            alert("Quantity must be at least 1.");
-            return;
-        }
-
-        const product = products.find(p => p.product_id === parseInt(transactionItem.product_id));
-
-        if(product && transactionItem.quantity_bought > product.product_quantity) {
-            alert(`Only ${product.product_quantity} units of ${product.product_name} are available in stock.`);
-            return;
-        }
-
-        setFormData(prev => ({ ...prev, transaction_items: [...prev.transaction_items, { ...transactionItem }] }));
-        setTransactionItem({ product_id: "", quantity_bought: "" });
+        setFormData(prev => ({ ...prev, transaction_items: [...prev.transaction_items, { product_id: transactionItem.product_id, quantity_bought: 1 }] }));
+        setTransactionItem({ product_id: "" });
         setError("");
+    }
+
+    const handleChangeValue = (productId, value, isAbsolute = false) => {
+        const item = formData.transaction_items.find(i => i.product_id === productId);
+        const product = products.find(p => p.product_id === parseInt(productId));
+
+        let newQty;
+
+        if (isAbsolute) {
+            if (value === "") {
+                newQty = "";
+            } else {
+                newQty = parseInt(value);
+                if (isNaN(newQty)) newQty = 1;
+            }
+        } else {
+            const currentQty = item.quantity_bought === "" ? 0 : parseInt(item.quantity_bought);
+            newQty = currentQty + value;
+        }
+
+        if (newQty !== "") {
+            if (newQty < 1) newQty = 1; // Prevent 0 or negatives
+
+            if (newQty > product.product_quantity) {
+                // Firing this outside of setFormData prevents the Strict Mode double-alert!
+                alert(`Stock limit reached. Only ${product.product_quantity} available.`);
+                newQty = product.product_quantity; // Cap it at max stock
+            }
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            transaction_items: prev.transaction_items.map(item =>
+                item.product_id === productId ? { ...item, quantity_bought: newQty } : item
+            )
+        }));
+    }
+
+    const handleOffFocus = (productId) => {
+        // input goes to 1 after left empty on off-focus
+        setFormData(prev => ({
+            ...prev,
+            transaction_items: prev.transaction_items.map(item =>
+                (item.product_id === productId && item.quantity_bought === "")
+                    ? { ...item, quantity_bought: 1 } // Default back to 1 if left empty
+                    : item
+            )
+        }));
     }
 
     const handleRemoveItem = (itemId) => {
@@ -124,7 +154,6 @@ function AddSales({ onClose, onAdd }) {
                             {error}
                         </div>
                     )}
-
                     <h3>PRODUCT:</h3>
                     <select
                         name="product_id"
@@ -140,16 +169,6 @@ function AddSales({ onClose, onAdd }) {
                             </option>
                         ))}
                     </select>
-                    <h3>QUANTITY:</h3>
-                    <input
-                        type="number"
-                        name="quantity_bought"
-                        placeholder="Enter Quantity"
-                        className={styles.input}
-                        value={transactionItem.quantity_bought}
-                        onChange={handleChangeItem}
-                        min="1"
-                    />
                     <button className={styles.buttonpop} onClick={handleAddItem}>Add product</button>
                     <h3>PAYMENT METHOD:</h3>
                     <select
@@ -162,21 +181,16 @@ function AddSales({ onClose, onAdd }) {
                         <option value="Cash">Cash</option>
                         <option value="GCash">GCash</option>
                     </select>
-
-                    {formData.payment_type === "GCash" && (
-                        <>
-                            <h3>REFERENCE STRING:</h3>
-                            <input
-                                type="text"
-                                name="payment_refstr"
-                                placeholder="Enter GCash Reference Number"
-                                className={styles.input}
-                                value={formData.payment_refstr}
-                                onChange={handleChange}
-                            />
-                        </>
-                    )}
-
+                    <h3>REFERENCE STRING:</h3>
+                    <input
+                        type="text"
+                        name="payment_refstr"
+                        placeholder="Enter GCash Reference Number"
+                        className={styles.input}
+                        value={formData.payment_refstr}
+                        onChange={handleChange}
+                        disabled={formData.payment_type !== "GCash"}
+                    />
                     <button
                         className={styles.buttonpop}
                         onClick={handleSubmit}
@@ -198,8 +212,14 @@ function AddSales({ onClose, onAdd }) {
                             const product = products.find(p => p.product_id === parseInt(item.product_id));
                             return (
                                 <div key={item.product_id} className={styles.summaryItem}>
-                                    <span>{product ? product.product_name : "Unknown Product"}</span>
-                                    <span>Qty: {item.quantity_bought}</span>
+                                    <span className={styles['product-name']}>{product ? product.product_name : "Unknown Product"}</span>
+
+                                    <div className={styles['qty-stepper']}>
+                                        <button type="button" className={styles['stepper-down']} onClick={() => handleChangeValue(item.product_id, -1)} onBlur={() => handleOffFocus(item.product_id)}>-</button>
+                                        <input type="number" value={item.quantity_bought} onChange={(e) => handleChangeValue(item.product_id, e.target.value, true)}/>
+                                        <button type="button" className={styles['stepper-up']} onClick={() => handleChangeValue(item.product_id, 1)} onBlur={() => handleOffFocus(item.product_id)}>+</button>
+                                    </div>
+
                                     <button onClick={() => handleRemoveItem(item.product_id)} className={styles.removeButton}>Remove</button>
                                 </div>
                             )
