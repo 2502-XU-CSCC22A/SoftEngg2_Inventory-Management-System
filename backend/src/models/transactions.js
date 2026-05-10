@@ -39,6 +39,10 @@ export default class transactions extends Model {
     voided_at: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    reason_for_edit: {
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   }, {
     sequelize,

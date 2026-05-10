@@ -36,6 +36,7 @@ const ActivLog = () => {
         doneAt: txn.created_at,
         doneBy: txn.created_by_user.username,
         transaction_details: txn,
+        reason_for_edit: txn.reason_for_edit,
       });
     }
     else {
@@ -46,6 +47,7 @@ const ActivLog = () => {
         doneAt: txn.created_at,
         doneBy: txn.created_by_user.username,
         transaction_details: txn,
+        reason_for_edit: txn.reason_for_edit,
       });
     }
 
@@ -57,6 +59,7 @@ const ActivLog = () => {
         doneAt: txn.voided_at,
         doneBy: txn.created_by_user.username, // change to voided_by later
         transaction_details: txn,
+        reason_for_edit: txn.reason_for_edit,
       });
     }
 
@@ -139,6 +142,7 @@ const ActivLog = () => {
                 <th>Done at</th>
                 <th>Done by</th>
                 <th>Activity Description</th>
+                <th>Activity Reason</th>
               </tr>
             </thead>
             <tbody>
@@ -150,6 +154,7 @@ const ActivLog = () => {
                     <td>{formatDateTime(log.doneAt)}</td>
                     <td>{log.doneBy}</td>
                     <td>{log.details}</td>
+                    <td>{log.reason_for_edit}</td>
                   </tr>
                 ))
               }

@@ -14,6 +14,7 @@ function EditSales({ onClose, transaction, onSave }) {
                 ? parseInt(item.quantity_bought)
                 : (item.quantity !== undefined ? parseInt(item.quantity) : 1)
         })),
+        reason_for_edit: "",
     });
 
     const [transactionItem, setTransactionItem] = useState({
@@ -203,6 +204,15 @@ function EditSales({ onClose, transaction, onSave }) {
                         value={formData.payment_type === "GCash" ? formData.payment_refstr : ""}
                         onChange={handleChange}
                         disabled={formData.payment_type !== "GCash"}
+                    />
+                    <h3>REASON FOR EDIT:</h3>
+                    <input
+                        type="text"
+                        name="reason_for_edit"
+                        placeholder="Reason for editing transaction"
+                        className={styles.input}
+                        maxLength={255}
+                        onChange={handleChange}
                     />
                     <button
                         className={styles.buttonpop}
