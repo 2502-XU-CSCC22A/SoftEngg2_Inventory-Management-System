@@ -4,6 +4,8 @@ import RemoveUserPopup from "./removeuserpopup";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUsers } from "../../hooks/useUsers.js";
+import logo from "../../assets/logo.jpg";
+
 
 function UserManagement() {
     const [showAdd, setShowAdd] = useState(false);
@@ -49,6 +51,7 @@ function UserManagement() {
     return (
           <div className={styles.usermanagementPage}>
             <div className={styles.header}>
+                 <img src={logo} alt="Logo" className={styles.logo} />
                 <h1 className={styles.usermantitle1}>User Management</h1>
                 <button className={styles.backbutton} onClick={() => navigate("/welcomeadmin")}>Back</button>
             </div>

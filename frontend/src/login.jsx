@@ -1,6 +1,7 @@
 import styles from "./login.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "./assets/logo.jpg";
 
 function Login() {
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ function Login() {
     <div className={styles.loginpage}>
       <div className={styles.logincontainer}>
         <div className={styles.welcomeWrapper}>
+           <img src={logo} alt="53 One Tech" className={styles.welcomeLogo} />
           <h1 className={styles.welcome}>Welcome User!</h1>
           <p className={styles.welcomeCaption}>Please enter your credentials</p>
         </div>

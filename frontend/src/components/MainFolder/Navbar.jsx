@@ -1,5 +1,6 @@
 import styles from './Navbar.module.css';
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.jpg";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const Navbar = () => {
   return (
     <nav>
       <div className={styles.header}>
+        <img src={logo} alt="53 One Tech" className={styles.logo} />
         <div className={styles.nav}>
       <button onClick={() => navigate("/topproduct")}>Top Product</button>
       <button onClick ={()=> navigate("/sales")}>Sales</button>

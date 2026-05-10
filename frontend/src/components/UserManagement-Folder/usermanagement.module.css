@@ -1,3 +1,14 @@
+.logo {
+  position: fixed;
+  left: 70px; 
+  top: 20px;  
+  width: 260px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.2);
+  border: 2px solid rgba(196, 164, 132, 0.5);
+}
 .usermanagementPage {
   min-height: 100vh;
   background: linear-gradient(135deg, #f9f0e6 0%, #f0e2d4 50%, #e8d5c4 100%);
@@ -108,7 +119,7 @@
 
 .header .backbutton {
   color: rgb(255, 255, 255);
-  background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
+  background: linear-gradient(135deg, #4a4646 0%, #272424 100%);
   border: none;
   border-radius: 50px;
   font-size: 16px;
@@ -118,17 +129,18 @@
   justify-content: center;
   align-items: center;
   position: fixed;
-  left: 80px;
-  top: 78px;
+  right: 80px;
+  top: 30px;
   width: 250px;
   height: 45px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(139, 94, 60, 0.2);
   letter-spacing: 0.5px;
+  z-index: 100;
 }
 
 .header .backbutton:hover {
-  background: linear-gradient(135deg, #8B5E3C 0%, #6b462a 100%);
+  background: linear-gradient(135deg, #191817 0%, #000000 100%);
   transform: translateY(-2px);
   transition: 0.3s;
   box-shadow: 0 6px 16px rgba(139, 94, 60, 0.3);
@@ -438,6 +450,13 @@
 }
 
 @media (max-width: 768px) {
+  .logo {
+    left: 20px;
+    top: 15px;
+    width: 180px;
+    height: 45px;
+  }
+  
   .usermantitle1 {
     font-size: 36px;
     margin-top: 80px;
@@ -458,7 +477,7 @@
   
   .header .backbutton {
     left: 20px;
-    top: 20px;
+    top: 70px;
     width: 120px;
     height: 40px;
     font-size: 14px;
@@ -531,46 +550,4 @@
   .line1, .line2 {
     display: none;
   }
-  
-}
-.loading, .error {
-  text-align: center;
-  padding: 60px 24px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 24px;
-  max-width: 500px;
-  margin: 100px auto;
-  color: #8B5E3C;
-  font-weight: 500;
-  border: 1px solid rgba(196, 164, 132, 0.2);
-}
-
-.loading {
-  position: relative;
-  padding-left: 70px;
-}
-
-.loading::before {
-  content: '';
-  position: absolute;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(196, 164, 132, 0.3);
-  border-top: 3px solid #8B5E3C;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: translateY(-50%) rotate(0deg); }
-  100% { transform: translateY(-50%) rotate(360deg); }
-}
-
-.error {
-  color: #c0392b;
-  border-left: 4px solid #e74c3c;
 }
