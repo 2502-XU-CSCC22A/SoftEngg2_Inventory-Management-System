@@ -4,6 +4,28 @@ import styles from './ActivLog.module.css';
 import { useTransactions } from '../../hooks/useTransactions';
 
 
+const ExpandableReason = ({ text }) => {
+  const [expanded, setExpanded] = useState(false);
+  if (!text) return null;
+
+  const isLong = text.length > 15;
+  const displayed = expanded || !isLong ? text : text.slice(0, 15) + '\u2026';
+
+  return (
+    <span>
+      {displayed}
+      {isLong && (
+        <>
+          {' '}
+          <button className={styles['see-toggle']} onClick={() => setExpanded(e => !e)}>
+            {expanded ? 'See less' : 'See more'}
+          </button>
+        </>
+      )}
+    </span>
+  );
+};
+
 // temporary data for visualization only, pwede na siya i-replace sa actual data nga mag-generate sa backend
 const ActivLog = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -154,7 +176,7 @@ const ActivLog = () => {
                     <td>{formatDateTime(log.doneAt)}</td>
                     <td>{log.doneBy}</td>
                     <td>{log.details}</td>
-                    <td>{log.reason_for_edit}</td>
+                    <td><ExpandableReason text={log.reason_for_edit} /></td>
                   </tr>
                 ))
               }

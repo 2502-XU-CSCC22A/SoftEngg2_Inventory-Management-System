@@ -82,6 +82,33 @@
   border-color: rgba(196, 164, 132, 0.6);
 }
 
+.textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid rgba(196, 164, 132, 0.3);
+  border-radius: 16px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  height: 120px;
+  resize: vertical;
+  overflow-y: auto;
+  font-family: inherit;
+  line-height: 1.5;
+  color: #4a3b2f;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #C4A484;
+  box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.1);
+}
+
+.textarea:hover {
+  border-color: rgba(196, 164, 132, 0.6);
+}
+
 .buttonpop {
   background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
   color: white;
