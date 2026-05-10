@@ -206,12 +206,10 @@ function EditSales({ onClose, transaction, onSave }) {
                         disabled={formData.payment_type !== "GCash"}
                     />
                     <h3>REASON FOR EDIT:</h3>
-                    <input
-                        type="text"
+                    <textarea
                         name="reason_for_edit"
                         placeholder="Reason for editing transaction"
-                        className={styles.input}
-                        maxLength={255}
+                        className={styles.textarea}
                         onChange={handleChange}
                     />
                     <button

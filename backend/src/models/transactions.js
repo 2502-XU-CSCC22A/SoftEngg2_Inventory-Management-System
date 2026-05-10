@@ -41,7 +41,7 @@ export default class transactions extends Model {
       allowNull: true
     },
     reason_for_edit: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(500),
       allowNull: true,
     }
   }, {
