@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navbar } from './Navbar';
 import styles from './ActivLog.module.css';
 import { useTransactions } from '../../hooks/useTransactions';
+import { formatToPesos } from '../../utils/utils';
 
 
 const ExpandableReason = ({ text }) => {
@@ -45,6 +46,63 @@ const ActivLog = () => {
         <span className={styles['dt-time']}>{time}</span>
       </>
     );
+  };
+
+  const [activeDiffTransaction, setActiveDiffTransaction] = useState(null);
+
+  const computeRevenue = (transaction) => {
+    return (transaction.transaction_items || []).reduce(
+      (sum, item) => sum + (item.product_unit_price || 0) * (item.quantity_bought || 0),
+      0
+    );
+  };
+
+  const buildDiffForTransaction = (txn) => {
+    if (!txn.prev_txn_id) {
+      return null;
+    }
+  
+    const parentTxn = transactions.find(t => t.transaction_id === txn.prev_txn_id);
+
+    if (!parentTxn) {
+      return null;
+    }
+    
+    const oldItems = parentTxn.transaction_items || [];
+    const newItems = txn.transaction_items || [];
+    const itemMap = new Map();
+
+    oldItems.forEach(item => {
+      itemMap.set(item.product_id, { oldItem: item });
+    });
+
+    newItems.forEach(item => {
+      const existing = itemMap.get(item.product_id) || {};
+      itemMap.set(item.product_id, { ...existing, newItem: item });
+    });
+
+    const itemDiffs = Array.from(itemMap.values()).map(({ oldItem, newItem }) => {
+      const oldQuantity = oldItem?.quantity_bought ?? 0;
+      const newQuantity = newItem?.quantity_bought ?? 0;
+      const unitPrice = newItem?.product_unit_price ?? oldItem?.product_unit_price ?? 0;
+      return {
+        product_id: oldItem?.product_id ?? newItem?.product_id,
+        product_name: newItem?.product_name || oldItem?.product_name || `Product #${oldItem?.product_id ?? newItem?.product_id}`,
+        oldQuantity,
+        newQuantity,
+        quantityDelta: newQuantity - oldQuantity,
+        unitPrice,
+        revenueDelta: (newQuantity - oldQuantity) * unitPrice,
+      };
+    }).sort((a, b) => a.product_name.localeCompare(b.product_name));
+
+    return {
+      previousTransactionId: parentTxn.transaction_id,
+      oldRevenue: computeRevenue(parentTxn),
+      newRevenue: computeRevenue(txn),
+      revenueDelta: computeRevenue(txn) - computeRevenue(parentTxn),
+      itemDiffs,
+    };
   };
 
   const logs = transactions.flatMap(txn => {
@@ -165,24 +223,112 @@ const ActivLog = () => {
                 <th>Done by</th>
                 <th>Activity Description</th>
                 <th>Activity Reason</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {
-                sortedLogs.map(log => (
-                  <tr key={log.log_id}>
-                    <td>{log.id}</td>
-                    <td>{log.activityType}</td>
-                    <td>{formatDateTime(log.doneAt)}</td>
-                    <td>{log.doneBy}</td>
-                    <td>{log.details}</td>
-                    <td><ExpandableReason text={log.reason_for_edit} /></td>
-                  </tr>
-                ))
+                sortedLogs.map(log => {
+                  const canShowDiff = log.activityType === 'correction' && log.transaction_details?.prev_txn_id &&
+                    transactions.some(t => t.transaction_id === log.transaction_details.prev_txn_id);
+                  return (
+                    <tr key={log.log_id}>
+                      <td>{log.id}</td>
+                      <td>{log.activityType}</td>
+                      <td>{formatDateTime(log.doneAt)}</td>
+                      <td>{log.doneBy}</td>
+                      <td>{log.details}</td>
+                      <td><ExpandableReason text={log.reason_for_edit} /></td>
+                      <td>
+                        {canShowDiff ? (
+                          <button
+                            type="button"
+                            className={styles['diff-button']}
+                            onClick={() => setActiveDiffTransaction(log.transaction_details)}
+                          >
+                            Show diff
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })
               }
             </tbody>
           </table>
         </div>
+
+        {activeDiffTransaction && (
+          <div className={styles['diff-popup-overlay']} role="dialog" aria-modal="true">
+            <div className={styles['diff-popup']}>
+              <div className={styles['diff-popup-header']}>
+                <div>
+                  <h3>Transaction edit diff</h3>
+                  <p>Compare sale #{activeDiffTransaction.prev_txn_id} with #{activeDiffTransaction.transaction_id}</p>
+                </div>
+                <button
+                  type="button"
+                  className={styles['popup-close']}
+                  onClick={() => setActiveDiffTransaction(null)}
+                  aria-label="Close diff popup"
+                >
+                  ×
+                </button>
+              </div>
+              <div className={styles['diff-popup-body']}>
+                {(() => {
+                  const diff = buildDiffForTransaction(activeDiffTransaction);
+                  if (!diff) {
+                    return <p className={styles['diff-empty']}>No parent transaction found to compare.</p>;
+                  }
+
+                  return (
+                    <>
+                      <div className={styles['diff-summary']}>
+                        <span>Previous revenue: {formatToPesos(diff.oldRevenue)}</span>
+                        <span>New revenue: {formatToPesos(diff.newRevenue)}</span>
+                        <span className={diff.revenueDelta >= 0 ? styles['delta-positive'] : styles['delta-negative']}>
+                          Δ {diff.revenueDelta >= 0 ? '+' : ''}{formatToPesos(diff.revenueDelta)}
+                        </span>
+                      </div>
+
+                      <div className={styles['diff-table-wrap']}>
+                        <table className={styles['diff-table']}>
+                          <thead>
+                            <tr>
+                              <th>Product</th>
+                              <th>Old Qty</th>
+                              <th>New Qty</th>
+                              <th>Qty Δ</th>
+                              <th>Unit Price</th>
+                              <th>Δ Revenue</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {diff.itemDiffs.map(item => (
+                              <tr key={item.product_id}>
+                                <td>{item.product_name}</td>
+                                <td>{item.oldQuantity}</td>
+                                <td>{item.newQuantity}</td>
+                                <td className={item.quantityDelta >= 0 ? styles['delta-positive'] : styles['delta-negative']}>
+                                  {item.quantityDelta >= 0 ? '+' : ''}{item.quantityDelta}
+                                </td>
+                                <td>{formatToPesos(item.unitPrice)}</td>
+                                <td className={item.revenueDelta >= 0 ? styles['delta-positive'] : styles['delta-negative']}>
+                                  {item.revenueDelta >= 0 ? '+' : ''}{formatToPesos(item.revenueDelta)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
