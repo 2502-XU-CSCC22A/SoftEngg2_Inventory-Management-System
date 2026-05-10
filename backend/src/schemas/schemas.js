@@ -24,7 +24,7 @@ export const updateTransactionSchema = Joi.object({
             then: Joi.string().min(1).required(),
             otherwise: Joi.optional()
         }),
-    reason_for_edit: Joi.string(),
+    reason_for_edit: Joi.string().max(255).required(),
     transaction_items: Joi.array().items(
         Joi.object({
             product_id: Joi.number().positive().required(),
