@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./editsales.module.css";
 import { useProducts } from "../../hooks/useProducts.js";
 import { formatToPesos } from "../../utils/utils.js"
+import _ from "lodash";
 
 function EditSales({ onClose, transaction, onSave }) {
     const [formData, setFormData] = useState({
@@ -113,8 +114,6 @@ function EditSales({ onClose, transaction, onSave }) {
         }));
     }
 
-    
-
     const handleRemoveItem = (itemId) => {
         setFormData(prev => ({ 
             ...prev, 
@@ -122,7 +121,30 @@ function EditSales({ onClose, transaction, onSave }) {
         }));
     }
 
+    const hasChanges = () => {
+        const detailsChanged =
+            (transaction.payment_type !== formData.payment_type) ||
+            (transaction.payment_refstr !== formData.payment_refstr);
+
+        if (detailsChanged) { 
+            return true;
+        }
+
+        const oldProducts = _.sortBy(transaction.transaction_items, 'product_id')
+            .map(item => _.pick(item, ['product_id', 'quantity_bought']));
+
+        const newProducts = _.sortBy(formData.transaction_items, 'product_id')
+            .map(item => _.pick(item, ['product_id', 'quantity_bought']));
+
+        return !_.isEqual(oldProducts, newProducts);
+    };
+
     const handleSave = async () => {
+        if (!hasChanges()) {
+            alert("Aborting save; nothing changed from the edited transaction.");
+            return;
+        }
+
         if (!formData.payment_type) {
             setError("Please fill in all required fields.");
             return;
@@ -145,6 +167,7 @@ function EditSales({ onClose, transaction, onSave }) {
                 transaction_id: transaction.transaction_id
             };
             
+            console.log(updatedData); 
             await onSave(updatedData);
             onClose();
         } catch (err) {
@@ -215,7 +238,7 @@ function EditSales({ onClose, transaction, onSave }) {
                     <button
                         className={styles.buttonpop}
                         onClick={handleSave}
-                        disabled={loading || query.isLoading}
+                        disabled={loading || query.isLoading || !hasChanges()}
                     >
                         {loading ? "Saving..." : "Save Changes"}
                     </button>
