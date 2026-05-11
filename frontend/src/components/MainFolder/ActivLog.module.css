@@ -313,11 +313,15 @@ tbody tr:hover {
   color: #3d2810;
 }
 
-.delta-positive {
+.diff-table td.delta-neutral {
+  color: #3d2810
+}
+
+.diff-table td.delta-positive {
   color: var(--success);
 }
 
-.delta-negative {
+.diff-table td.delta-negative {
   color: #dc2626;
 }
 
