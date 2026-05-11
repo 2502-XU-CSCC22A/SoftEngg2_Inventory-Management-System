@@ -167,7 +167,6 @@ function EditSales({ onClose, transaction, onSave }) {
                 transaction_id: transaction.transaction_id
             };
             
-            console.log(updatedData); 
             await onSave(updatedData);
             onClose();
         } catch (err) {
