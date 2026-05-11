@@ -1,13 +1,12 @@
-import "./welcomeuser.css";
+import styles from "./welcomeuser.module.css";
 import { useNavigate } from "react-router-dom";
 function Welcomeuser() {
     const navigate = useNavigate();
     return (
-        <div className ="welcomeuserpage">
-            <h1 className ="welcome">Welcome</h1>
-            <div className="button-group">
-            <button onClick={() => navigate("/topproduct")} className = "startbutton">Start</button>
-            <button onClick={() => {localStorage.clear(); window.location.href = "about:blank";}}className="exitbutton">Exit</button>
+        <div className={styles.welcomeuserpage}>
+            <h1 className={styles.welcome}>Welcome</h1>
+            <div className={styles["button-group"]}>
+            <button onClick={() => navigate("/topproduct")} className={styles.startbutton}>Start</button>
             </div>
         </div>
     );

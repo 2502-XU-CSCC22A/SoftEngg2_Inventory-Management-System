@@ -3,47 +3,103 @@ import express from "express";
 export const transactionsRouter = express.Router();
 
 import models, { sequelize } from "../config/db.js";
+import { carvePayload, validate, validateMonthAndYear } from "../middleware/transactionsMiddleware.js";
+import { getTransactionByMonthAndYear, insertTransaction, updateTransaction, getAllTransactionsByMonthAndYear } from "../controllers/transactionsController.js";
+import { insertTransactionSchema, updateTransactionSchema } from "../schemas/schemas.js";
+import { fetchUpdateableTransaction } from "../middleware/transactionsMiddleware.js";
 
-//add error handling
-// -> get all transactions
 transactionsRouter.get('/', async (req, res) => {
   const transactions = await models.transactions.findAll({
     include: {
       model: models.transaction_items,
       as: "transaction_items",
+    },
+    where: {
+      voided_at: null,
     }
   });
   res.json(transactions);
 })
 
-// -> record transaction
-transactionsRouter.post('/', async (req, res) => {
+transactionsRouter.get('/show-all', async (req, res) => {
+  const transactions = await models.transactions.findAll({
+    include: {
+      model: models.transaction_items,
+      as: "transaction_items",
+    },
+  });
+  res.json(transactions);
+});
+
+
+// -> get transactions by month and year
+transactionsRouter.get('/filter', validateMonthAndYear, async (req, res) => {
+  // month = 1-based index, so we need to subtract 1 from the month value;
+  // year = 4-digit year
+  const { month, year } = req.query;
   try {
-    const result = await sequelize.transaction(async t => {
-      const newTransaction = await models.transactions.create(
-        {
-          "payment_type": req.body.payment_type,
-        },
-        { transaction: t },
-      )
-
-      const transactionItems = req.body.items.map(async (item) => {
-        const transactionItem = await models.transaction_items.create(
-          {
-            "transaction_id": newTransaction.transaction_id,
-            "product_id": item.product_id,
-            "product_quantity": item.product_quantity,
-          },
-          { transaction: t },
-        )
-      })
-
-      return await Promise.all(transactionItems);
-    })
-
-    res.json({ "message": "Success" })
+    const transactions = await getTransactionByMonthAndYear(month, year);
+    if (transactions) {
+      return res.status(200).json({ message: "Data fetched successfully.", data: transactions })
+    }
   }
   catch (error) {
-    res.json({ "message": error.message, "full_message": error.parent })
+    console.error(`Error in fetch txn by date: ${error}`);
+    return res.status(error.status || 500).json({ message: error.message });
   }
+})
+
+// -> record transaction
+transactionsRouter.post('/', validate(insertTransactionSchema), async (req, res, next) => {
+  try {
+    let result;
+    await sequelize.transaction(async t => {
+      result = await insertTransaction(req.body, t, req.session.user.user_id);
+    })
+
+    if (result) {
+      return res.status(201).json({ message: "Transaction inserted successfully.", data: result });
+    }
+  }
+  catch (error) {
+    console.error("Error in insert: ", error);
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+})
+
+// get ALL transactions by month and year (for logs)
+transactionsRouter.get('/show-all/filter', validateMonthAndYear, async (req, res) => {
+  const { month, year } = req.query;
+  try {
+    const transactions = await getAllTransactionsByMonthAndYear(month, year);
+    if (transactions) {
+      return res.status(200).json({ message: "Data fetched successfully.", data: transactions })
+    }
+  }
+  catch (error) {
+    console.error(`Error in fetch txn by date: ${error}`);
+    return res.status(error.status || 500).json({ message: error.message });
+  }
+})
+
+// -> update transaction 
+transactionsRouter.patch('/:transactionId', 
+  fetchUpdateableTransaction, 
+  validate(updateTransactionSchema), 
+  carvePayload,
+  async (req, res, next) => {
+    try {
+      let result;
+      await sequelize.transaction(async t => {
+        result = await updateTransaction(req.oldTxn, req.updatedPayload, req.session.user.user_id, t);
+      })
+
+      if (result) {
+        return res.status(200).json({ message: "Transaction updated successfully.", data: result });
+      }
+    }
+    catch (error) {
+      console.error("Error in patch: ", error.message);
+      return res.status(error.status || 500).json({ message: error.message });
+    }
 })

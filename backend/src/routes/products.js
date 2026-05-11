@@ -1,26 +1,37 @@
 import express from "express";
+import { upload } from "../config/multer.js"
 export const productsRouter = express.Router();
 import models from "../config/db.js";
-import { validateInsertPayload } from "../middleware/productsMiddleware.js";
-import { validatePatchPayload } from "../middleware/productsMiddleware.js";
-import { insertNewProduct, updateExistingProduct } from "../controllers/productsController.js";
+import { Op } from "sequelize";
+import { validate, checkValidQuery } from "../middleware/productsMiddleware.js";
+import { insertNewProduct, updateExistingProduct, updateProductImage } from "../controllers/productsController.js";
+import { insertProductSchema, updateProductSchema } from "../schemas/schemas.js";
 
-const productsSchema = {
-  product_name: "string",
-  product_unit_price: "number",
-  product_quantity: "number",
-  is_still_offered: "boolean"
-}
-
-//add error handling
-// -> get all products
+// unified get products route 
 productsRouter.get('/', async (req, res) => {
-  const products = await models.products.findAll();
-  res.json(products);
+  const { is_still_offered } = req.query;
+
+  let products = null;
+
+  if (is_still_offered !== undefined) {
+    products = await models.products.findAll({
+      where: {
+        is_still_offered: is_still_offered === "true",
+      },
+      order: [["product_name", "ASC"]],
+    })
+  }
+  else {
+    products = await models.products.findAll({ order: [["product_name", "ASC"]]})
+  }
+
+  return res.status(200).json({ message: "Products fetched successfully.", data: products })
 })
 
 // -> add new product
-productsRouter.post('/', validateInsertPayload(productsSchema), insertNewProduct)
+productsRouter.post('/', upload.single('image'), validate(insertProductSchema), insertNewProduct)
 
 // update any of the product details (except for product_id)
-productsRouter.patch('/:productId', validatePatchPayload(productsSchema), updateExistingProduct);
+productsRouter.patch('/:productId', validate(updateProductSchema), updateExistingProduct);
+
+productsRouter.patch('/:productId/image', upload.single('image'), updateProductImage); 

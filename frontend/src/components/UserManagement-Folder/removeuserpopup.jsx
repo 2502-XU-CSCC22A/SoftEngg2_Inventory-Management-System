@@ -1,22 +1,87 @@
-import "./removeuserpopup.css";
-import Confirmation from "./confirmation";
+import styles from "./removeuserpopup.module.css";
 import { useState } from "react";
-function RemoveUserPopup({ onClose }) {
-      const [showConfirm, setShowConfirm] = useState(false);
+import api from "../../api/api.js";
+
+function RemoveUserPopup({ onClose, onUserRemoved, users }) {
+    const [selectedUsername, setSelectedUsername] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleRemove = async () => {
+        if (!selectedUsername) {
+            setError("Please select a user to remove.");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+        
+        try {
+            const userToRemove = users.find(u => (u.username || u.user_name) === selectedUsername);
+            const userId = userToRemove?.id || userToRemove?.user_id;
+            
+            const response = await api.delete(`/users/${userId}`);
+            
+            if (response.status === 200) {
+                alert(`User "${selectedUsername}" has been removed successfully!`);
+                if (onUserRemoved) {
+                    await onUserRemoved(selectedUsername);
+                }
+                onClose();
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to remove user. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="popup">
-            <div className="removepopup">
-                <h1 className="removeusertitle">Remove User</h1>
-                <h3>Username:</h3>
-                <input type="text" placeholder="Enter Username" className="text-design"/>
-                <h3>ID:</h3>
-                <input type="text" placeholder="Enter User ID" className="text-design"/>
-                <button onClick={() => setShowConfirm(true)} className="buttonpop">Confirm</button>
-                <br />
-                <button onClick={onClose}className="buttonpop">Cancel</button> {/*will be back */}
+        <div className={styles.popup}>
+            <div className={styles.removepopup}>
+                <h1 className={styles.removeusertitle}>Remove User</h1>
+               
+                {error && (
+                    <div className={styles.errorMessage} style={{ color: "red", textAlign: "center", marginBottom: "10px", fontSize: "13px" }}>
+                        {error}
+                    </div>
+                )}
+               
+                <h3>Select User:</h3>
+                <select
+                    className={styles.textdesign}
+                    value={selectedUsername}
+                    onChange={(e) => setSelectedUsername(e.target.value)}
+                >
+                    <option value="">Select a user</option>
+                    {users.map((user) => (
+                        <option key={user.id || user.user_id} value={user.username || user.user_name}>
+                            {user.username || user.user_name} ({user.is_admin ? "admin" : "user"})
+                        </option>
+                    ))}
+                </select>
+               
+                <p style={{ fontSize: "12px", color: "#999", marginTop: "10px", marginBottom: "15px" }}>
+                    This action cannot be undone.
+                </p>
+               
+                <button
+                    onClick={handleRemove}
+                    className={styles.buttonpop}
+                    disabled={loading}
+                >
+                    {loading ? "Removing..." : "Remove User"}
+                </button>
+                <button
+                    onClick={onClose}
+                    className={styles.buttonpop}
+                    disabled={loading}
+                >
+                    Cancel
+                </button>
             </div>
-            {showConfirm && <Confirmation onClose={() => setShowConfirm(false)} />}
-      </div>
+        </div>
     );
 }
+
 export default RemoveUserPopup;

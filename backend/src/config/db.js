@@ -9,19 +9,31 @@ const __dirname = dirname(__filename);
 
 dotenv.config({ path: resolve(__dirname, '../../.env') });
 
-const DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@db:5432/${process.env.PG_DB}`
+let DB_URL = null;
 
-export const sequelize = new Sequelize(DB_URL)
+if (process.env.NODE_ENV !== "test") {
+  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@db:5432/${process.env.PG_DB}`;
+}
+else {
+  DB_URL = `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@db:5432/test_db`;
+}
+
+export const sequelize = new Sequelize(DB_URL);
+
+const models = initModels(sequelize);
 
 export const testDBConnection = async () => {
   try {
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
+
+    if (process.env.NODE_ENV !== 'test') {
+      await sequelize.sync({ alter: true });
+      console.log('Database synced (alter mode).');
+    }
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
 }
-
-const models = initModels(sequelize);
 
 export default models;

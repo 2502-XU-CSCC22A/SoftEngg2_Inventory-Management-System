@@ -1,0 +1,334 @@
+.welcomeadminpage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9f0e6 0%, #f0e2d4 50%, #e8d5c4 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcomeadminpage::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(196, 164, 132, 0.15) 0%, rgba(196, 164, 132, 0) 70%);
+  border-radius: 50%;
+  top: -100px;
+  left: -100px;
+  animation: floatBubble 22s ease-in-out infinite;
+}
+
+.welcomeadminpage::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139, 94, 60, 0.1) 0%, rgba(139, 94, 60, 0) 70%);
+  border-radius: 50%;
+  bottom: -150px;
+  right: -150px;
+  animation: floatBubble 28s ease-in-out infinite reverse;
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 40px) scale(0.9);
+  }
+}
+
+.welcome {
+  font-size: 80px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8B5E3C 0%, #a0846b 40%, #C4A484 60%, #8B5E3C 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 50px;
+  letter-spacing: -2px;
+  animation: shimmerFlow 5s linear infinite;
+  text-align: center;
+  position: relative;
+}
+
+@keyframes shimmerFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.welcome::before {
+  content: '❀';
+  position: absolute;
+  top: -20px;
+  left: -30px;
+  font-size: 30px;
+  color: #C4A484;
+  opacity: 0.5;
+  animation: gentleRotate 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.welcome::after {
+  content: '❀';
+  position: absolute;
+  bottom: -20px;
+  right: -30px;
+  font-size: 30px;
+  color: #C4A484;
+  opacity: 0.5;
+  animation: gentleRotate 8s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes gentleRotate {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+.usermanagement {
+  position: absolute;
+  top: 50px;
+  right: 80px;
+  color: white;
+  background-color: rgba(152, 116, 96, 1);
+  border: none;
+  border-radius: 8px;
+  width: 180px;
+  height: 45px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.usermanagement:hover {
+  background-color: rgba(152, 116, 96, 0.9);
+  transition: 0.3s;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 25px;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.startbutton {
+  color: white;
+  background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
+  border: none;
+  border-radius: 50px;
+  width: 200px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 25px rgba(139, 94, 60, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.startbutton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.startbutton::after {
+  content: '→';
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.startbutton:hover::before {
+  left: 100%;
+}
+
+.startbutton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(139, 94, 60, 0.4);
+  background: linear-gradient(135deg, #8B5E3C 0%, #6b462a 100%);
+  padding-right: 45px;
+}
+
+.startbutton:hover::after {
+  opacity: 1;
+  right: 20px;
+}
+
+.startbutton:active {
+  transform: translateY(1px);
+  box-shadow: 0 5px 20px rgba(139, 94, 60, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome {
+    font-size: 60px;
+    margin-bottom: 40px;
+  }
+  
+  .welcome::before,
+  .welcome::after {
+    font-size: 24px;
+  }
+  
+  .welcome::before {
+    top: -15px;
+    left: -20px;
+  }
+  
+  .welcome::after {
+    bottom: -15px;
+    right: -20px;
+  }
+  
+  .usermanagement {
+    top: 30px;
+    right: 30px;
+    width: 160px;
+    height: 42px;
+    font-size: 14px;
+  }
+  
+  .startbutton {
+    width: 180px;
+    height: 45px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome {
+    font-size: 42px;
+    margin-bottom: 35px;
+    letter-spacing: -1px;
+  }
+  
+  .welcome::before,
+  .welcome::after {
+    font-size: 18px;
+  }
+  
+  .welcome::before {
+    top: -10px;
+    left: -15px;
+  }
+  
+  .welcome::after {
+    bottom: -10px;
+    right: -15px;
+  }
+  
+  .usermanagement {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-bottom: 30px;
+    width: 180px;
+    height: 42px;
+    font-size: 14px;
+  }
+  
+  .welcomeadminpage {
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .buttonGroup {
+    gap: 15px;
+  }
+  
+  .startbutton {
+    width: 160px;
+    height: 42px;
+    font-size: 13px;
+  }
+  
+  .startbutton::after {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .welcome {
+    font-size: 36px;
+  }
+  
+  .startbutton {
+    width: 140px;
+    height: 40px;
+    font-size: 12px;
+  }
+  
+  .usermanagement {
+    width: 160px;
+    height: 40px;
+    font-size: 13px;
+  }
+}
+
+.startbutton:focus-visible {
+  outline: 2px solid #C4A484;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(196, 164, 132, 0.3);
+  color: #8B5E3C;
+}
+
+.welcomeadminpage {
+  opacity: 0;
+  animation: pageFadeIn 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
