@@ -84,14 +84,14 @@
 
 .textarea {
   width: 100%;
-  padding: 12px 15px;
+  padding: 16px;
   border: 2px solid rgba(196, 164, 132, 0.3);
   border-radius: 16px;
   font-size: 14px;
   background: white;
   transition: all 0.3s ease;
   box-sizing: border-box;
-  height: 120px;
+  min-height: 100px;
   resize: vertical;
   overflow-y: auto;
   font-family: inherit;
