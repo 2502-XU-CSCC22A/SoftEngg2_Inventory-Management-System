@@ -141,7 +141,7 @@ function EditSales({ onClose, transaction, onSave }) {
 
     const handleSave = async () => {
         if (!hasChanges()) {
-            alert("Aborting save; nothing changed from the edited transaction.");
+            setError("No changes detected between new and old transaction.");
             return;
         }
 
@@ -237,7 +237,7 @@ function EditSales({ onClose, transaction, onSave }) {
                     <button
                         className={styles.buttonpop}
                         onClick={handleSave}
-                        disabled={loading || query.isLoading || !hasChanges()}
+                        disabled={loading || query.isLoading}
                     >
                         {loading ? "Saving..." : "Save Changes"}
                     </button>
