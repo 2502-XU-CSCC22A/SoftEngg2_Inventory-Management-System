@@ -299,6 +299,7 @@ No analytics queries were modified in this enhancement. All existing queries fet
 | Frontend | Save as Pending button added | ✅ |
 | Frontend | UI Polish: Status Tabs & Icons added | ✅ |
 | Frontend | UI Polish: Enhanced Modals added | ✅ |
+| Backend & Frontend | `completed_at` timestamp tracking added | ✅ |
 
 ---
 
@@ -316,3 +317,17 @@ After the functional implementation of the transaction statuses, a dedicated UI 
    - Separated the "Pending" action buttons into a distinct highlighted action row (`.modalActionRow`) at the bottom of the modal.
 4. **Polished Confirmation Modals (`ConfirmModal`)**: Upgraded the generic confirmation dialogs. They now feature a large, centered, circular icon at the top (a green check or a red X) to immediately visually communicate the action's intent, combined with refined typography and button sizing.
 5. **Visual Cues for Cancelled Transactions**: Cancelled transactions in the main table now have their row slightly dimmed (`opacity: 0.7`) and their revenue number struck-through to visually reinforce that they do not contribute to total sales.
+
+---
+
+## Completion Timing Tracking (Phase 4.2)
+
+To distinguish between when a transaction was initiated and when it was actually finalized:
+
+1. **`completed_at` Column**: Added a new timestamp column to the `transactions` table.
+2. **Automatic Recording**: 
+   - New "Complete Sale" transactions immediately record the current time as `completed_at`.
+   - "Pending" transactions leave `completed_at` empty until the user manually clicks "Mark as Completed", at which point the timestamp is recorded.
+3. **UI Transparency**: The Transaction Detail modal now displays both the **Created At** and **Completed At** times, providing a clear audit trail of the transaction lifecycle.
+4. **Data Migration**: All pre-existing completed transactions were automatically backfilled with their creation time to ensure data consistency.
+

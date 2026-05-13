@@ -76,6 +76,8 @@ function TransactionDetailModal({ transaction, onClose, formatDateTime, formatTo
         0
     );
     const txnStatus = transaction.status || 'completed';
+    const createdAt = transaction.created_at || transaction.datetime;
+    const completedAt = transaction.completed_at || (txnStatus === 'completed' ? createdAt : null);
 
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
@@ -96,9 +98,15 @@ function TransactionDetailModal({ transaction, onClose, formatDateTime, formatTo
 
                 <div className={styles.modalMeta}>
                     <div className={styles.modalMetaRow}>
-                        <span className={styles.modalMetaLabel}>Date &amp; Time</span>
+                        <span className={styles.modalMetaLabel}>Created At</span>
                         <span className={styles.modalMetaValue}>
-                            {formatDateTime(transaction.created_at || transaction.datetime)}
+                            {formatDateTime(createdAt)}
+                        </span>
+                    </div>
+                    <div className={styles.modalMetaRow}>
+                        <span className={styles.modalMetaLabel}>Completed At</span>
+                        <span className={styles.modalMetaValue}>
+                            {completedAt ? formatDateTime(completedAt) : '—'}
                         </span>
                     </div>
                     <div className={styles.modalMetaRow}>
@@ -214,7 +222,8 @@ function Sales() {
     const monthNames = Array.from({ length: 12 }, (_, i) =>
         new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(2026, i))
     );
-    const futureYears = Array.from({ length: 101 }, (_, i) => 2026 + i);
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: (currentYear + 5) - 2020 + 1 }, (_, i) => 2020 + i).reverse();
 
     const statusFilterConfig = [
         { value: 'all', label: '📋 All Statuses' },
@@ -262,7 +271,7 @@ function Sales() {
                     </button>
                     <div className={styles.filters}>
                         <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className={styles.yearDropdown}>
-                            {futureYears.map(year => <option key={year} value={year}>{year}</option>)}
+                            {years.map(year => <option key={year} value={year}>{year}</option>)}
                         </select>
                         <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className={styles.monthDropdown}>
                             {monthNames.map((name, index) => <option key={index} value={index + 1}>{name}</option>)}

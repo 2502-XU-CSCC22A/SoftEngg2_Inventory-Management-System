@@ -154,7 +154,11 @@ const Monthlyreport = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const monthlyData = useMemo(() => {
-    const transactions = query.data || [];
+    const rawData = query.data?.data ?? query.data ?? [];
+    // Only count completed transactions in revenue analytics
+    const transactions = Array.isArray(rawData)
+      ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+      : [];
     const grouped = {};
     let unusualTransactions = [];
 
@@ -196,7 +200,11 @@ const Monthlyreport = () => {
   }, [monthlyData, selectedMonth, selectedYear]);
 
   const dailyChartData = useMemo(() => {
-    const transactions = query.data || [];
+    const rawData = query.data?.data ?? query.data ?? [];
+    // Only count completed transactions in the daily chart
+    const transactions = Array.isArray(rawData)
+      ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+      : [];
     const totalDays = getDaysInMonth(selectedYear, selectedMonth);
     const dayMap = {};
 
@@ -231,7 +239,11 @@ const Monthlyreport = () => {
   };
 
   const handleExport = () => {
-    const transactions = query.data || [];
+    const rawData = query.data?.data ?? query.data ?? [];
+    // Only export completed transactions
+    const transactions = Array.isArray(rawData)
+      ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+      : [];
     const rows = [['Transaction ID', 'Date', 'Product', 'Quantity', 'Unit Price', 'Revenue']];
 
     transactions.forEach(txn => {

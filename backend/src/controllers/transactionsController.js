@@ -1,7 +1,5 @@
 import { Op } from "sequelize";
-import { registerConsoleShortcuts } from "vitest/node";
 import models, { sequelize } from "../config/db.js";
-import { where } from "sequelize";
 import { getValidProduct, getValidUser, insertTransactionItem, isPayloadIdentical, patchTransactionPayload, validatePurchasedAmount } from "../services/transactionService.js";
 import _ from "lodash";
 
@@ -18,6 +16,10 @@ export const insertTransaction = async (data, t, userId) => {
     // Only 'pending' and 'completed' are valid on creation (validated by schema).
     if (!data.status) {
         data.status = 'completed';
+    }
+
+    if (data.status === 'completed') {
+        data.completed_at = new Date();
     }
 
     const { transaction_items, ...transactionData } = data  
@@ -172,8 +174,19 @@ export const updateTransactionStatus = async (transactionId, newStatus, t) => {
 
     // Transition: pending → completed
     // No inventory change — stock was already reserved on creation.
+    const updateData = { status: newStatus };
+    if (newStatus === 'completed') {
+        updateData.completed_at = new Date();
+    }
 
-    await txn.update({ status: newStatus }, { transaction: t });
+    await txn.update(updateData, { transaction: t });
+
+    // Reload to ensure completed_at and all fields reflect the persisted DB state.
+    await txn.reload({
+        include: { model: models.transaction_items, as: 'transaction_items' },
+        transaction: t,
+    });
+
     return txn;
 }
 

@@ -1,4 +1,3 @@
-import { defaultValueSchemable } from "sequelize/lib/utils";
 import models, { sequelize } from "../config/db.js";
 import { patchTransactionPayload, isPayloadIdentical } from "../services/transactionService.js";
 

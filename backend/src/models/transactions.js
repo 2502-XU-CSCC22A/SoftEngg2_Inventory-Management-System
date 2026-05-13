@@ -48,6 +48,10 @@ export default class transactions extends Model {
       type: DataTypes.ENUM('pending', 'completed', 'cancelled'),
       allowNull: false,
       defaultValue: 'completed',
+    },
+    completed_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
