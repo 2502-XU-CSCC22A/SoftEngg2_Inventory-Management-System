@@ -13,6 +13,13 @@ import _ from "lodash";
 export const insertTransaction = async (data, t, userId) => {
     data.created_by = userId;
 
+    // Enhancement: support optional status on creation.
+    // Defaults to 'completed' to preserve existing sales behavior.
+    // Only 'pending' and 'completed' are valid on creation (validated by schema).
+    if (!data.status) {
+        data.status = 'completed';
+    }
+
     const { transaction_items, ...transactionData } = data  
     const txn = await models.transactions.create(transactionData, { transaction: t })
     const txnJSON = txn.toJSON()
@@ -23,6 +30,8 @@ export const insertTransaction = async (data, t, userId) => {
         validatePurchasedAmount(item.quantity_bought, product.product_quantity)   
         const txnItem = await insertTransactionItem(productJSON, txnJSON, item, t);
 
+        // Inventory is deducted immediately regardless of status (pending or completed).
+        // This reserves the stock for pending transactions and deducts for completed ones.
         await models.products.decrement('product_quantity', {
             by: item.quantity_bought,
             where: {
@@ -73,18 +82,29 @@ export const updateTransaction = async (oldTxn, updatedPayload, userId, t) => {
     return newTxn;
 }
 
-export const getTransactionByMonthAndYear = async (month, year) => {
+export const getTransactionByMonthAndYear = async (month, year, status = null) => {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 1);
 
-    const transactions = await models.transactions.findAll({
-        where: {
-            created_at: {
-                [Op.gte]: startDate,
-                [Op.lt]: endDate,
-            },
-            voided_at: null,
+    const allowedStatuses = ['pending', 'completed', 'cancelled'];
+
+    // Build where clause. Always exclude voided (edited) records.
+    const where = {
+        created_at: {
+            [Op.gte]: startDate,
+            [Op.lt]: endDate,
         },
+        voided_at: null,
+    };
+
+    // Enhancement: if a valid status filter is provided, apply it.
+    // If status is 'all' or not provided, return all non-voided transactions.
+    if (status && status !== 'all' && allowedStatuses.includes(status)) {
+        where.status = status;
+    }
+
+    const transactions = await models.transactions.findAll({
+        where,
         include: {
             model: models.transaction_items,
             as: "transaction_items",
@@ -93,6 +113,68 @@ export const getTransactionByMonthAndYear = async (month, year) => {
     })
 
     return transactions;
+}
+
+// Enhancement: Update the status of a transaction following strict lifecycle rules.
+export const updateTransactionStatus = async (transactionId, newStatus, t) => {
+    const allowedNewStatuses = ['completed', 'cancelled'];
+
+    if (!allowedNewStatuses.includes(newStatus)) {
+        const error = new Error('Invalid status. Only "completed" or "cancelled" are allowed.');
+        error.status = 400;
+        throw error;
+    }
+
+    const txn = await models.transactions.findOne({
+        where: { transaction_id: transactionId, voided_at: null },
+        include: { model: models.transaction_items, as: 'transaction_items' },
+        transaction: t,
+    });
+
+    if (!txn) {
+        const error = new Error('Transaction not found.');
+        error.status = 404;
+        throw error;
+    }
+
+    const currentStatus = txn.status;
+
+    // Enforce strict lifecycle rules:
+    if (currentStatus === 'completed') {
+        const error = new Error('Completed transactions cannot be changed in this version.');
+        error.status = 400;
+        throw error;
+    }
+
+    if (currentStatus === 'cancelled') {
+        const error = new Error('Cancelled transactions cannot be changed.');
+        error.status = 400;
+        throw error;
+    }
+
+    if (currentStatus === newStatus) {
+        const error = new Error(`Transaction is already ${currentStatus}.`);
+        error.status = 400;
+        throw error;
+    }
+
+    // Transition: pending → cancelled
+    // Restore the reserved inventory for each item.
+    if (currentStatus === 'pending' && newStatus === 'cancelled') {
+        for (const item of txn.transaction_items) {
+            await models.products.increment('product_quantity', {
+                by: item.quantity_bought,
+                where: { product_id: item.product_id },
+                transaction: t,
+            });
+        }
+    }
+
+    // Transition: pending → completed
+    // No inventory change — stock was already reserved on creation.
+
+    await txn.update({ status: newStatus }, { transaction: t });
+    return txn;
 }
 
 export const getAllTransactionsByMonthAndYear = async (month, year) => {
