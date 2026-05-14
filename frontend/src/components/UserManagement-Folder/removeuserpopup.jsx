@@ -1,8 +1,10 @@
 import styles from "./removeuserpopup.module.css";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api/api.js";
 
 function RemoveUserPopup({ onClose, onUserRemoved, users }) {
+    const navigate = useNavigate();
     const [selectedUsername, setSelectedUsername] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -27,10 +29,22 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                 if (onUserRemoved) {
                     await onUserRemoved(selectedUsername);
                 }
+                if(response.data.isSelfDelete){ //if user deletes themself, they get logged out
+                    try {
+                        await fetch("http://localhost:3000/auth/logout", {
+                            method: "DELETE",
+                            credentials: "include"
+                        });
+                        navigate("/login"); 
+                    } catch (err) {
+                        console.log("Logout failed", err);
+                        navigate("/login"); 
+                    }
+                }
                 onClose();
             }
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to remove user. Please try again.");
+            setError(err.response?.data?.error || "Failed to remove user. Please try again.");
         } finally {
             setLoading(false);
         }
