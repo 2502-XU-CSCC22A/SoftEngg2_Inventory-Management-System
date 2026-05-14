@@ -65,6 +65,7 @@ const Available = () => {
   );
 
   const handleChangeImage = (e, productId) => {
+    console.log(productId);
     const file = e.target.files[0];
 
     if (!file) {
@@ -147,8 +148,8 @@ const Available = () => {
                       {
                         product.is_still_offered && (
                           <>
-                            <input id={`upload-file-${product.product_id}`} type="file" id="actual-btn" hidden onChange={(e) => handleChangeImage(e, product.product_id)} />
-                            <label htmlFor='actual-btn' className={styles['upload-btn']}> <MdFileUpload className={styles['upload-icon']} /> </label>
+                            <input id={`upload-file-${product.product_id}`} type="file" hidden onChange={(e) => handleChangeImage(e, product.product_id)} />
+                            <label htmlFor={`upload-file-${product.product_id}`} className={styles['upload-btn']}> <MdFileUpload className={styles['upload-icon']} /> </label>
                           </>
                         )
                       }
