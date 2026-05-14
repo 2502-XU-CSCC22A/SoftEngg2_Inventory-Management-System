@@ -35,7 +35,10 @@ export const useTransactions = (month = null, year = null) => {
                 return data;
             }
             catch (error) {
-                if (error.response && error.response.data) {
+                if (error.response && error.response.data.errors) {
+                    throw new Error(error.response.data.errors.map(e => e.message).join(", "));
+                }
+                else {
                     throw new Error(error.response.data.message || "Something went wrong.");
                 }
             }
@@ -56,7 +59,10 @@ export const useTransactions = (month = null, year = null) => {
                 return data;
             }
             catch (error) {
-                if (error.response && error.response.data) {
+                if (error.response && error.response.data.errors) {
+                    throw new Error(error.response.data.errors.map(e => e.message).join(", "));
+                }
+                else {
                     throw new Error(error.response.data.message || "Something went wrong.");
                 }
             }
