@@ -1,8 +1,10 @@
 import styles from "./removeuserpopup.module.css";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api/api.js";
 
 function RemoveUserPopup({ onClose, onUserRemoved, users }) {
+    const navigate = useNavigate();
     const [selectedUsername, setSelectedUsername] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -26,6 +28,18 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                 alert(`User "${selectedUsername}" has been removed successfully!`);
                 if (onUserRemoved) {
                     await onUserRemoved(selectedUsername);
+                }
+                if(response.data.isSelfDelete){
+                    try {
+                        await fetch("http://localhost:3000/auth/logout", {
+                            method: "DELETE",
+                            credentials: "include"
+                        });
+                        navigate("/login"); 
+                    } catch (err) {
+                        console.log("Logout failed", err);
+                        navigate("/login"); 
+                    }
                 }
                 onClose();
             }
