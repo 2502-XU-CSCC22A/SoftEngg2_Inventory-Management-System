@@ -30,7 +30,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                 onClose();
             }
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to remove user. Please try again.");
+            setError(err.response?.data?.error || "Failed to remove user. Please try again.");
         } finally {
             setLoading(false);
         }
