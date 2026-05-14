@@ -31,6 +31,9 @@ export const useProducts = (is_still_offered = undefined) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
+        }
     });
 
     const insertMutation = useMutation({
@@ -52,6 +55,9 @@ export const useProducts = (is_still_offered = undefined) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
+        }
     });
 
     const updateImageMutation = useMutation({
@@ -68,6 +74,9 @@ export const useProducts = (is_still_offered = undefined) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
         }
     })
 
