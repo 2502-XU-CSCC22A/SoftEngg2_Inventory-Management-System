@@ -18,32 +18,65 @@ export const useProducts = (is_still_offered = undefined) => {
     // The Updater (Mutation)
     const updateMutation = useMutation({
         mutationFn: async ({ product_id, ...payload }) => {
-            return api.patch(`/products/${product_id}`, payload);
+            try {
+                const { data } = await api.patch(`/products/${product_id}`, payload);
+                return data;
+            }
+            catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Something went wrong.");
+                }
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
+        }
     });
 
     const insertMutation = useMutation({
         mutationFn: async (newProduct) => {
-            return api.post('/products', newProduct, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
+            try {
+                const { data } = await api.post('/products', newProduct, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                });
+                return data;
+            }
+            catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Something went wrong.");
                 }
-            });
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
+        }
     });
 
     const updateImageMutation = useMutation({
         mutationFn: async ({ productId, formData }) => {
-            return api.patch(`/products/${productId}/image`, formData)
+            try {
+                const { data } = await api.patch(`/products/${productId}/image`, formData);
+                return data;
+            }
+            catch (error) {
+                if (error.response && error.response.data) {
+                    throw new Error(error.response.data.message || "Something went wrong.");
+                }
+            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+        onError: (error) => {
+            alert(`Error: ${error.message}`)
         }
     })
 
