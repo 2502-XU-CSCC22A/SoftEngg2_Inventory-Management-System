@@ -30,6 +30,11 @@ function EditAvailable({ product, onClose, onSave }) {
       return;
     }
 
+    if (Number.isInteger(updatedQuantity) === false) {
+      alert("Invalid quantity entered. Please enter a whole number.");
+      return;
+    }
+
     onSave({
       product_quantity: updatedQuantity,
       product_unit_price: sanitizedPrice,
@@ -46,7 +51,9 @@ function EditAvailable({ product, onClose, onSave }) {
         <h3>QUANTITY</h3>
         <input type="number" placeholder="Enter Quantity" className={styles.input} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
         <h3>PRICE</h3>
-        <input type="number" placeholder="Enter Price" className={styles.input} value={price} onChange={(e) => setPrice(e.target.value)}/>
+        <input type="number" placeholder="Enter Price" className={styles.input} value={price} onChange={(e) => setPrice(e.target.value)}
+          placeholder="Whole numbers and 2 decimal places only"
+        />
 
         <button className={styles.buttonpop} onClick={handleSave}>Save</button>
         <button onClick={onClose} className={styles.buttonpop}>Cancel</button>
