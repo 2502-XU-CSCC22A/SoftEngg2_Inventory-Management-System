@@ -77,10 +77,15 @@ export const generateSortedLogs = (transactions) => {
                 reason_for_edit: txn.reason_for_edit,
             })
         } else {
+            const isDirectSale = txn.status === 'completed' &&
+                (new Date(txn.completed_at) - new Date(txn.created_at) < 1000);
+
             entries.push({
                 id: txn.transaction_id,
-                activityType: 'pending',
-                details: `Created pending sale #${txn.transaction_id}`,
+                activityType: `${isDirectSale === true ? 'sale' : 'pending'}`,
+                details: isDirectSale
+                    ? `Created completed sale #${txn.transaction_id}`
+                    : `Created pending sale #${txn.transaction_id}`,
                 doneAt: txn.created_at,
                 doneBy: txn.created_by_user.username,
                 transaction_details: txn,
@@ -88,14 +93,19 @@ export const generateSortedLogs = (transactions) => {
         }
 
         if (txn.completed_at) {
-            entries.push({
-                id: txn.transaction_id,
-                activityType: 'sale',
-                details: `${txn.status === 'completed' ? 'Completed' : 'Cancelled'} sale #${txn.transaction_id}`,
-                doneAt: txn.completed_at,
-                doneBy: txn.created_by_user.username,
-                transaction_details: txn,
-            });
+            const isDirectSale = txn.status === 'completed' &&
+                (new Date(txn.completed_at) - new Date(txn.created_at) < 1000);
+                
+            if (!isDirectSale) {
+                entries.push({
+                    id: txn.transaction_id,
+                    activityType: 'sale',
+                    details: `${txn.status === 'completed' ? 'Completed' : 'Cancelled'} sale #${txn.transaction_id}`,
+                    doneAt: txn.completed_at,
+                    doneBy: txn.created_by_user.username,
+                    transaction_details: txn,
+                });
+            }
         }
 
         if (txn.voided_at) {
