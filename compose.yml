@@ -8,10 +8,9 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - db-data:/var/lib/postgresql/
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB} -h localhost -p 5432"]
       interval: 5s
@@ -33,11 +32,15 @@ services:
     build: ./backend
     container_name: backend
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - ${EXPRESS_PORT}:3000
     depends_on:
       db:
        condition: service_healthy
+    volumes:
+      - ./images:/app/uploads
 
 
   frontend:
@@ -45,6 +48,9 @@ services:
     container_name: frontend
     ports:
       - 5173:5173
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - backend
 

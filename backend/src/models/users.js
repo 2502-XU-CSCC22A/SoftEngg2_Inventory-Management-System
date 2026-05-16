@@ -14,7 +14,7 @@ export default class users extends Model {
     username: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: "uq_username"
+      unique: "users_username_key"
     },
     password: {
       type: DataTypes.STRING(255),

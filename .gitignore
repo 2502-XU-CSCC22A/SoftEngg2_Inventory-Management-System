@@ -26,3 +26,8 @@ frontend/*.ntvs*
 frontend/*.njsproj
 frontend/*.sln
 frontend/*.sw?
+
+backend/src/password_hasher.js
+images/*
+
+!images/.gitkeep

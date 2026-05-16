@@ -7,17 +7,13 @@ export default class transactions extends Model {
     transaction_id: {
       autoIncrement: true,
       autoIncrementIdentity: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
     prev_txn_id: {
-      type: DataTypes.BIGINT,
-      allowNull: true
-    },
-    transaction_timestamp: {
-      type: DataTypes.DATE,
-      allowNull: false
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     payment_type: {
       type: DataTypes.STRING(255),
@@ -26,6 +22,11 @@ export default class transactions extends Model {
     payment_refstr: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.fn('now')
     },
     created_by: {
       type: DataTypes.INTEGER,
@@ -38,12 +39,25 @@ export default class transactions extends Model {
     voided_at: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    reason_for_edit: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'completed', 'cancelled'),
+      allowNull: false,
+      defaultValue: 'completed',
+    },
+    completed_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
     tableName: 'transactions',
     schema: 'public',
-    timestamps: true,
+    timestamps: false,
     indexes: [
       {
         name: "pk_transaction_id",

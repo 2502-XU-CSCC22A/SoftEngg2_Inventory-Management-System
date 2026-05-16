@@ -7,12 +7,12 @@ export default class transaction_items extends Model {
     item_id: {
       autoIncrement: true,
       autoIncrementIdentity: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
     transaction_id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'transactions',
