@@ -175,7 +175,7 @@ export const updateTransactionStatus = async (transactionId, newStatus, t) => {
     // Transition: pending → completed
     // No inventory change — stock was already reserved on creation.
     const updateData = { status: newStatus };
-    if (newStatus === 'completed') {
+    if (newStatus === 'completed' || newStatus === 'cancelled') {
         updateData.completed_at = new Date();
     }
 

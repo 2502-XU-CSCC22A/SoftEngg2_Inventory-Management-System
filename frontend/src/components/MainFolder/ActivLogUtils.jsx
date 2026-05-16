@@ -61,38 +61,58 @@ export const buildDiffForTransaction = (txn, transactions) => {
 };
 
 export const generateSortedLogs = (transactions) => {
-    const activityPriority = { sale: 3, voided: 2, correction: 1 };
+    const activityPriority = { cancel: 5, pending: 4, sale: 3, voided: 2, correction: 1 };
 
     const logs = transactions.flatMap(txn => {
         const entries = [];
-
+        // checks if txn is new or edit
         if (txn.prev_txn_id) {
             entries.push({
                 id: txn.transaction_id,
                 activityType: 'correction',
-                details: `Adjusted sale #${txn.prev_txn_id} as sale #${txn.transaction_id}`,
+                details: `Adjusted ${txn.status === 'pending' ? 'pending' : 'completed'} sale #${txn.prev_txn_id} as sale #${txn.transaction_id}`,
                 doneAt: txn.created_at,
                 doneBy: txn.created_by_user.username,
                 transaction_details: txn,
                 reason_for_edit: txn.reason_for_edit,
-            });
+            })
         } else {
+            const isDirectSale = txn.status === 'completed' &&
+                (new Date(txn.completed_at) - new Date(txn.created_at) < 1000);
+
             entries.push({
                 id: txn.transaction_id,
-                activityType: 'sale',
-                details: `Create sale #${txn.transaction_id}`,
+                activityType: `${isDirectSale === true ? 'sale' : 'pending'}`,
+                details: isDirectSale
+                    ? `Created completed sale #${txn.transaction_id}`
+                    : `Created pending sale #${txn.transaction_id}`,
                 doneAt: txn.created_at,
                 doneBy: txn.created_by_user.username,
                 transaction_details: txn,
-                reason_for_edit: txn.reason_for_edit,
-            });
+            })
+        }
+
+        if (txn.completed_at) {
+            const isDirectSale = txn.status === 'completed' &&
+                (new Date(txn.completed_at) - new Date(txn.created_at) < 1000);
+
+            if (!isDirectSale) {
+                entries.push({
+                    id: txn.transaction_id,
+                    activityType: `${txn.status === 'cancelled' ? 'cancel' : 'sale'}`,
+                    details: `${txn.status === 'completed' ? 'Completed' : 'Cancelled'} sale #${txn.transaction_id}`,
+                    doneAt: txn.completed_at,
+                    doneBy: txn.created_by_user.username,
+                    transaction_details: txn,
+                });
+            }
         }
 
         if (txn.voided_at) {
             entries.push({
                 id: txn.transaction_id,
                 activityType: 'voided',
-                details: `Voided sale #${txn.transaction_id}`,
+                details: `Voided ${txn.status === 'completed' ? 'completed' : 'pending'} sale #${txn.transaction_id}`,
                 doneAt: txn.voided_at,
                 doneBy: txn.created_by_user.username,
                 transaction_details: txn,
