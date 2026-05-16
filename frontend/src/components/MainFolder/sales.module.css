@@ -12,7 +12,7 @@
   z-index: 1;
 }
 
-.soldtransactions {
+.pageTitle {
   text-align: center;
   margin: 0;
   padding: 40px 0 30px;
@@ -261,16 +261,280 @@
   transform: translateY(0);
 }
 
-.noData {
-  text-align: center;
-  padding: 60px 24px;
-  color: #a8896e;
+/* ── Top Bar ── */
+.topBar {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-.noData p {
-  font-size: 16px;
-  font-weight: 500;
+/* ── Enhancement: Status Tabs ── */
+.statusTabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid rgba(196, 164, 132, 0.2);
+  padding-bottom: 10px;
+}
+
+.statusTab {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a0846b;
+  padding: 8px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  border-radius: 8px 8px 0 0;
+}
+
+.statusTab:hover {
   color: #8B5E3C;
+  background: rgba(196, 164, 132, 0.05);
+}
+
+.statusTabActive_all, .statusTabActive_pending, .statusTabActive_completed, .statusTabActive_cancelled {
+  color: #8B5E3C;
+  font-weight: 700;
+}
+
+.statusTabIndicator {
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(135deg, #8B5E3C 0%, #C4A484 100%);
+  border-radius: 3px 3px 0 0;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.tableRowCancelled {
+  opacity: 0.7;
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.revenueStrike {
+  text-decoration: line-through;
+  color: #9ca3af !important;
+}
+
+/* ── Enhancement: Status Badges ── */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.statusPending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.statusCompleted {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.statusCancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ── Enhancement: Complete / Cancel action buttons ── */
+.completeButton, .modalCompleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+  white-space: nowrap;
+}
+
+.completeButton:hover, .modalCompleteBtn:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+}
+
+.cancelButton, .modalCancelBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+  white-space: nowrap;
+}
+
+.cancelButton:hover, .modalCancelBtn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+}
+
+/* ── Enhancement: Confirmation Modal ── */
+.confirmModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(60, 40, 20, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.confirmModalCard {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 60px rgba(60, 40, 20, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+  padding: 32px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.confirmIconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.confirmIconComplete {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.confirmIconCancel {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+.confirmModalTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #4a3b2f;
+  letter-spacing: 0.5px;
+}
+
+.confirmModalBody {
+  font-size: 0.95rem;
+  color: #6b5c4f;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirmModalNote {
+  font-size: 0.8rem;
+  color: #a07850;
+  margin: 0;
+  font-style: italic;
+}
+
+.confirmModalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.confirmGoBack {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.confirmGoBack:hover {
+  background: #e5e7eb;
+}
+
+.confirmModalActions button {
+  flex: 1;
+  padding: 10px 20px;
+  font-size: 13px;
+  justify-content: center;
+}
+
+/* ── Empty state styles ── */
+.noData {
+  text-align: center;
+  padding: 80px 24px;
+  color: #a8896e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.noDataIcon {
+  color: rgba(196, 164, 132, 0.6);
+  margin-bottom: 10px;
+}
+
+.noDataTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #8B5E3C;
+  margin: 0;
+}
+
+.noDataSub {
+  font-size: 14px;
+  color: #a0846b;
+  margin: 0;
 }
 
 .transactionIdText {
@@ -445,8 +709,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 18px;
-  background: linear-gradient(135deg, rgba(196, 164, 132, 0.12) 0%, rgba(139, 94, 60, 0.08) 100%);
-  border-bottom: 1px solid rgba(196, 164, 132, 0.25);
+  background: linear-gradient(135deg, #fff 0%, rgba(196, 164, 132, 0.05) 100%);
+  border-bottom: 1px solid rgba(196, 164, 132, 0.15);
 }
 .modalTitle {
   margin: 0;
@@ -581,6 +845,50 @@
   color: #2e7d32;
 }
 
+/* ── Modal status strip ── */
+.modalStatusStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  font-size: 0.85rem;
+}
+
+.strip_pending {
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.strip_completed {
+  background: rgba(34, 197, 94, 0.1);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.strip_cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.modalStripHint {
+  color: #6b5c4f;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.modalActionRow {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px 24px;
+  background: rgba(245, 158, 11, 0.05);
+  border-top: 1px dashed rgba(245, 158, 11, 0.3);
+}
+
+.modalCompleteBtn, .modalCancelBtn {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
 @media (max-width: 1024px) {
   .tableHeader, .tableBody {
     margin: 0 20px;
@@ -606,13 +914,13 @@
     justify-content: center;
   }
   
-  .soldtransactions {
+  .pageTitle {
     font-size: 30px;
   }
 }
 
 @media (max-width: 768px) {
-  .soldtransactions {
+  .pageTitle {
     font-size: 28px;
     padding: 30px 0 20px;
   }
@@ -676,7 +984,7 @@
 }
 
 @media (max-width: 480px) {
-  .soldtransactions {
+  .pageTitle {
     font-size: 22px;
   }
   

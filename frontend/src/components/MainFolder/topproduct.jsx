@@ -14,7 +14,11 @@ function TopProduct() {
 
     // Create a map of product_id to product details
     const { topProducts } = useMemo(() => {
-        const transactions = transactionsQuery.data || [];
+        const rawData = transactionsQuery.data?.data ?? transactionsQuery.data ?? [];
+        // Only count completed transactions in top-products ranking
+        const transactions = Array.isArray(rawData)
+            ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+            : [];
         
         const productSales = {};
         

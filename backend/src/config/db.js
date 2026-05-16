@@ -22,6 +22,15 @@ export const sequelize = new Sequelize(DB_URL);
 
 const models = initModels(sequelize);
 
+const backfillCompletedTransactionTimestamps = async () => {
+  await sequelize.query(`
+    UPDATE transactions
+    SET completed_at = created_at
+    WHERE status = 'completed'
+      AND completed_at IS NULL
+  `);
+}
+
 export const testDBConnection = async () => {
   try {
     await sequelize.authenticate();
@@ -29,6 +38,7 @@ export const testDBConnection = async () => {
 
     if (process.env.NODE_ENV !== 'test') {
       await sequelize.sync({ alter: true });
+      await backfillCompletedTransactionTimestamps();
       console.log('Database synced (alter mode).');
     }
   } catch (error) {

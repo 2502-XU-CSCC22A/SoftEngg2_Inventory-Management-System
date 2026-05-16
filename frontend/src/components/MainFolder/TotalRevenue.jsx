@@ -10,7 +10,11 @@ const TotalRevenue = () => {
   const [isYearPopupOpen, setIsYearPopupOpen] = useState(false);
 
   const yearlyData = useMemo(() => {
-    const transactions = query.data || [];
+    const rawData = query.data?.data ?? query.data ?? [];
+    // Only count completed transactions in revenue analytics
+    const transactions = Array.isArray(rawData)
+      ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+      : [];
     const years = {};
 
     transactions.forEach(txn => {
@@ -77,7 +81,11 @@ const TotalRevenue = () => {
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   const handleExport = () => {
-    const transactions = query.data || [];
+    const rawData = query.data?.data ?? query.data ?? [];
+    // Only export completed transactions
+    const transactions = Array.isArray(rawData)
+      ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+      : [];
     const rows = [['Transaction ID', 'Date', 'Product', 'Quantity', 'Unit Price', 'Revenue', 'Month']];
 
     transactions.forEach(txn => {

@@ -13,6 +13,9 @@ export const insertTransactionSchema = Joi.object({
             quantity_bought: Joi.number().positive().max(2147483647).required()
         })
     ).min(1).required().unique('product_id'),
+    // Optional status on creation. Only 'pending' or 'completed' are valid on create.
+    // Defaults to 'completed' in the controller to preserve existing behavior.
+    status: Joi.string().valid('pending', 'completed').optional(),
 })
 
 export const updateTransactionSchema = Joi.object({

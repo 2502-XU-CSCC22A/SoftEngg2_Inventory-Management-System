@@ -104,7 +104,9 @@ function AddSales({ onClose, onAdd }) {
         }));
     }
 
-    const handleSubmit = async () => {
+    // Enhancement: accept explicit status for pending/completed creation.
+    // Defaults to 'completed' to preserve the existing direct-sale flow.
+    const handleSubmit = async (status = 'completed') => {
         // Validation
         if (!formData.payment_type) {
             setError("Please fill in all required fields.");
@@ -133,7 +135,7 @@ function AddSales({ onClose, onAdd }) {
 
         setLoading(true);
         try {
-            const transactionData = { ...formData };
+            const transactionData = { ...formData, status };
             await onAdd(transactionData);
             onClose();
         } catch (err) {
@@ -191,12 +193,21 @@ function AddSales({ onClose, onAdd }) {
                         onChange={handleChange}
                         disabled={formData.payment_type !== "GCash"}
                     />
+                    {/* Enhancement: two submit buttons — Complete Sale (default) and Save as Pending */}
                     <button
                         className={styles.buttonpop}
-                        onClick={handleSubmit}
+                        onClick={() => handleSubmit('completed')}
                         disabled={loading || query.isLoading}
                     >
-                        {loading ? "Adding..." : "Add Transaction"}
+                        {loading ? "Processing..." : "✅ Complete Sale"}
+                    </button>
+                    <button
+                        className={styles.buttonpop}
+                        onClick={() => handleSubmit('pending')}
+                        disabled={loading || query.isLoading}
+                        style={{ opacity: 0.85 }}
+                    >
+                        {loading ? "Processing..." : "🕐 Save as Pending"}
                     </button>
                     <button
                         onClick={onClose}
