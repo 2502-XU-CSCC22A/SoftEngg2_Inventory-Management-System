@@ -5,7 +5,7 @@ import EditSales from "./editsales";
 import { useState } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
 import { formatToPesos } from "../../utils/utils.js";
-import { FiEye, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
+import { FiEye, FiCheck, FiX, FiEdit2, FiClipboard, FiClock } from "react-icons/fi";
 import { MdPendingActions } from "react-icons/md";
 import { HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineClock } from "react-icons/hi";
 
@@ -226,11 +226,26 @@ function Sales() {
     const years = Array.from({ length: (currentYear + 5) - 2020 + 1 }, (_, i) => 2020 + i).reverse();
 
     const statusFilterConfig = [
-        { value: 'all', label: '📋 All Statuses' },
-        { value: 'pending', label: '🕐 Pending' },
-        { value: 'completed', label: '✅ Completed' },
-        { value: 'cancelled', label: '✕ Cancelled' },
+        { value: 'all', label: 'All Statuses' },
+        { value: 'pending', label: 'Pending' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'cancelled', label: 'Cancelled' },
     ];
+
+    const returnIcon = (label) => {
+        if (label === 'All Statuses') {
+            return <FiClipboard />
+        }
+        else if (label === 'Pending') {
+            return <FiClock />
+        }
+        else if (label === 'Completed') {
+            return <FiCheck />
+        }
+        else {
+            return <FiX />
+        }
+    }
 
     return (
         <div className={styles.page}>
@@ -258,7 +273,9 @@ function Sales() {
                             className={`${styles.statusTab} ${statusFilter === value ? styles[`statusTabActive_${value}`] : ''}`}
                             onClick={() => setStatusFilter(value)}
                         >
-                            {label}
+                            <div className={styles['display-btn']}>
+                                {returnIcon(label)} {label}
+                            </div>
                             {statusFilter === value && <span className={styles.statusTabIndicator} />}
                         </button>
                     ))}
