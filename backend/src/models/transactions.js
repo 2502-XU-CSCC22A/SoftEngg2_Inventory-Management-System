@@ -43,6 +43,15 @@ export default class transactions extends Model {
     reason_for_edit: {
       type: DataTypes.STRING(500),
       allowNull: true,
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'completed', 'cancelled'),
+      allowNull: false,
+      defaultValue: 'completed',
+    },
+    completed_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
