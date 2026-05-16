@@ -65,6 +65,30 @@ export const addUser = async (req, res) => {
 
 export const archiveUser = async (req, res) => {
   try {
+    const targetUser = await models.users.findOne({
+      where: {
+        user_id: req.params.user_id,
+        is_active: true
+      }
+    });
+
+    if (!targetUser){
+      return res.status(404).json({error: "User not found"});
+    }
+
+    // check if user to delete is the only active admin
+    if (targetUser.is_admin){
+      const activeAdminInDb = await models.users.count({
+        where: {
+          is_active: true,
+          is_admin: true
+        }
+      });
+      if (activeAdminInDb === 1){
+        return res.status(400).json({error: "This is the only active admin account. Removal stopped"});
+      }
+    }
+
     const [archivedUsers] = await models.users.update(
       { is_active: false},
       { where: { 
@@ -72,12 +96,13 @@ export const archiveUser = async (req, res) => {
           is_active: true
         }
       });
+    
+    const selfDelete = targetUser.user_id === req.session.user.user_id;//check if deleted themself
 
-      if(archivedUsers === 0){
-        return res.status(404).json({error: "User not found"})
-      }
-
-    res.status(200).json({message: "User removed"})
+    res.status(200).json({
+      message: "User removed",
+      isSelfDelete: selfDelete
+    });
   } catch(error){
     res.status(500).json({error: error.message})
   }

@@ -56,7 +56,7 @@ function AddProduct({ onClose, onAdd, productsList }) {
         }
 
         if (validatePriceInput(String(price)) === false) {
-            alert("Invalid price format. Please enter a valid number with up to two decimal places.");
+            alert("Invalid price format. Please enter a valid number with either zero or two decimal places.");
             return;
         }
 
@@ -77,6 +77,11 @@ function AddProduct({ onClose, onAdd, productsList }) {
 
         if (quantity < 0) {
             alert("Invalid quantity entered. Value should be zero or bigger.");
+            return;
+        }
+
+        if (Number.isInteger(Number(quantity)) === false) {
+            alert("Invalid quantity entered. Please enter a whole number.");
             return;
         }
 
@@ -104,7 +109,8 @@ function AddProduct({ onClose, onAdd, productsList }) {
                 <input type="number" placeholder="Enter Quantity" className={styles.input} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                 <h3>PRICE</h3>
                 <input type="number" placeholder="Enter Price" 
-                className={styles.input} value={price} onChange={(e) => setPrice(e.target.value)} />
+                className={styles.input} value={price} onChange={(e) => setPrice(e.target.value)} 
+                placeholder="Whole numbers and 2 decimal places only"/>
                 <button className={styles.buttonpop} onClick={handleAdd}>
                     Add
                 </button>

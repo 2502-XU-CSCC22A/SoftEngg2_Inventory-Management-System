@@ -233,6 +233,7 @@ function EditSales({ onClose, transaction, onSave }) {
                         placeholder="Reason for editing transaction"
                         className={styles.textarea}
                         onChange={handleChange}
+                        required
                     />
                     <button
                         className={styles.buttonpop}
