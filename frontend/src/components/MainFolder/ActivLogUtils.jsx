@@ -61,7 +61,7 @@ export const buildDiffForTransaction = (txn, transactions) => {
 };
 
 export const generateSortedLogs = (transactions) => {
-    const activityPriority = { pending: 4, sale: 3, voided: 2, correction: 1 };
+    const activityPriority = { cancel: 5, pending: 4, sale: 3, voided: 2, correction: 1 };
 
     const logs = transactions.flatMap(txn => {
         const entries = [];
@@ -95,11 +95,11 @@ export const generateSortedLogs = (transactions) => {
         if (txn.completed_at) {
             const isDirectSale = txn.status === 'completed' &&
                 (new Date(txn.completed_at) - new Date(txn.created_at) < 1000);
-                
+
             if (!isDirectSale) {
                 entries.push({
                     id: txn.transaction_id,
-                    activityType: 'sale',
+                    activityType: `${txn.status === 'cancelled' ? 'cancel' : 'sale'}`,
                     details: `${txn.status === 'completed' ? 'Completed' : 'Cancelled'} sale #${txn.transaction_id}`,
                     doneAt: txn.completed_at,
                     doneBy: txn.created_by_user.username,
