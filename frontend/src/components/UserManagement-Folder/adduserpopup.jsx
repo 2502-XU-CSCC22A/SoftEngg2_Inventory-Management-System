@@ -42,7 +42,7 @@ function AddUserPopup({ onClose, onUserAdded, existingUsers = [] }) {
        
         // Check if username already exists
         const userExists = existingUsers.some(
-            user => (user.username || user.user_name || "").toLowerCase() === formData.username.toLowerCase()
+            user => (user.username).toLowerCase() === formData.username.toLowerCase()
         );
        
         if (userExists) {
@@ -87,7 +87,7 @@ function AddUserPopup({ onClose, onUserAdded, existingUsers = [] }) {
                 <h1 className={styles.addusertitle}>Add User</h1>
                
                 {error && (
-                    <div className={styles.errorMessage} style={{ color: "red", textAlign: "center", marginBottom: "10px", fontSize: "13px" }}>
+                    <div className={styles.errorMessage}>
                         {error}
                     </div>
                 )}

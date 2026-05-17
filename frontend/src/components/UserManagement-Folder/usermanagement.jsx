@@ -20,24 +20,9 @@ function UserManagement() {
     const users = usersData?.data || usersData || [];
 
     const filteredUsers = users.filter(user =>
-        user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.user_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.username?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    /* in case muingon na need ug created at
-    const formatDateTime = (dateString) => {
-        if (!dateString) return "N/A";
-        const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };*/
-
-    const handleUserAdded = async (newUser) => {
+    const handleUserAdded = async () => {
         await refetch(); // Refresh the user list
     };
 
@@ -55,7 +40,6 @@ function UserManagement() {
                 <h1 className={styles.usermantitle1}>User Management</h1>
                 <button className={styles.backbutton} onClick={() => navigate("/welcomeadmin")}>Back</button>
             </div>
-            <hr className={styles.line1} />
             <button className={styles.adduserbutton} onClick={() => setShowAdd(true)}>Add User</button>
             <button className={styles.removeuserbutton} onClick={() => setShowRemove(true)}>Remove User</button>
             <h1 className={styles.recent}>Most Recent</h1>
@@ -66,16 +50,12 @@ function UserManagement() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-           
-            {/* Table Header */}
             <div className={styles.tableHeader}>
                 <div className={styles.headerCell}>Users</div>
                 <div className={styles.headerCell}>Role</div>
-                {/*<div className={styles.headerCell}>Created On</div> keep lng just in case*/}
             </div>
             <hr className={styles.line2} />
            
-            {/* Table Body - User List */}
             <div className={styles.tableBody}>
                 {filteredUsers.length === 0 ? (
                     <div className={styles.emptyRow}>
@@ -83,26 +63,25 @@ function UserManagement() {
                     </div>
                 ) : (
                     filteredUsers.map((user) => (
-                        <div key={user.id || user.user_id} className={styles.tableRow}>
-                            <div className={styles.cell}>{user.username || user.user_name}</div>
+                        <div key={user.user_id} className={styles.tableRow}>
+                            <div className={styles.cell}>{user.username}</div>
                             <div className={styles.cell}>
                                 <span className={user.is_admin ? styles.adminBadge : styles.userBadge}>
                                     {user.is_admin ? "admin" : "user"}
                                 </span>
                             </div>
-                            {/*<div className={styles.cell}>{formatDateTime(user.createdAt || user.created_at)}</div>  keep lng just in case*/}
                         </div>
                     ))
                 )}
             </div>
 
-            {showAdd && <AddUserPopup
-                onClose={() => setShowAdd(false)}
+            {showAdd && <AddUserPopup 
+            onClose={() => setShowAdd(false)}
                 onUserAdded={handleUserAdded}
                 existingUsers={users}
             />}
-            {showRemove && <RemoveUserPopup
-                onClose={() => setShowRemove(false)}
+            {showRemove && <RemoveUserPopup 
+            onClose={() => setShowRemove(false)}
                 onUserRemoved={handleUserRemoved}
                 users={users}
             />}
