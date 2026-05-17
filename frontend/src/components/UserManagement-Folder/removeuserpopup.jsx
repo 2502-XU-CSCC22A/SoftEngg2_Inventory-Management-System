@@ -19,14 +19,14 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
         setError("");
         
         try {
-            const userToRemove = users.find(u => (u.username || u.user_name) === selectedUsername);
-            const userId = userToRemove?.id || userToRemove?.user_id;
+            const userToRemove = users.find(u => (u.username) === selectedUsername);
+            const userId = userToRemove?.user_id;
             
             const response = await api.delete(`/users/${userId}`);
             
             if (response.status === 200) {
                 alert(`User "${selectedUsername}" has been removed successfully!`);
-                if (onUserRemoved) {
+                if (onUserRemoved) { //for safe practice
                     await onUserRemoved(selectedUsername);
                 }
                 if(response.data.isSelfDelete){ //if user deletes themself, they get logged out
@@ -56,7 +56,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                 <h1 className={styles.removeusertitle}>Remove User</h1>
                
                 {error && (
-                    <div className={styles.errorMessage} style={{ color: "red", textAlign: "center", marginBottom: "10px", fontSize: "13px" }}>
+                    <div className={styles.errorMessage}>
                         {error}
                     </div>
                 )}
@@ -69,8 +69,8 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                 >
                     <option value="">Select a user</option>
                     {users.map((user) => (
-                        <option key={user.id || user.user_id} value={user.username || user.user_name}>
-                            {user.username || user.user_name} ({user.is_admin ? "admin" : "user"})
+                        <option key={user.user_id} value={user.username}>
+                            {user.username} ({user.is_admin ? "admin" : "user"})
                         </option>
                     ))}
                 </select>
