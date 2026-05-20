@@ -199,7 +199,7 @@ function AddSales({ onClose, onAdd }) {
                         onClick={() => handleSubmit('completed')}
                         disabled={loading || query.isLoading}
                     >
-                        {loading ? "Processing..." : "✅ Complete Sale"}
+                        {loading ? "Processing..." : "Complete Sale"}
                     </button>
                     <button
                         className={styles.buttonpop}
@@ -207,7 +207,7 @@ function AddSales({ onClose, onAdd }) {
                         disabled={loading || query.isLoading}
                         style={{ opacity: 0.85 }}
                     >
-                        {loading ? "Processing..." : "🕐 Save as Pending"}
+                        {loading ? "Processing..." : "Save as Pending"}
                     </button>
                     <button
                         onClick={onClose}

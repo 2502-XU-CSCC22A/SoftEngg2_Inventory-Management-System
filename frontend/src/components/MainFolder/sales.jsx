@@ -256,7 +256,7 @@ function Sales() {
                 <div className={styles.topBar}>
                     <input
                         type="search"
-                        placeholder="🔍  Search by product..."
+                        placeholder="Search by product..."
                         className={styles.search1}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
