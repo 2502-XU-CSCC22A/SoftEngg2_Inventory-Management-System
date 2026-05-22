@@ -1,57 +1,171 @@
-import styles from './Navbar.module.css';
-import { useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.jpg";
-import api from "../../api/api.js";
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(139, 94, 60, 0.08);
+  position: relative;
+  z-index: 100;
+}
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
 
-export const Navbar = () => {
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:3000/auth/logout", {
-        method: "DELETE",
-        credentials: "include"
-      });
+.logo {
+  height: 70px;
+  width: 280px;
+  border-radius: 0px;
+  object-fit: cover;
+  background: white;
+  padding: 4px;
+}
 
-      navigate("/login"); 
-    } catch (err) {
-      console.log("Logout failed", err);
-      navigate("/login"); 
-    }
-    };
-    
-    const usermanagementlocation = async () => {
-        try {
-        const response = await api.get("auth/me");
-        const user = response.data.user;
+.nav {
+  display: flex;
+  gap: 12px;
+  margin: 0 auto;
+}
 
-    if (user.is_admin){
-        navigate("/usermanagement");
-    }
-    else{
-        alert("You do not have permission to access the User Management page.");
-    }
-  } catch (err) {
-    alert("Failed to verify user permissions. Please try again.");
-  }
-  };
+.header button {
+  color: #8B5E3C;
+  background-color: transparent;
+  border: none;
+  border-radius: 50px;
+  width: 130px;
+  height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: all 0.3s ease;
+  position: relative;
+  letter-spacing: 0.3px;
+}
 
-  return (
-    <nav>
-      <div className={styles.header}>
-        <img src={logo} alt="53 One Tech" className={styles.logo} />
-        <div className={styles.nav}>
-      <button onClick={() => navigate("/topproduct")}>Top Product</button>
-      <button onClick ={()=> navigate("/sales")}>Sales</button>
-      <button onClick ={()=> navigate("/Available")}>Inventory</button> 
-      <button onClick ={()=> navigate("/ActivLog")}>Activity Log</button>
-      <button onClick ={()=> navigate("/Monthlyreport")}>Overall reports</button>
-      </div>
-      <button onClick = {usermanagementlocation} className={styles.user}>Usermanagement</button>
-       <button onClick ={handleLogout} className={styles.logoutbutton}>Logout</button>
-      </div>
-      <hr />
-      
-    </nav>
-  );
-};
-export default Navbar;
+.header button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #C4A484, #8B5E3C);
+  transition: width 0.3s ease;
+}
+
+.header button:hover::before {
+  width: 60%;
+}
+
+.header button:hover {
+  color: #6b462a;
+  background-color: rgba(196, 164, 132, 0.08);
+  transform: translateY(-2px);
+}
+
+.header .logoutbutton {
+  color: white;
+  background: linear-gradient(135deg, #312f2d 0%, #4b4540 100%);
+  border: none;
+  border-radius: 50px;
+  width: 120px;
+  height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0;
+  margin-right: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.header .logoutbutton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.header .logoutbutton:hover::before {
+  left: 100%;
+}
+
+.header .logoutbutton:hover {
+  background: linear-gradient(135deg, #201e1c 0%, #030303 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+  color: white;
+}
+
+.header .logoutbutton:active {
+  transform: translateY(0);
+}
+
+hr {
+  margin: 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196, 164, 132, 0.3), rgba(139, 94, 60, 0.5), rgba(196, 164, 132, 0.3), transparent);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+  }  
+ 
+}
+.header .user {
+  color: white;
+  background: linear-gradient(135deg, #a0846b 0%, #8B5E3C 100%);
+  border: none;
+  border-radius: 50px;
+  width: 180px;
+  height: 42px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0;
+  margin-right: 10px;
+  transition: all 0.10s ease;
+  box-shadow: 0 2px 8px rgba(139, 94, 60, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.header .user::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.header .user:hover::before {
+  left: 100%;
+}
+
+.header .user:hover {
+  background: linear-gradient(135deg, #8B5E3C 0%, #6b462a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+  color: rgb(255, 255, 255);
+}
+
+.header .user:active {
+  transform: translateY(0);
+}
