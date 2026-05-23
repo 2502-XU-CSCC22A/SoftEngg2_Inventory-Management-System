@@ -8,30 +8,39 @@ export const insertNewProduct = async (req, res) => {
     try {
         const { product_name, product_unit_price, product_quantity } = req.body;
 
-        const origPath = req.file.path;
-        const modFileName = `sqr_${req.file.filename}`;
-        const newPath = path.join(req.file.destination, modFileName);
+        const useDefaultImage = req.body.use_default_image === true;
+        let modFileName = null;
+        let photoHash = null;
 
-        const buf = fs.readFileSync(origPath);
+        if (useDefaultImage){
+            modFileName = "DEFAULT_IMAGE";
+            photoHash = "DEFAULT_IMAGE";
+        }else {
+            const origPath = req.file.path;
+            modFileName = `sqr_${req.file.filename}`;
+            const newPath = path.join(req.file.destination, modFileName);
 
-        const photoHash = crypto.createHash('md5').update(buf).digest('hex');
+            const buf = fs.readFileSync(origPath);
 
-        const hashMatch = await models.products.findOne({
-            where: {
-                product_img_hash: photoHash,
+            photoHash = crypto.createHash('md5').update(buf).digest('hex');
+
+            const hashMatch = await models.products.findOne({
+                where: {
+                    product_img_hash: photoHash,
+                }
+            })
+
+            if (hashMatch) {
+                return res.status(409).json({ message: "Photo already exists in another product. Please use another photo."});
             }
-        })
 
-        if (hashMatch) {
-            return res.status(409).json({ message: "Photo already exists in another product. Please use another photo."});
+            await sharp(origPath).resize(300, 300, {
+                fit: "cover",
+                position: sharp.strategy.entropy,
+            }).toFormat('webp').toFile(newPath);
+
+            fs.unlinkSync(origPath);
         }
-
-        await sharp(origPath).resize(300, 300, {
-            fit: "cover",
-            position: sharp.strategy.entropy,
-        }).toFormat('webp').toFile(newPath);
-
-        fs.unlinkSync(origPath);
 
         const product = await models.products.create({
             product_name,
