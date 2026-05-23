@@ -49,12 +49,7 @@ function AddProduct({ onClose, onAdd, productsList }) {
         img.src = objectUrl;
     };
 
-    const handleAdd = () => {
-        if (productImage === "") {
-            alert("Please upload a image file (min. 300 x 300)");
-            return;
-        }
-
+    const handleAdd = async () => {
         if (validatePriceInput(String(price)) === false) {
             alert("Invalid price format. Please enter a valid number with either zero or two decimal places.");
             return;
@@ -93,7 +88,13 @@ function AddProduct({ onClose, onAdd, productsList }) {
         formData.append('product_name', finalName);
         formData.append('product_quantity', finalQuantity);
         formData.append('product_unit_price', finalPrice);
-        formData.append('image', productImage);
+
+        if (productImage === "") {
+            formData.append("use_default_image", "true");
+        } else {
+            formData.append("use_default_image", "false");
+            formData.append('image', productImage);
+        }
 
         onAdd(formData);
     }

@@ -6,6 +6,7 @@ import styles from './Available.module.css';
 import { useProducts } from '../../hooks/useProducts.js';
 import { formatToPesos } from '../../utils/utils.js';
 import fallback from "../../assets/fallback.png"
+import defaultImage from "../../assets/default-product-pic.jpg";
 import { MdFileUpload } from 'react-icons/md';
 
 const Available = () => {
@@ -144,7 +145,11 @@ const Available = () => {
                 <div key={product.product_id} className={styles[`${product.is_still_offered ? 'product-card' : 'product-card-hidden'}`]}>
                   <div className={styles['card-content']}>
                     <div className={styles['img-container']}>
-                      <img src={product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`}></img>
+                      <img src={
+                        product.product_img_url === "DEFAULT_IMAGE" ? defaultImage :
+                          product.product_img_url? `${API_BASE_URL}/images/${product.product_img_url}`: fallback
+                        //product.product_img_url === null ? `${fallback}` : `${API_BASE_URL}/images/${product.product_img_url}`
+                        }></img>
                       {
                         product.is_still_offered && (
                           <>
