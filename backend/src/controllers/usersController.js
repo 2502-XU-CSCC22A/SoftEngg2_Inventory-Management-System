@@ -138,21 +138,22 @@ export const editUser = async (req, res) => {
       if (newUsername) return res.status(400).json({error: "Username already exists. Please choose another one."});
     }
 
-    // users are not allowed to change their status from admin to user themselves
     const selfEdit = targetUser.user_id === req.session.user.user_id;
-    if(selfEdit && targetUser.is_admin){
-      if (!is_admin) return res.status(400).json({error: "Cannot change role of own account from admin to user."});
-    }
-    // checks if target account is only active admin left
-    if (targetUser.is_admin){
-      const activeAdminInDb = await models.users.count({
-        where: {
-          is_active: true,
-          is_admin: true
+    if(targetUser.is_admin){
+      // users are not allowed to change their status from admin to user themselves
+      if (!is_admin && selfEdit) return res.status(400).json({error: "Cannot change role of own account from admin to user."});
+
+      // checks if target account is only active admin left
+      if (!is_admin){
+        const activeAdminInDb = await models.users.count({
+          where: {
+            is_active: true,
+            is_admin: true
+          }
+        });
+        if (activeAdminInDb === 1){
+          return res.status(400).json({error: "This is the only active admin account, role change not allowed. Editing stopped"});
         }
-      });
-      if (activeAdminInDb === 1){
-        return res.status(400).json({error: "This is the only active admin account. Editing stopped"});
       }
     }
 
