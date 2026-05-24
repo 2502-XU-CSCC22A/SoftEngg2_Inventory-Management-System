@@ -140,7 +140,6 @@ function AddUserPopup({ onClose, onUserAdded, existingUsers = [] }) {
                 >
                     {loading ? "Adding..." : "Add User"}
                 </button>
-                <br />
                 <button onClick={onClose} className={styles.buttonpop}>
                     Cancel
                 </button>
