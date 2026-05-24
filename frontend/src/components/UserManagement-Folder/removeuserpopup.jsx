@@ -23,6 +23,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
          const adminCount = users.filter(user => user.is_admin).length;
 
     if (userToRemove?.is_admin && adminCount === 1) {
+        setError("This is the only active admin account. Removal stopped");
         setShowConfirmation(false);
          return;
     }   
