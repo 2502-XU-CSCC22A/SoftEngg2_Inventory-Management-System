@@ -17,9 +17,19 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
             setError("Please select a user to remove.");
             return;
         }
-        const userToRemove = users.find(user => user.username === selectedUsername);
+        const userToRemove = users.find(user => 
+        user.username === selectedUsername);
+
+         const adminCount = users.filter(user => user.is_admin).length;
+
+    if (userToRemove?.is_admin && adminCount === 1) {
+        setShowConfirmation(false);
+         return;
+    }   
+    
         setSelectedUser(userToRemove);
-        setShowConfirmation(true);
+        setShowConfirmation(true);  
+    
     };
 
     const handleConfirmRemove = async () => {
@@ -31,7 +41,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
             const response = await api.delete(`/users/${userID}`);
             if (response.status === 200) {
                 if (onUserRemoved) {
-                await onUserRemoved( selectedUsername);
+                await onUserRemoved(selectedUsername);
             }
             if (response.data.isSelfDelete) {
                 try {
@@ -87,7 +97,7 @@ function RemoveUserPopup({ onClose, onUserRemoved, users }) {
                     ))}
                 </select>
                
-                <p style={{ fontSize: "12px", color: "#999", marginTop: "10px", marginBottom: "15px" }}>
+                <p className={styles.warningtext}>
                     This action cannot be undone.
                 </p>
                
