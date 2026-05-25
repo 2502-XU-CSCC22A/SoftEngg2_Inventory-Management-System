@@ -13,7 +13,7 @@ const ActivLog = () => {
   const [activeDiffTransaction, setActiveDiffTransaction] = useState(null);
 
   const { queryAll } = useTransactions(selectedMonth, selectedYear);
-  const transactions = queryAll.data?.data || [];
+  const transactions = useMemo(() => queryAll.data?.data || [], [queryAll.data]);
 
   // useMemo ensures we only recalculate the logs if 'transactions' actually change
   const sortedLogs = useMemo(() => generateSortedLogs(transactions), [transactions]);

@@ -138,7 +138,7 @@ function AddSales({ onClose, onAdd }) {
             const transactionData = { ...formData, status };
             await onAdd(transactionData);
             onClose();
-        } catch (err) {
+        } catch {
             setError("Failed to add transaction. Please try again.");
         } finally {
             setLoading(false);
