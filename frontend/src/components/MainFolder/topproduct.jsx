@@ -81,7 +81,7 @@ function TopProduct() {
                         {topProducts.length === 0 && (
                             <div className={styles.noData}>
                                 <p>No sales data available yet.</p>
-                                <p style={styles.notavail}>Add transactions in Sales page to see top products.</p>
+                                <p className={styles.notavail}>Add transactions in Sales page to see top products.</p>
                             </div>
                         )}
                     </div>
