@@ -34,12 +34,12 @@
 }
 
 .left-panel h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 58px;
-  font-weight: 900;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 54px;
+  font-weight: 700;
   color: #2d1e10;
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -1px;
 }
 
 .date {
@@ -190,10 +190,10 @@
 }
 
 .section-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 20px;
-  font-weight: 700;
-  color: #6b4226;
+  font-weight: 600;
+  color: #8b6343;
   margin-bottom: 0;
 }
 
@@ -271,9 +271,9 @@
 }
 
 .year-popup-header h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   color: #2d1e10;
 }
 

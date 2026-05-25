@@ -181,11 +181,11 @@ html, body, #root {
 }
 
 .header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 38px;
-  font-weight: 800;
-  color: #6b4226;
-  letter-spacing: -0.5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #8b6343;
+  letter-spacing: 0.2px;
 }
 
 .product-grid-wrapper {
