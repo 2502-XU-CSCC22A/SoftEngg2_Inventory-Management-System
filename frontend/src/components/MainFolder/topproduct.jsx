@@ -14,10 +14,10 @@ function TopProduct() {
 
     // Create a map of product_id to product details
     const { topProducts } = useMemo(() => {
-        const rawData = transactionsQuery.data?.data ?? transactionsQuery.data ?? [];
+        const rawData = transactionsQuery.data ?? [];
         // Only count completed transactions in top-products ranking
         const transactions = Array.isArray(rawData)
-            ? rawData.filter(txn => !txn.status || txn.status === 'completed')
+            ? rawData.filter(txn => txn.status === 'completed')
             : [];
         
         const productSales = {};
@@ -28,15 +28,16 @@ function TopProduct() {
                     const productId = item.product_id;
                     const productName = item.product_name || 'Product ID: ${productId}';
                     const unitPrice = item.product_unit_price || 0;
+                    const quantity = item.quantity_bought;
                     
                     if (productSales[productName]) {
-                        productSales[productName].quantity += item.quantity_bought;
-                        productSales[productName].revenue += (item.quantity_bought * unitPrice);
+                        productSales[productName].quantity += quantity;
+                        productSales[productName].revenue += (quantity * unitPrice);
                     } else {
                         productSales[productName] = {
                             name: productName,
-                            quantity: item.quantity_bought,
-                            revenue: item.quantity_bought * unitPrice,
+                            quantity: quantity,
+                            revenue: quantity * unitPrice,
                             productId: productId
                         };
                     }
@@ -80,7 +81,7 @@ function TopProduct() {
                         {topProducts.length === 0 && (
                             <div className={styles.noData}>
                                 <p>No sales data available yet.</p>
-                                <p style={{ fontSize: "12px", marginTop: "10px" }}>Add transactions in Sales page to see top products.</p>
+                                <p style={styles.notavail}>Add transactions in Sales page to see top products.</p>
                             </div>
                         )}
                     </div>

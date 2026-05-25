@@ -1,6 +1,7 @@
 import styles from "./usermanagement.module.css";
 import AddUserPopup from "./adduserpopup";
 import RemoveUserPopup from "./removeuserpopup";
+import EditUserPopup from "./edituserpopup";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUsers } from "../../hooks/useUsers.js";
@@ -12,6 +13,8 @@ function UserManagement() {
     const [showRemove, setShowRemove] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
+    const [showEdit, setShowEdit] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     // Use the React Query hook to fetch users
     const { data: usersData, isLoading, isError, refetch } = useUsers();
@@ -22,12 +25,19 @@ function UserManagement() {
     const filteredUsers = users.filter(user =>
         user.username?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    const handlEditClick = (user) => {
+        setSelectedUser(user);
+        setShowEdit(true);
+    }
     const handleUserAdded = async () => {
         await refetch(); // Refresh the user list
     };
 
     const handleUserRemoved = async () => {
         await refetch(); // Refresh the user list
+    };
+    const handleUserUpdated = async () => {
+    await refetch(); // Refresh the user list
     };
 
     if (isLoading) return <div className={styles.loading}>Loading users...</div>;
@@ -53,6 +63,7 @@ function UserManagement() {
             <div className={styles.tableHeader}>
                 <div className={styles.headerCell}>Users</div>
                 <div className={styles.headerCell}>Role</div>
+                 <div className={styles.headerCell}>Actions</div> 
             </div>
             <hr className={styles.line2} />
            
@@ -70,6 +81,9 @@ function UserManagement() {
                                     {user.is_admin ? "admin" : "user"}
                                 </span>
                             </div>
+                            <div className={styles.cell}>
+                                <button className={styles.editButton} onClick={() => handlEditClick(user)}>Edit</button>
+                            </div>
                         </div>
                     ))
                 )}
@@ -85,6 +99,13 @@ function UserManagement() {
                 onUserRemoved={handleUserRemoved}
                 users={users}
             />}
+            {showEdit && selectedUser && (
+                <EditUserPopup
+                user={selectedUser}
+                onClose={() => setShowEdit(false)}
+                onUserUpdated={handleUserUpdated}
+                />
+            )}
         </div>
     );
 }

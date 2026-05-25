@@ -1,6 +1,7 @@
 import styles from './Navbar.module.css';
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.jpg";
+import api from "../../api/api.js";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -16,6 +17,22 @@ export const Navbar = () => {
       console.log("Logout failed", err);
       navigate("/login"); 
     }
+    };
+    
+    const usermanagementlocation = async () => {
+        try {
+        const response = await api.get("auth/me");
+        const user = response.data.user;
+
+    if (user.is_admin){
+        navigate("/usermanagement");
+    }
+    else{
+        alert("You do not have permission to access the User Management page.");
+    }
+  } catch (err) {
+    alert("Failed to verify user permissions. Please try again.");
+  }
   };
 
   return (
@@ -29,6 +46,7 @@ export const Navbar = () => {
       <button onClick ={()=> navigate("/ActivLog")}>Activity Log</button>
       <button onClick ={()=> navigate("/Monthlyreport")}>Overall reports</button>
       </div>
+      <button onClick = {usermanagementlocation} className={styles.user}>Usermanagement</button>
        <button onClick ={handleLogout} className={styles.logoutbutton}>Logout</button>
       </div>
       <hr />

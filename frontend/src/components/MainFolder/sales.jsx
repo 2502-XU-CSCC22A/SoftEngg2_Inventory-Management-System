@@ -284,7 +284,7 @@ function Sales() {
                 {/* ── Actions row ── */}
                 <div className={styles.actions}>
                     <button className={styles.add} onClick={() => setshowaddsales(true)}>
-                        + New Transaction
+                         New Transaction
                     </button>
                     <div className={styles.filters}>
                         <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className={styles.yearDropdown}>
