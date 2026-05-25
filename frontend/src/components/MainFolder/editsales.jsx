@@ -169,7 +169,7 @@ function EditSales({ onClose, transaction, onSave }) {
             
             await onSave(updatedData);
             onClose();
-        } catch (err) {
+        } catch {
             setError("Failed to update transaction. Please try again.");
         } finally {
             setLoading(false);

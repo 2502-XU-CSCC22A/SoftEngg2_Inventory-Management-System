@@ -30,7 +30,7 @@ export const Navbar = () => {
     else{
         alert("You do not have permission to access the User Management page.");
     }
-  } catch (err) {
+  } catch {
     alert("Failed to verify user permissions. Please try again.");
   }
   };

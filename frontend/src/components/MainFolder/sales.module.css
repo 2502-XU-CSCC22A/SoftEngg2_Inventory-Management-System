@@ -1,13 +1,37 @@
 .page {
   width: 100%;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   background: linear-gradient(135deg, #f9f0e6 0%, #f0e2d4 50%, #d0b392 100%);
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page::-webkit-scrollbar {
+  width: 10px;
+}
+
+.page::-webkit-scrollbar-track {
+  background: rgba(196, 164, 132, 0.12);
+}
+
+.page::-webkit-scrollbar-thumb {
+  background: rgba(139, 94, 60, 0.45);
+  border-radius: 10px;
+  border: 2px solid rgba(249, 240, 230, 0.85);
+}
+
+.page::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 94, 60, 0.65);
 }
 
 .main {
-  padding: 20px;
+  padding: 20px 20px max(32px, env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;
 }
@@ -157,14 +181,19 @@
   min-width: 120px;
 }
 
+.tableShell {
+  margin: 0 50px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
 .tableHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0 50px;
   padding: 16px 24px;
   background: linear-gradient(135deg, rgba(196, 164, 132, 0.12) 0%, rgba(139, 94, 60, 0.08) 100%);
-  border-radius: 16px 16px 0 0;
   border-bottom: 2px solid rgba(196, 164, 132, 0.3);
 }
 
@@ -183,21 +212,23 @@
 }
 
 .tableBody {
-  margin: 0 50px;
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);
-  border-radius: 0 0 16px 16px;
-  max-height: 280px;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  min-height: clamp(440px, calc(100vh - 450px), 610px);
+  overflow: hidden;
   border: 1px solid rgba(196, 164, 132, 0.2);
   border-top: none;
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .tableRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex: 1 1 0;
+  min-height: 68px;
   padding: 14px 24px;
   border-bottom: 1px solid rgba(196, 164, 132, 0.15);
   transition: all 0.3s ease;
@@ -210,6 +241,15 @@
 .tableRow:hover {
   background: rgba(196, 164, 132, 0.08);
   transform: translateX(3px);
+}
+
+.emptyTableRow {
+  pointer-events: none;
+}
+
+.emptyTableRow:hover {
+  background: transparent;
+  transform: none;
 }
 
 .cell {
@@ -272,6 +312,7 @@
 .statusTabs {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 25px;
   border-bottom: 2px solid rgba(196, 164, 132, 0.2);
@@ -516,7 +557,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  flex: 1;
 }
 
 .noDataIcon {
@@ -593,28 +636,86 @@
   border-left: 4px solid #e74c3c;
 }
 
-.tableBody::-webkit-scrollbar {
-  width: 8px;
-}
-
-.tableBody::-webkit-scrollbar-track {
-  background: rgba(196, 164, 132, 0.1);
-  border-radius: 10px;
-}
-
-.tableBody::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #C4A484, #8B5E3C);
-  border-radius: 10px;
-  transition: background 0.3s;
-}
-
-.tableBody::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #8B5E3C, #6b462a);
-}
-
 ::selection {
   background: rgba(196, 164, 132, 0.3);
   color: #8B5E3C;
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(249, 240, 230, 0.96) 0%, rgba(232, 211, 190, 0.96) 100%);
+  border: 1px solid rgba(196, 164, 132, 0.24);
+  border-top: 1px solid rgba(196, 164, 132, 0.32);
+}
+
+.paginationSummary {
+  margin: 0;
+  color: #8B5E3C;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.paginationButton,
+.pageNumberButton {
+  height: 34px;
+  border: 1.5px solid rgba(196, 164, 132, 0.48);
+  background: rgba(255, 255, 255, 0.92);
+  color: #8B5E3C;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.paginationButton {
+  padding: 0 16px;
+}
+
+.pageNumberButton {
+  width: 34px;
+  padding: 0;
+}
+
+.paginationButton:hover:not(:disabled),
+.pageNumberButton:hover {
+  border-color: #C4A484;
+  background: rgba(196, 164, 132, 0.16);
+  transform: translateY(-1px);
+}
+
+.paginationButton:disabled {
+  color: rgba(139, 94, 60, 0.42);
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.pageNumberActive,
+.pageNumberActive:hover {
+  background: linear-gradient(135deg, #C4A484 0%, #8B5E3C 100%);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(139, 94, 60, 0.22);
+}
+
+.paginationDots {
+  color: #a0846b;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0 2px;
 }
 
 /* ── Product truncation pill ── */
@@ -890,8 +991,8 @@
 }
 
 @media (max-width: 1024px) {
-  .tableHeader, .tableBody {
-    margin: 0 20px;
+  .tableShell {
+    margin: 0 20px 28px;
   }
   
   .actions {
@@ -920,18 +1021,42 @@
 }
 
 @media (max-width: 768px) {
+  .main {
+    padding: 16px 16px max(28px, env(safe-area-inset-bottom));
+  }
+
   .pageTitle {
     font-size: 28px;
     padding: 30px 0 20px;
+  }
+
+  .statusTabs {
+    gap: 8px;
+  }
+
+  .statusTab {
+    flex: 1 1 calc(50% - 8px);
+    display: flex;
+    justify-content: center;
+    min-width: 140px;
   }
   
   .tableHeader {
     display: none;
   }
+
+  .tableBody {
+    min-height: auto;
+  }
   
   .tableRow {
     flex-wrap: wrap;
+    flex: none;
     padding: 16px;
+  }
+
+  .emptyTableRow {
+    display: none;
   }
   
   .cell {
@@ -972,24 +1097,50 @@
     text-align: center;
     margin-top: 10px;
   }
+
+  .cell:nth-child(6) {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
+  }
   
   .filters {
     gap: 10px;
   }
+
+  .paginationBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .paginationSummary,
+  .paginationControls {
+    justify-content: center;
+    text-align: center;
+  }
   
   .filters select {
+    flex: 1;
+    min-width: 0;
     padding: 8px 16px;
     font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
+  .main {
+    padding: 12px 0 max(20px, env(safe-area-inset-bottom));
+  }
+
   .pageTitle {
     font-size: 22px;
   }
   
-  .tableBody {
-    margin: 0 15px;
+  .tableShell {
+    margin: 0 15px 24px;
   }
   
   .actions {
@@ -1003,11 +1154,12 @@
   }
   
   .search1 {
-    width: 100%;
+    width: calc(100% - 30px);
+    box-sizing: border-box;
   }
   
   .filters select {
-    min-width: 100px;
+    min-width: 0;
   }
   .loading, .error {
   text-align: center;

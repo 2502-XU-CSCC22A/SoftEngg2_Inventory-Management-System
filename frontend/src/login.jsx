@@ -90,7 +90,9 @@ function Login() {
         } else {
           navigate("/welcomeuser");
         }
-      } catch { }
+      } catch {
+        return;
+      }
     };
     checkSession();
   }, [navigate]);
