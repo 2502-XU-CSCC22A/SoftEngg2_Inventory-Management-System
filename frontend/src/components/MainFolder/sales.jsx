@@ -2,7 +2,7 @@ import styles from "./sales.module.css";
 import { Navbar } from "../MainFolder/Navbar";
 import AddSales from "./addsales";
 import EditSales from "./editsales";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTransactions } from "../../hooks/useTransactions.js";
 import { formatToPesos } from "../../utils/utils.js";
 import { FiEye, FiCheck, FiX, FiEdit2, FiClipboard, FiClock } from "react-icons/fi";
@@ -10,6 +10,18 @@ import { MdPendingActions } from "react-icons/md";
 import { HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineClock } from "react-icons/hi";
 
 const MAX_VISIBLE_PRODUCTS = 2;
+
+function getRowsPerPage() {
+    if (typeof window === "undefined") return 8;
+
+    const { innerHeight, innerWidth } = window;
+
+    if (innerWidth <= 480) return innerHeight <= 700 ? 1 : 2;
+    if (innerWidth <= 768) return innerHeight <= 760 ? 2 : 3;
+    if (innerHeight <= 700) return 3;
+    if (innerHeight <= 850) return 5;
+    return 8;
+}
 
 // ── StatusBadge: premium pill with icon + label ──────────────────────────────
 function StatusBadge({ status }) {
@@ -179,8 +191,13 @@ function Sales() {
     const [completeTarget, setCompleteTarget] = useState(null);
     const [cancelTarget, setCancelTarget] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(getRowsPerPage);
 
-    const ROWS_PER_PAGE = 8;
+    useEffect(() => {
+        const handleResize = () => setRowsPerPage(getRowsPerPage());
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const statusParam = statusFilter === 'all' ? null : statusFilter;
     const { query, updateMutation, insertMutation, updateStatusMutation } = useTransactions(
@@ -194,12 +211,12 @@ function Sales() {
         )
     );
 
-    const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / ROWS_PER_PAGE));
+    const totalPages = Math.max(1, Math.ceil(filteredTransactions.length / rowsPerPage));
     const activePage = Math.min(currentPage, totalPages);
-    const indexOfLastRow = activePage * ROWS_PER_PAGE;
-    const indexOfFirstRow = indexOfLastRow - ROWS_PER_PAGE;
+    const indexOfLastRow = activePage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
     const currentRows = filteredTransactions.slice(indexOfFirstRow, indexOfLastRow);
-    const emptyRowsCount = Math.max(0, ROWS_PER_PAGE - currentRows.length);
+    const emptyRowsCount = Math.max(0, rowsPerPage - currentRows.length);
     const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
     const visiblePageNumbers = pageNumbers.filter(pageNumber => {
         if (totalPages <= 5) return true;

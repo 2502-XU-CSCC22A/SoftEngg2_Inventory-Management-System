@@ -2,36 +2,19 @@
   width: 100%;
   height: 100vh;
   height: 100dvh;
-  min-height: 100vh;
   background: linear-gradient(135deg, #f9f0e6 0%, #f0e2d4 50%, #d0b392 100%);
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-.page::-webkit-scrollbar {
-  width: 10px;
-}
-
-.page::-webkit-scrollbar-track {
-  background: rgba(196, 164, 132, 0.12);
-}
-
-.page::-webkit-scrollbar-thumb {
-  background: rgba(139, 94, 60, 0.45);
-  border-radius: 10px;
-  border: 2px solid rgba(249, 240, 230, 0.85);
-}
-
-.page::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 94, 60, 0.65);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .main {
-  padding: 20px 20px max(32px, env(safe-area-inset-bottom));
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(10px, 2vh, 20px);
   position: relative;
   z-index: 1;
 }
@@ -182,6 +165,10 @@
 }
 
 .tableShell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   margin: 0 50px 32px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -212,9 +199,10 @@
 }
 
 .tableBody {
+  flex: 1;
+  min-height: 0;
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);
-  min-height: clamp(440px, calc(100vh - 450px), 610px);
   overflow: hidden;
   border: 1px solid rgba(196, 164, 132, 0.2);
   border-top: none;
@@ -228,8 +216,8 @@
   justify-content: space-between;
   align-items: center;
   flex: 1 1 0;
-  min-height: 68px;
-  padding: 14px 24px;
+  min-height: 0;
+  padding: clamp(7px, 1.4vh, 14px) 24px;
   border-bottom: 1px solid rgba(196, 164, 132, 0.15);
   transition: all 0.3s ease;
 }
@@ -990,6 +978,53 @@
   font-size: 13px;
 }
 
+@media (max-height: 850px) {
+  .topBar {
+    margin-top: 0;
+  }
+
+  .search1 {
+    height: 36px;
+  }
+
+  .pageTitle {
+    padding: 14px 0 12px;
+    font-size: 28px;
+  }
+
+  .statusTabs {
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+  }
+
+  .statusTab {
+    padding: 6px 14px;
+  }
+
+  .actions {
+    margin-top: 8px;
+    margin-bottom: 10px;
+  }
+
+  .add {
+    height: 40px;
+  }
+
+  .tableShell {
+    margin-bottom: 10px;
+  }
+
+  .tableHeader {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .paginationBar {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
 @media (max-width: 1024px) {
   .tableShell {
     margin: 0 20px 28px;
@@ -1022,12 +1057,12 @@
 
 @media (max-width: 768px) {
   .main {
-    padding: 16px 16px max(28px, env(safe-area-inset-bottom));
+    padding: 10px 12px;
   }
 
   .pageTitle {
-    font-size: 28px;
-    padding: 30px 0 20px;
+    font-size: 24px;
+    padding: 10px 0 8px;
   }
 
   .statusTabs {
@@ -1046,13 +1081,12 @@
   }
 
   .tableBody {
-    min-height: auto;
+    min-height: 0;
   }
   
   .tableRow {
     flex-wrap: wrap;
-    flex: none;
-    padding: 16px;
+    padding: 7px 12px;
   }
 
   .emptyTableRow {
@@ -1063,7 +1097,7 @@
     width: 50%;
     flex: none;
     text-align: left;
-    padding: 8px;
+    padding: 4px 8px;
   }
   
   .cell:nth-child(1) {
@@ -1071,7 +1105,7 @@
     text-align: center;
     font-weight: 700;
     color: #8B5E3C;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
   }
   
   .cell:nth-child(2)::before {
@@ -1095,12 +1129,12 @@
   .cell:nth-child(5) {
     width: 100%;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 5px;
   }
 
   .cell:nth-child(6) {
     width: 100%;
-    margin-top: 10px;
+    margin-top: 5px;
   }
 
   .actionButtons {
@@ -1114,6 +1148,8 @@
   .paginationBar {
     flex-direction: column;
     align-items: stretch;
+    gap: 6px;
+    padding: 6px 10px;
   }
 
   .paginationSummary,
@@ -1132,7 +1168,7 @@
 
 @media (max-width: 480px) {
   .main {
-    padding: 12px 0 max(20px, env(safe-area-inset-bottom));
+    padding: 8px 0;
   }
 
   .pageTitle {
@@ -1140,11 +1176,11 @@
   }
   
   .tableShell {
-    margin: 0 15px 24px;
+    margin: 0 10px 8px;
   }
   
   .actions {
-    margin: 15px;
+    margin: 6px 10px;
   }
   
   .add {
