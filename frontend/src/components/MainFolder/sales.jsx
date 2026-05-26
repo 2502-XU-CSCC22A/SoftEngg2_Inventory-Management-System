@@ -16,9 +16,9 @@ function getRowsPerPage() {
 
     const { innerHeight, innerWidth } = window;
 
-    if (innerWidth <= 480) return innerHeight <= 700 ? 1 : 2;
-    if (innerWidth <= 768) return innerHeight <= 760 ? 2 : 3;
-    if (innerHeight <= 700) return 3;
+    if (innerWidth <= 480) return 2;
+    if (innerWidth <= 768) return 3;
+    if (innerHeight <= 700) return 4;
     if (innerHeight <= 850) return 5;
     return 8;
 }
