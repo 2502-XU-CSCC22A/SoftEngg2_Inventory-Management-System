@@ -9,6 +9,12 @@
   overflow: hidden;
 }
 
+.page > nav {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
 .main {
   flex: 1;
   min-height: 0;
@@ -17,6 +23,9 @@
   padding: clamp(10px, 2vh, 20px);
   position: relative;
   z-index: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 .pageTitle {
@@ -1074,14 +1083,8 @@
   }
 }
 
-/* Use natural-height content when the viewport cannot safely compress the rows. */
+/* Let the content scroll below the persistent navigation when rows need space. */
 @media (max-width: 768px), (max-height: 700px) {
-  .page {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .main,
   .tableShell,
   .tableBody {
     flex: none;
